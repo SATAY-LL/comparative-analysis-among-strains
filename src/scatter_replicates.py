@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 
 def scatter_replicates(data,names,tn_lim,reads_lim,save=True):
     """Scatter plots of replicates
@@ -22,19 +23,27 @@ def scatter_replicates(data,names,tn_lim,reads_lim,save=True):
 
     fig,ax = plt.subplots(nrows=1,ncols=2,figsize=(15,8))
 
-    ax[0].scatter(data[0],data[1],s=10,c='b',alpha=0.5)
+    res_tn = stats.linregress(np.array(data[0]), np.array(data[1]))
+
+    ax[0].scatter(data[0],data[1],s=10,c='b',alpha=0.5,label="original data")
+    ax[0].plot(np.array(data[0]), res_tn.intercept + res_tn.slope*np.array(data[0]), 'r', label='fitted line')
     ax[0].set_xlabel(names[0])
     ax[0].set_ylabel(names[1])
     ax[0].set_xlim(0,tn_lim)
     ax[0].set_ylim(0,tn_lim)
-    ax[0].set_title("Transposon insertions")
+    ax[0].set_title("Transposon insertions->" + f"std: {res_tn.stderr:.6f}")
+    ax[0].legend()
 
-    ax[1].scatter(data[2],data[3],s=10,c='b',alpha=0.5)
+    res_reads = stats.linregress(np.array(data[2]), np.array(data[3]))
+    ax[1].scatter(data[2],data[3],s=10,c='b',alpha=0.5,label="original data")
+    ax[1].plot(np.array(data[2]), res_reads.intercept + res_tn.slope*np.array(data[2]), 'r', label='fitted line')
+
     ax[1].set_xlim(0,reads_lim)
     ax[1].set_ylim(0,reads_lim)
     ax[1].set_xlabel(names[0])
     ax[1].set_ylabel(names[1])
-    ax[1].set_title("Reads")
+    ax[1].set_title("Reads->"+ f"std: {res_reads.stderr:.6f}")
+    ax[1].legend()
 
     
     if save==True:
