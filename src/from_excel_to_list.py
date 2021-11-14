@@ -1,3 +1,4 @@
+import numpy as np
 def from_excel_to_list(x):
     """Convert a string of numbers to a list of floats
 
@@ -11,10 +12,11 @@ def from_excel_to_list(x):
     list
         a list of floats
     """
-    if len(x) < 3:# to avoid the error of the empty string
+   
+    if x=='[]': # to avoid the error of the empty string
         x=0
-    elif x=='[]':
-        x=0
+    elif type(x)==np.int64:
+        x=x
     else:
         x=x.replace('[', '')
         x=x.replace(']', '')
