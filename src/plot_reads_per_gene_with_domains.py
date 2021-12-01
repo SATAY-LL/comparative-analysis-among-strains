@@ -123,4 +123,4 @@ def plot_reads_per_gene_with_domains(data,gene,domain_genomics_coordinates,key):
 
         i+=1
 
-    
+    plt.tight_layout()
