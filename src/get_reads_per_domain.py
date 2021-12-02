@@ -74,16 +74,20 @@ def get_reads_per_domain(data,gene):
 
     
     reads_domain=[]
+    insertions_domain=[]
     for j in np.arange(0,len(domain_genomic)):
         pos_domain=[]
+        pos_domain_hits=[]
         if type(insertions_vector)!=int:
             for i in np.arange(0,len(insertions_vector)):     
 
                 if domain_genomic[j][0]<=insertions_vector[i] and insertions_vector[i]<=domain_genomic[j][1]:
-                    pos_domain.append(reads_vector[i])       
+                    pos_domain.append(reads_vector[i]) 
+                    pos_domain_hits.append(insertions_vector[i])      
 
         reads_domain.append(np.sum(pos_domain))
+        insertions_domain.append(np.sum(pos_domain_hits))
 
-    return reads_domain,domain_genomic
+    return reads_domain,domain_genomic,insertions_domain
 
 
