@@ -5,7 +5,9 @@ def from_excel_to_list(x):
     Parameters
     ----------
     x : str
-        the values from the dataframe  on insertion locations and reads per insertion location
+        the values from the dataframe  on insertion locations and 
+        reads per insertion location. It could be other values that are str but are 
+        meant to be converted to floats.
 
     Returns
     -------

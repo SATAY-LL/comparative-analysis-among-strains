@@ -4,7 +4,7 @@
 
 ### To ensure that region with few or zero hits are due to biological reasons: 
 
-- [ ] Compute the number of transposons in the upstream and downstrea 3KB regions of every gene. Then if the number of transposons is less than the average transposon density of the library * 3KB , then discard the gene for analysis of essentiality. If not then keep the gene for analysis of essentiality.
+- [ ] Compute the number of transposons in the upstream and downstream 3KB regions of every gene. Then if the number of transposons is less than the average transposon density of the library * 3KB , then discard the gene for analysis of essentiality. If not then keep the gene for analysis of essentiality.
 
 - [ ] Find a way to get rid of genes that have a low alignment score (gene duplications and gene with repeats), thereby avoiding the situation of having less transposons due to a misalignment. (Look into BWA alignment score)
 
