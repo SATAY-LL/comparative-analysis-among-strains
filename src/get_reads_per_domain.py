@@ -83,7 +83,8 @@ def get_reads_per_domain(data,gene):
 
                 if domain_genomic[j][0]<=insertions_vector[i] and insertions_vector[i]<=domain_genomic[j][1]:
                     pos_domain.append(reads_vector[i]) 
-                    pos_domain_hits.append(insertions_vector[i])      
+                    #pos_domain_hits.append(insertions_vector[i]) 
+                    pos_domain_hits.append(1)  # append 1 if the insertion is in the domain
 
         reads_domain.append(np.sum(pos_domain))
         insertions_domain.append(np.sum(pos_domain_hits))
