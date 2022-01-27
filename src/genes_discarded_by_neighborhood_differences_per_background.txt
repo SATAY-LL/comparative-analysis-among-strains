@@ -1,80 +1,345 @@
-these genes: [] are different between bem1-aid_a and bem1-aid_a
-these genes: ['ARR3' 'HAL1'] are different between bem1-aid_a and dbem1dbem3_b
-these genes: ['ARR3' 'HAL1'] are different between bem1-aid_a and wt_merged
-these genes: ['ARR3' 'HAL1' 'NOP4'] are different between bem1-aid_a and dbem1dbem3_a
-these genes: ['ARR3' 'HAL1' 'ICL2' 'LSP1' 'TIM50'] are different between bem1-aid_a and dnrp1_merged
-these genes: ['APM1' 'CWC27' 'ERI1' 'MNN9' 'NEW1' 'NOP4' 'SPE3' 'TFB4'] are different between bem1-aid_a and bem1-aid_b
-these genes: ['ARR3' 'HAL1'] are different between bem1-aid_a and dbem3_merged
+
+There are 358 genes discarded in bem1-aid_a for essentiality scores due to its low coverage in its neighborhood.
+There are 383 genes discarded in dbem1dbem3_b for essentiality scores due to its low coverage in its neighborhood.
+There are 383 genes discarded in wt_merged for essentiality scores due to its low coverage in its neighborhood.
+There are 381 genes discarded in dbem1dbem3_a for essentiality scores due to its low coverage in its neighborhood.
+There are 379 genes discarded in dnrp1_merged for essentiality scores due to its low coverage in its neighborhood.
+There are 364 genes discarded in bem1-aid_b for essentiality scores due to its low coverage in its neighborhood.
+There are 383 genes discarded in dbem3_merged for essentiality scores due to its low coverage in its neighborhood.
 
 
-these genes: ['ARR1' 'ATG11' 'BET2' 'CBP3' 'COA2' 'COG4' 'DIM1' 'DPB2' 'ENV7' 'FLC1'
- 'GDE1' 'GRS2' 'HFI1' 'ISM1' 'KEL3' 'NUT2' 'PAU22' 'PNG1' 'PRM4' 'PRP4'
- 'RBD2' 'RPL1A' 'SRP54' 'TAZ1' 'TEF1' 'UBA3' 'VPS28'] are different between dbem1dbem3_b and bem1-aid_a
-these genes: [] are different between dbem1dbem3_b and dbem1dbem3_b
-these genes: [] are different between dbem1dbem3_b and wt_merged
-these genes: ['ATG11' 'NOP4'] are different between dbem1dbem3_b and dbem1dbem3_a
-these genes: ['ATG11' 'ICL2' 'LSP1' 'TIM50'] are different between dbem1dbem3_b and dnrp1_merged
-these genes: ['APM1' 'ATG11' 'BET2' 'CBP3' 'CWC27' 'DPB2' 'ENV7' 'ERI1' 'GRS2' 'KEL3'
- 'MNN9' 'NEW1' 'NOP4' 'PNG1' 'PRM4' 'RBD2' 'SPE3' 'TEF1' 'TFB4' 'UBA3'
- 'VPS28'] are different between dbem1dbem3_b and bem1-aid_b
-these genes: [] are different between dbem1dbem3_b and dbem3_merged
 
 
-these genes: ['ARR1' 'ATG11' 'BET2' 'CBP3' 'COA2' 'COG4' 'DIM1' 'DPB2' 'ENV7' 'FLC1'
- 'GDE1' 'GRS2' 'HFI1' 'ISM1' 'KEL3' 'NUT2' 'PAU22' 'PNG1' 'PRM4' 'PRP4'
- 'RBD2' 'RPL1A' 'SRP54' 'TAZ1' 'TEF1' 'UBA3' 'VPS28'] are different between wt_merged and bem1-aid_a
-these genes: [] are different between wt_merged and dbem1dbem3_b
-these genes: [] are different between wt_merged and wt_merged
-these genes: ['ATG11' 'NOP4'] are different between wt_merged and dbem1dbem3_a
-these genes: ['ATG11' 'ICL2' 'LSP1' 'TIM50'] are different between wt_merged and dnrp1_merged
-these genes: ['APM1' 'ATG11' 'BET2' 'CBP3' 'CWC27' 'DPB2' 'ENV7' 'ERI1' 'GRS2' 'KEL3'
- 'MNN9' 'NEW1' 'NOP4' 'PNG1' 'PRM4' 'RBD2' 'SPE3' 'TEF1' 'TFB4' 'UBA3'
- 'VPS28'] are different between wt_merged and bem1-aid_b
-these genes: [] are different between wt_merged and dbem3_merged
 
 
-these genes: ['ARR1' 'BET2' 'CBP3' 'COA2' 'COG4' 'DIM1' 'DPB2' 'ENV7' 'FLC1' 'GDE1'
- 'GRS2' 'HFI1' 'ISM1' 'KEL3' 'NUT2' 'PAU22' 'PNG1' 'PRM4' 'PRP4' 'RBD2'
- 'RPL1A' 'SRP54' 'TAZ1' 'TEF1' 'UBA3' 'VPS28'] are different between dbem1dbem3_a and bem1-aid_a
-these genes: [] are different between dbem1dbem3_a and dbem1dbem3_b
-these genes: [] are different between dbem1dbem3_a and wt_merged
-these genes: [] are different between dbem1dbem3_a and dbem1dbem3_a
-these genes: ['ICL2' 'LSP1' 'TIM50'] are different between dbem1dbem3_a and dnrp1_merged
-these genes: ['APM1' 'BET2' 'CBP3' 'CWC27' 'DPB2' 'ENV7' 'ERI1' 'GRS2' 'KEL3' 'MNN9'
- 'NEW1' 'PNG1' 'PRM4' 'RBD2' 'SPE3' 'TEF1' 'TFB4' 'UBA3' 'VPS28'] are different between dbem1dbem3_a and bem1-aid_b
-these genes: [] are different between dbem1dbem3_a and dbem3_merged
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_b
+
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_a
 
 
-these genes: ['ARR1' 'BET2' 'CBP3' 'COA2' 'COG4' 'DIM1' 'DPB2' 'ENV7' 'FLC1' 'GDE1'
- 'GRS2' 'HFI1' 'ISM1' 'KEL3' 'NUT2' 'PAU22' 'PNG1' 'PRM4' 'PRP4' 'RBD2'
- 'RPL1A' 'SRP54' 'TAZ1' 'TEF1' 'UBA3' 'VPS28'] are different between dnrp1_merged and bem1-aid_a
-these genes: [] are different between dnrp1_merged and dbem1dbem3_b
-these genes: [] are different between dnrp1_merged and wt_merged
-these genes: ['NOP4'] are different between dnrp1_merged and dbem1dbem3_a
-these genes: [] are different between dnrp1_merged and dnrp1_merged
-these genes: ['APM1' 'BET2' 'CBP3' 'CWC27' 'DPB2' 'ENV7' 'ERI1' 'GRS2' 'KEL3' 'MNN9'
- 'NEW1' 'NOP4' 'PNG1' 'PRM4' 'RBD2' 'SPE3' 'TEF1' 'TFB4' 'UBA3' 'VPS28'] are different between dnrp1_merged and bem1-aid_b
-these genes: [] are different between dnrp1_merged and dbem3_merged
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in wt_merged
+
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_a
 
 
-these genes: ['ARR1' 'COA2' 'COG4' 'DIM1' 'FLC1' 'GDE1' 'HFI1' 'ISM1' 'NUT2' 'PAU22'
- 'PRP4' 'RPL1A' 'SRP54' 'TAZ1'] are different between bem1-aid_b and bem1-aid_a
-these genes: ['ARR3' 'HAL1'] are different between bem1-aid_b and dbem1dbem3_b
-these genes: ['ARR3' 'HAL1'] are different between bem1-aid_b and wt_merged
-these genes: ['ARR3' 'HAL1'] are different between bem1-aid_b and dbem1dbem3_a
-these genes: ['ARR3' 'HAL1' 'ICL2' 'LSP1' 'TIM50'] are different between bem1-aid_b and dnrp1_merged
-these genes: [] are different between bem1-aid_b and bem1-aid_b
-these genes: ['ARR3' 'HAL1'] are different between bem1-aid_b and dbem3_merged
+these genes: [' ARR3' ' HAL1' ' NOP4'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_a
 
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_a
 
-these genes: ['ARR1' 'ATG11' 'BET2' 'CBP3' 'COA2' 'COG4' 'DIM1' 'DPB2' 'ENV7' 'FLC1'
- 'GDE1' 'GRS2' 'HFI1' 'ISM1' 'KEL3' 'NUT2' 'PAU22' 'PNG1' 'PRM4' 'PRP4'
- 'RBD2' 'RPL1A' 'SRP54' 'TAZ1' 'TEF1' 'UBA3' 'VPS28'] are different between dbem3_merged and bem1-aid_a
-these genes: [] are different between dbem3_merged and dbem1dbem3_b
-these genes: [] are different between dbem3_merged and wt_merged
-these genes: ['ATG11' 'NOP4'] are different between dbem3_merged and dbem1dbem3_a
-these genes: ['ATG11' 'ICL2' 'LSP1' 'TIM50'] are different between dbem3_merged and dnrp1_merged
-these genes: ['APM1' 'ATG11' 'BET2' 'CBP3' 'CWC27' 'DPB2' 'ENV7' 'ERI1' 'GRS2' 'KEL3'
- 'MNN9' 'NEW1' 'NOP4' 'PNG1' 'PRM4' 'RBD2' 'SPE3' 'TEF1' 'TFB4' 'UBA3'
- 'VPS28'] are different between dbem3_merged and bem1-aid_b
-these genes: [] are different between dbem3_merged and dbem3_merged
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_a that are not in dnrp1_merged
+
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_a
+
+these genes: [' APM1' ' CWC27' ' ERI1' ' MNN9' ' NEW1' ' NOP4' ' SPE3' ' TFB4'] are genes that are discarded in bem1-aid_a that are not in bem1-aid_b
+
+these genes: [' ARR1' ' COA2' ' COG4' ' DIM1' ' FLC1' ' GDE1' ' HFI1' ' ISM1' ' NUT2'
+ ' PAU22' ' PRP4' ' RPL1A' ' SRP54' ' TAZ1'] are genes that are discarded in bem1-aid_b that are not in bem1-aid_a
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem3_merged
+
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_a
+
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_a
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_b
+
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in wt_merged
+
+these genes: [] are genes that are discarded in wt_merged that are not in dbem1dbem3_b
+
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem1dbem3_b that are not in dbem1dbem3_a
+
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem1dbem3_b
+
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_b that are not in dnrp1_merged
+
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_b
+
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_b
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_b
+
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in dbem3_merged
+
+these genes: [] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_b
+
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_a
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in wt_merged
+
+these genes: [] are genes that are discarded in wt_merged that are not in dbem1dbem3_b
+
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in wt_merged
+
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in wt_merged that are not in dbem1dbem3_a
+
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in wt_merged
+
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in wt_merged that are not in dnrp1_merged
+
+these genes: [] are genes that are discarded in dnrp1_merged that are not in wt_merged
+
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_b
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in wt_merged
+
+these genes: [] are genes that are discarded in wt_merged that are not in dbem3_merged
+
+these genes: [] are genes that are discarded in dbem3_merged that are not in wt_merged
+
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_a
+
+these genes: [' ARR3' ' HAL1' ' NOP4'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_a
+
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem1dbem3_b
+
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem1dbem3_b that are not in dbem1dbem3_a
+
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in wt_merged
+
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in wt_merged that are not in dbem1dbem3_a
+
+these genes: [' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_a that are not in dnrp1_merged
+
+these genes: [' NOP4'] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_a
+
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_b
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_a
+
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem3_merged
+
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_a
+
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_a
+
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_a that are not in dnrp1_merged
+
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_b
+
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_b that are not in dnrp1_merged
+
+these genes: [] are genes that are discarded in dnrp1_merged that are not in wt_merged
+
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in wt_merged that are not in dnrp1_merged
+
+these genes: [' NOP4'] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_a
+
+these genes: [' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_a that are not in dnrp1_merged
+
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4'
+ ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_b
+
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_b that are not in dnrp1_merged
+
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem3_merged
+
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem3_merged that are not in dnrp1_merged
+
+these genes: [' ARR1' ' COA2' ' COG4' ' DIM1' ' FLC1' ' GDE1' ' HFI1' ' ISM1' ' NUT2'
+ ' PAU22' ' PRP4' ' RPL1A' ' SRP54' ' TAZ1'] are genes that are discarded in bem1-aid_b that are not in bem1-aid_a
+
+these genes: [' APM1' ' CWC27' ' ERI1' ' MNN9' ' NEW1' ' NOP4' ' SPE3' ' TFB4'] are genes that are discarded in bem1-aid_a that are not in bem1-aid_b
+
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_b
+
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in wt_merged
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_a
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_b that are not in dnrp1_merged
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4'
+ ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem3_merged
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_b
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem3_merged
+these genes: [] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_b
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in dbem3_merged
+these genes: [] are genes that are discarded in dbem3_merged that are not in wt_merged
+these genes: [] are genes that are discarded in wt_merged that are not in dbem3_merged
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_a
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem3_merged
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem3_merged that are not in dnrp1_merged
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem3_merged
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem3_merged
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_b
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in wt_merged
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1' ' NOP4'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_a
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_a that are not in dnrp1_merged
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_a
+these genes: [' APM1' ' CWC27' ' ERI1' ' MNN9' ' NEW1' ' NOP4' ' SPE3' ' TFB4'] are genes that are discarded in bem1-aid_a that are not in bem1-aid_b
+these genes: [' ARR1' ' COA2' ' COG4' ' DIM1' ' FLC1' ' GDE1' ' HFI1' ' ISM1' ' NUT2'
+ ' PAU22' ' PRP4' ' RPL1A' ' SRP54' ' TAZ1'] are genes that are discarded in bem1-aid_b that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem3_merged
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_a
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_b
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in wt_merged
+these genes: [] are genes that are discarded in wt_merged that are not in dbem1dbem3_b
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem1dbem3_b that are not in dbem1dbem3_a
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem1dbem3_b
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_b that are not in dnrp1_merged
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_b
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_b
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in dbem3_merged
+these genes: [] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_b
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in wt_merged
+these genes: [] are genes that are discarded in wt_merged that are not in dbem1dbem3_b
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in wt_merged
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in wt_merged that are not in dbem1dbem3_a
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in wt_merged
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in wt_merged that are not in dnrp1_merged
+these genes: [] are genes that are discarded in dnrp1_merged that are not in wt_merged
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in wt_merged
+these genes: [] are genes that are discarded in wt_merged that are not in dbem3_merged
+these genes: [] are genes that are discarded in dbem3_merged that are not in wt_merged
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1' ' NOP4'] are genes that are discarded in bem1-aid_a that are not in dbem1dbem3_a
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem1dbem3_b
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem1dbem3_b that are not in dbem1dbem3_a
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in wt_merged
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in wt_merged that are not in dbem1dbem3_a
+these genes: [' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_a that are not in dnrp1_merged
+these genes: [' NOP4'] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_a
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_a
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem3_merged
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_a
+these genes: [' ARR1' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7' ' FLC1'
+ ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1' ' PRM4'
+ ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_a that are not in dnrp1_merged
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_b
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_b that are not in dnrp1_merged
+these genes: [] are genes that are discarded in dnrp1_merged that are not in wt_merged
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in wt_merged that are not in dnrp1_merged
+these genes: [' NOP4'] are genes that are discarded in dnrp1_merged that are not in dbem1dbem3_a
+these genes: [' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem1dbem3_a that are not in dnrp1_merged
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4'
+ ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_b that are not in dnrp1_merged
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem3_merged
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem3_merged that are not in dnrp1_merged
+these genes: [' ARR1' ' COA2' ' COG4' ' DIM1' ' FLC1' ' GDE1' ' HFI1' ' ISM1' ' NUT2'
+ ' PAU22' ' PRP4' ' RPL1A' ' SRP54' ' TAZ1'] are genes that are discarded in bem1-aid_b that are not in bem1-aid_a
+these genes: [' APM1' ' CWC27' ' ERI1' ' MNN9' ' NEW1' ' NOP4' ' SPE3' ' TFB4'] are genes that are discarded in bem1-aid_a that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_b
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem1dbem3_b that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in wt_merged
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in wt_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem1dbem3_a
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem1dbem3_a that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in bem1-aid_b that are not in dnrp1_merged
+these genes: [' APM1' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2' ' KEL3'
+ ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1' ' TFB4'
+ ' UBA3' ' VPS28'] are genes that are discarded in dnrp1_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem3_merged
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_b
+these genes: [' ARR1' ' ATG11' ' BET2' ' CBP3' ' COA2' ' COG4' ' DIM1' ' DPB2' ' ENV7'
+ ' FLC1' ' GDE1' ' GRS2' ' HFI1' ' ISM1' ' KEL3' ' NUT2' ' PAU22' ' PNG1'
+ ' PRM4' ' PRP4' ' RBD2' ' RPL1A' ' SRP54' ' TAZ1' ' TEF1' ' UBA3'
+ ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_a
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_a that are not in dbem3_merged
+these genes: [] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_b
+these genes: [] are genes that are discarded in dbem1dbem3_b that are not in dbem3_merged
+these genes: [] are genes that are discarded in dbem3_merged that are not in wt_merged
+these genes: [] are genes that are discarded in wt_merged that are not in dbem3_merged
+these genes: [' ATG11' ' NOP4'] are genes that are discarded in dbem3_merged that are not in dbem1dbem3_a
+these genes: [] are genes that are discarded in dbem1dbem3_a that are not in dbem3_merged
+these genes: [' ATG11' ' ICL2' ' LSP1' ' TIM50'] are genes that are discarded in dbem3_merged that are not in dnrp1_merged
+these genes: [] are genes that are discarded in dnrp1_merged that are not in dbem3_merged
+these genes: [' APM1' ' ATG11' ' BET2' ' CBP3' ' CWC27' ' DPB2' ' ENV7' ' ERI1' ' GRS2'
+ ' KEL3' ' MNN9' ' NEW1' ' NOP4' ' PNG1' ' PRM4' ' RBD2' ' SPE3' ' TEF1'
+ ' TFB4' ' UBA3' ' VPS28'] are genes that are discarded in dbem3_merged that are not in bem1-aid_b
+these genes: [' ARR3' ' HAL1'] are genes that are discarded in bem1-aid_b that are not in dbem3_merged
+

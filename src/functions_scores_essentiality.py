@@ -56,15 +56,15 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
     for gene in valid_index:
         insertion_float=from_excel_to_list(data_background.loc[gene,"Insertion locations"])
 
-        if type(insertion_float)!=int: 
-
-            if len(insertion_float)>1:
+        if type(insertion_float)!=int : 
+            n = 5
+            if len(insertion_float)>n :
 
                 ## Step 2: Compute largest interval free of transposons between the transposon n and the n+5
-                n = 5
-
+                
+                x=np.array(insertion_float)
                 #L=np.max(np.diff(insertion_float))
-                L=np.max(insertion_float[n:] - insertion_float[:-n])
+                L=np.max(x[n:] - x[:-n])
 
                 ## Step 2: Compute length gene
 
@@ -76,7 +76,7 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
 
                 ## Compute the score per gene per background
 
-                if all((N>10,L>300,L>0.1*l,L<0.9*l)):
+                if all((N>1,L>300,L>0.1*l,L<0.9*l)):
                     #print(L,N,l)
                     score["value"][gene]=L*N/pow(l,1.5)
                     
