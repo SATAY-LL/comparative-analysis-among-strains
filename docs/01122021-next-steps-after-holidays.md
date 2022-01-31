@@ -4,15 +4,18 @@
 
 ### To ensure that region with few or zero hits are due to biological reasons: 
 
-- [ ] Compute the number of transposons in the upstream and downstream 3KB regions of every gene. Then if the number of transposons is less than the average transposon density of the library * 3KB , then discard the gene for analysis of essentiality. If not then keep the gene for analysis of essentiality.
+- [x] Compute the number of transposons in the upstream and downstream 3KB regions of every gene. Then if the number of transposons is less than the average transposon density of the library * 3KB , then discard the gene for analysis of essentiality. If not then keep the gene for analysis of essentiality.
 
-- [ ] Find a way to get rid of genes that have a low alignment score (gene duplications and gene with repeats), thereby avoiding the situation of having less transposons due to a misalignment. (Look into BWA alignment score)
+- [x] Find a way to get rid of genes that have a low alignment score (gene duplications and gene with repeats), thereby avoiding the situation of having less transposons due to a misalignment. (Look into BWA alignment score)
+    - These are just the genes that happen to have multiple genomic loactions along the genome. 
 
 ### Make a list of essential genes from different backgrounds.
 
-- [ ] Have a list of essential genes per genetic background with the adhoc criteria of having few transposons in that region , after filtering out genes with low alignment score and by the neghboring intergenic regions. 
+- [x] Have a list of essential genes per genetic background with the adhoc criteria of having few transposons in that region , after filtering out genes with low alignment score and by the neghboring intergenic regions. 
+    - I have a list of essential genes per background with the criteria of Benoit , for the domain likelihood score for essentiality. 
+    - I havent implemented the search with an adhoc criteria from ourselves.
 
-- [ ] Make a heatmap where the rows are all essential genes from all backgrounds and the columns the evolutionary backgrounds. (Like Evelyn plot, but with genes instead of organisms) https://stackoverflow.com/questions/27854243/is-it-possible-to-plot-a-checkerboard-type-plot-in-python
+- [x] Make a heatmap where the rows are all essential genes from all backgrounds and the columns the evolutionary backgrounds. (Like Evelyn plot, but with genes instead of organisms) https://stackoverflow.com/questions/27854243/is-it-possible-to-plot-a-checkerboard-type-plot-in-python
 
 ## Fitness calculation
 
