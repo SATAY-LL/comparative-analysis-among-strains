@@ -98,7 +98,8 @@ def plot_reads_per_gene_with_domains(data,gene,domain_genomics_coordinates,key):
     ax.set_xlim(start_location,end_location)
 
     facecolor=[essential_color,nonessential_color,noncoding_color,codingdna_color,
-    "black","blue","red","purple"]
+    "black","blue","red","purple","green","orange","brown","pink","grey","yellow","cyan",
+    "magenta","gray","black","blue","red","purple","green","orange","brown","pink","grey","yellow","cyan"]
 
 
     i=0

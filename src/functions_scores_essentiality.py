@@ -76,7 +76,7 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
 
                 ## Compute the score per gene per background
 
-                if all((N>15,L>300,L>0.1*l,L<0.9*l)):
+                if all((N>20,L>300,L>0.1*l,L<0.9*l)):
                     #print(L,N,l)
                     score["value"][gene]=L*N/pow(l,1.5)
                     

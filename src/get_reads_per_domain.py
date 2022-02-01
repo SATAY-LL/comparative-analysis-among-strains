@@ -36,7 +36,7 @@ def get_reads_per_domain(data,gene):
     domain_genomic=[]
     tmp=data.loc[gene,"domain locations"]
     
-    if type(tmp)!=float : 
+    if all((type(tmp)!=float,type(tmp)!=int) ): 
 
         if type(tmp.tolist()[0])!=int:
             
