@@ -56,9 +56,9 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
     for gene in valid_index:
         insertion_float=from_excel_to_list(data_background.loc[gene,"Insertion locations"])
 
-        if type(insertion_float)!=int : 
+        if type(insertion_float)!=int : # for genes with more than one insertion location
             n = 5
-            if len(insertion_float)>n :
+            if len(insertion_float)>n : # for genes which number of insertion locations bigger than 5
 
                 ## Step 2: Compute largest interval free of transposons between the transposon n and the n+5
                 
@@ -90,3 +90,37 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
         else:
             score["value"][gene]=0
     return score
+
+
+def write_ones_if_essential(data_scores,background,essential_genes):
+    """Writing 1 if the gene is essential , zero otherwise in the desired background
+
+    Parameters
+    ----------
+    data_scores : [type]
+        [description]
+    background : [type]
+        [description]
+    essential_genes : [type]
+        [description]
+
+    Returns
+    -------
+    [type]
+        [description]
+    """
+
+    scores_data=data_scores.loc[background,:]
+    for true_genes in essential_genes:
+        
+        index_essential=np.argwhere(scores_data.index==true_genes)
+        
+        if len(index_essential)>0:
+            #scores_wt.loc[index_essential[0],"true essential"]=1
+            tmp=scores_data.index[index_essential[0][0]]
+            scores_data.loc[tmp,"true essential"]=1
+        
+        
+    scores_data.fillna(0,inplace=True)
+
+    return scores_data
