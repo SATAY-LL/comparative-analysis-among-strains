@@ -124,3 +124,25 @@ def write_ones_if_essential(data_scores,background,essential_genes):
     scores_data.fillna(0,inplace=True)
 
     return scores_data
+
+## Genes that only have insertions with one or two reads
+def exclude_genes_with_one_or_two_reads(data,background):
+    """[summary]
+
+    Parameters
+    ----------
+    data : [type]
+        [description]
+    background : [type]
+        [description]
+
+    Returns
+    -------
+    [type]
+        [description]
+    """
+
+    tmp=data.loc[background]
+    tmp=tmp[tmp.loc[:,"Reads"]>2]["Gene name"] # genes with more than 2 reads
+    
+    return tmp
