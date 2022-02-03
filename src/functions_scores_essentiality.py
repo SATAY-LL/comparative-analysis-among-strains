@@ -4,7 +4,7 @@ import pandas as pd
 from collections import defaultdict
 from from_excel_to_list import from_excel_to_list
 
-def get_genes_names_for_essentiality(data_genes_names,data_discarded_genes_names,background):
+def get_genes_names_for_essentiality(data_genes_names,data_discarded_genes_by_duplication,discarded_genes_by_low_coverage,background):
     """[summary]
 
     Parameters
@@ -23,12 +23,39 @@ def get_genes_names_for_essentiality(data_genes_names,data_discarded_genes_names
     """
 
     a=np.array(data_genes_names.loc[background,"Gene name"])
-    b=np.array(data_discarded_genes_names.loc[background,"discarded_genes_neighborhood"])
+    b=data_discarded_genes_by_duplication
+    c=np.array(discarded_genes_by_low_coverage.loc[background,"discarded_genes_neighborhood"])
 
     genes_names_without_duplicates=np.setdiff1d(a,b)
-    genes_names_without_low_coverage=np.setdiff1d(genes_names_without_duplicates,b)
+    genes_names_without_low_coverage=np.setdiff1d(genes_names_without_duplicates,c)
 
     return genes_names_without_low_coverage
+
+
+def get_no_duplicates_gene_names(data_genes_names,data_discarded_genes_by_duplication):
+    """[summary]
+
+    Parameters
+    ----------
+    data_genes_names : [type]
+        [description]
+    data_discarded_genes_names : [type]
+        [description]
+    background : [type]
+        [description]
+
+    Returns
+    -------
+    [type]
+        [description]
+    """
+
+    a=np.array(data_genes_names.loc["wt_merged","Gene name"])
+    b=data_discarded_genes_by_duplication
+
+    genes_names_without_duplicates=np.setdiff1d(a,b)
+
+    return genes_names_without_duplicates
 
 
 def get_essentiality_score_per_gene_per_background(useful_genes,background,data_insertions):

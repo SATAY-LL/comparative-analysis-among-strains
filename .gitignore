@@ -2,6 +2,8 @@
 *.wig 
 *.bed
 *.xlsx
+data/WT_1_Benoit
+data/WT_2_Benoit
 
 !data/Domains_all_genes_protein_coordinates_yeastmine.tsv
 !data/Gene_Protein_length_yeastmine.tsv
