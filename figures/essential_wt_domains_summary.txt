@@ -1,6 +1,0 @@
-The number of essential protein domains in WT is = 409
-The number of known essential genes in WT is = 1884
-The number of known essentials that have also an essential domain is =  232
-The number of stringent essential protein domains in WT is = 42
-The number of known essential genes in WT is = 1884
-The number of known essentials that have also a stringent essential domain is =  20
