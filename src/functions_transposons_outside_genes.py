@@ -102,21 +102,27 @@ def get_discarded_genes_by_duplication(data_positions_pd,genes_names):
 
 
 def get_amenable_genes_coverage_neighborhood(data_positions_pd,genes_names,discarded_genes_by_duplication,windows_size):
-    """[summary]
+    """To get the genes that are inside the allow region of the genome based on the
+    windows size chosen to look at the flanks for each gene. 
+    For example if the windows size is 3kb then the genes whose initial genomic
+    location is less than 3000 are discarded for the analsysis because there is not enough 
+    data to make the calculation. Same if the end location is less than 3KB to the end of the genome. 
 
     Parameters
     ----------
-    data_positions_pd : [type]
-        [description]
-    genes_names : [type]
-        [description]
-    discarded_genes_by_duplication : [type]
-        [description]
+    data_positions_pd : dataframe
+        dataframe with the positions of the transposons along the genome.
+    genes_names : list
+        all considered genes
+    discarded_genes_by_duplication : list
+        duplictaed genes in the genome that are discarded
 
     Returns
     -------
-    [type]
-        [description]
+    list
+        target genes that are inside the allow region of the genome
+    list 
+        discarded genes that are outside the allow region of the genome
     """
 
     key="wt_merged"

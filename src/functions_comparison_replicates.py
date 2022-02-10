@@ -170,7 +170,7 @@ def create_pergene_insertions_excel_file(datafile,export=True):
         for j in i.index:
             if not i.loc[j,"Reads per insertion location"]==[]: 
                 i.loc[j,"Reads"]=np.sum(i.loc[j,"Reads per insertion location"])-np.max(i.loc[j,"Reads per insertion location"]) #REMOVE LARGEST VALUE TO REDUCE NOISE
-                i.loc[j,"Insertions"]=len(i.loc[j,"Reads per insertion location"])
+                i.loc[j,"Insertions"]=len(i.loc[j,"Reads per insertion location"])-1 # removing the transposon with the highest read
             else:
                 i.loc[j,"Reads"]=0
                 i.loc[j,"Insertions"]=0
