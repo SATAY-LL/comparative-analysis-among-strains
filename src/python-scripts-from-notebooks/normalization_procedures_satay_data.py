@@ -170,6 +170,8 @@ windows_size=10000):
 
         data_without_index.loc[index_gene,"tr_normalized_windows"]=data_without_index.loc[index_gene,"Insertions"]/total_insertions
         data_without_index.loc[index_gene,"reads_normalized_windows"]=data_without_index.loc[index_gene,"Reads"]/total_reads
+        data_without_index.loc[index_gene,"insertions_over_windows"]=total_insertions
+        data_without_index.loc[index_gene,"reads_over_windows"]=total_reads
 
     return data_without_index,reads_per_chrom,insertions_per_chrom
         
@@ -192,6 +194,8 @@ insertions_per_chrom_pd=pd.concat(insertions_per_chrom_list,axis=0,keys=backgrou
 # +
 # data_norm_pd.to_excel("../postprocessed-data/data_norm_linear_transformation_all_backgrounds.xlsx")
 # -
+
+data_norm_pd.loc["wt_merged"][0:3]
 
 reads_per_chrom_pd.loc["wt_merged"]["I"]
 
@@ -555,35 +559,44 @@ linear_transformations_plots_per_chrom(data_norm_pd,"wt_merged","plot-genome-ins
 # +
 fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(10,5))
 
-plt.subplots_adjust(wspace=0.8)
-plt.subplots_adjust(hspace=0.5)
+plt.subplots_adjust(wspace=0.8,hspace=0.6)
+
 
 data=data_norm_pd.loc["wt_merged"]
 data=data[~data.isin([np.nan, np.inf, -np.inf]).any(1)]    
 
 values=["Linear-norm-reads","Reads","Linear-norm-insertions","Insertions",
-"Linear-norm-tr-density","tr-density","tr_normalized_windows","Insertions",
-"reads_normalized_windows","Reads","Insertions","tr-density"]
+"Linear-norm-tr-density","tr-density","reads_normalized_windows","Reads",
+"tr_normalized_windows","Insertions","Insertions","tr-density"]
+
+labels=["Norm. over chrom.","Raw reads","Norm. over chrom.","Raw insertions",
+"Norm. over chrom.","Insertion density","Norm. over 10kb","Raw reads",
+"Norm. over 10kb","Raw insertions","Raw insertions","Insertion density"]
 
 fig.suptitle("Relationships between raw and transformed data",fontsize=18)
 
 j=0
 for i in np.arange(0,6):
-    plt.subplot(2,3,i+1)
+    #plt.subplot(2,3,i+1)
     x=data.loc[:,values[j]]
     y=data.loc[:,values[j+1]]
-    plt.scatter(x,y,color="black",alpha=0.3)
+    sns.regplot(x=x,y=y,ax=ax[i//3,i%3],color="black",seed=1,ci=95,order=1)
+    # plt.scatter(x,y,color="black",alpha=0.3)
     
-    plt.xlabel(values[j],fontsize=14)
-    plt.ylabel(values[j+1],fontsize=14)
-    #plt.xscale("log")
-    #plt.yscale("log")
-    plt.ylim(0,np.max(y)/2)
-    plt.xlim(0,np.max(x)/2)
-    plt.yticks(fontsize=13)
-    plt.xticks(fontsize=13)
+    ax[i//3,i%3].set_xlabel(labels[j],fontsize=16)
+    ax[i//3,i%3].set_ylabel(labels[j+1],fontsize=16)
+    # # #plt.xscale("log")
+    # # #plt.yscale("log")
+    # # plt.ylim(0,np.max(y)/2)
+    # # plt.xlim(0,np.max(x)/2)
+    # plt.yticks(fontsize=14)
+    # plt.xticks(fontsize=14)
     j=j+2
 
+for axes in ax.flatten():
+    axes.tick_params(axis='x', labelsize=14)
+    axes.tick_params(axis='y', labelsize=14)
+    
 
 fig.savefig("../figures/figures_thesis_chapter_2/linear_relationships-data.png",bbox_inches="tight",dpi=400)
 #ax[1,2].set_axis_off()
@@ -609,6 +622,58 @@ fig.savefig("../figures/figures_thesis_chapter_2/linear_relationships-data.png",
 ## Compare different libraries 
 
 
+
+# +
+## Make the following plots:
+
+# 1. Plot the reads per chrom 
+# 2. Plot the insertions per chrom 
+# 3. Plot the reads over the 10kb windows 
+# 4. Plot the insertions over the 10kb windows 
+
+data=data_norm_pd.loc["wt_merged"]
+
+fig,ax=plt.subplots(nrows=2,ncols=2,figsize=(10,5))
+plt.subplots_adjust(hspace=0.6,wspace=0.3)
+
+chrom=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI"]
+x_reads=[]
+x_insertions=[]
+for chr in chrom:
+    x_reads.append(reads_per_chrom_pd.loc["wt_merged"][chr])
+    x_insertions.append(insertions_per_chrom_pd.loc["wt_merged"][chr])
+
+
+sns.lineplot(data=x_reads,ax=ax[0,0],color="black",ci="sd",err_style="band");
+ax[0,0].set_xticks(np.arange(0,len(chrom),1))
+ax[0,0].set_xticklabels(chrom,rotation=45,fontsize=12);
+ax[0,0].set_title("Reads per chrom",fontsize=16)
+
+sns.lineplot(data=x_insertions,ax=ax[0,1],color="black",ci="sd",err_style="band");
+ax[0,1].set_xticks(np.arange(0,len(chrom),1))
+ax[0,1].set_xticklabels(chrom,rotation=45,fontsize=12);
+ax[0,1].set_title("Insertions per chrom",fontsize=16)
+
+
+sns.lineplot(data=data["reads_over_windows"],ax=ax[1,0],color="black",ci="sd",err_style="band");
+
+ax[1,0].set_title("Reads over 10kb windows",fontsize=16)
+ax[1,0].set_ylabel(" ")
+# ax[1,0].tick_params(axis='x', labelsize=12)
+ax[1,0].set_xlabel("Genomic locations",fontsize=14)
+
+sns.lineplot(data=data["insertions_over_windows"],ax=ax[1,1],color="black",ci="sd",err_style="band");
+
+ax[1,1].set_title("Insertions over 10kb windows",fontsize=16)
+ax[1,1].set_ylabel(" ")
+ax[1,1].set_xlabel("Genomic locations",fontsize=14)
+
+for i in range(ax.shape[0]):
+    for j in range(ax.shape[1]):
+        ax[i,j].tick_params(axis='x', labelsize=14)
+        ax[i,j].tick_params(axis='y', labelsize=14)
+
+fig.savefig("../figures/figures_thesis_chapter_2/reads_insertions_per_chrom.png",bbox_inches="tight",dpi=400)
 # -
 
 # ## Make a quantile quantile plot of the reads counts over the genes to have an idea of how deviated from a normal distribution is this. 
