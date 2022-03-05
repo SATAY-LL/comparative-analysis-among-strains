@@ -4,6 +4,12 @@
 
 ![](../figures/fig_Flowchart-notebooks-data-analysis.png)
 
+## Version control
+
+- Convert to a python file:
+
+`jupytext --to python-scripts-from-notebooks//py src/<name-changed-notebook>.ipynb`
+
 ## Description of notebooks 
 
 ### analysis_evolutionary_trajectory.ipynb   
