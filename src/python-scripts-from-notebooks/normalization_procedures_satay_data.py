@@ -192,7 +192,11 @@ reads_per_chrom_pd=pd.concat(reads_per_chrom_list,axis=0,keys=backgrounds)
 insertions_per_chrom_pd=pd.concat(insertions_per_chrom_list,axis=0,keys=backgrounds)
 
 # +
-# data_norm_pd.to_excel("../postprocessed-data/data_norm_linear_transformation_all_backgrounds.xlsx")
+## To properly export to excel, lets add a column with the name of the background
+
+data2excel=data_norm_pd.copy()
+data2excel["background"]=data2excel.index.get_level_values(0)
+data2excel.to_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx")
 # -
 
 data_norm_pd.loc["wt_merged"][0:3]
@@ -465,7 +469,7 @@ linear_transformations_plots(data_norm_pd,type="plot-genome-insertions",backgrou
 types=["insertions","reads","transposon density","plot-genome-reads",
 "plot-genome-insertions","plot-genome-density"]
 for i in types:
-    linear_transformations_plots(data_norm_pd,i,"wt_merged",saveFigure=True)
+    linear_transformations_plots(data_norm_pd,i,"wt_merged",saveFigure=False)
 
 
 # +
@@ -552,9 +556,9 @@ saveFigure=False):
             
     
         
-# -
 
-linear_transformations_plots_per_chrom(data_norm_pd,"wt_merged","plot-genome-insertions",chrom="XV",saveFigure=True)
+# +
+#linear_transformations_plots_per_chrom(data_norm_pd,"wt_merged","plot-genome-insertions",chrom="XV",saveFigure=True)
 
 # +
 fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(10,5))
@@ -580,7 +584,8 @@ for i in np.arange(0,6):
     #plt.subplot(2,3,i+1)
     x=data.loc[:,values[j]]
     y=data.loc[:,values[j+1]]
-    sns.regplot(x=x,y=y,ax=ax[i//3,i%3],color="black",seed=1,ci=95,order=1)
+    sns.regplot(x=x,y=y,ax=ax[i//3,i%3],color="black",seed=1,
+    ci=95,order=1,scatter_kws={'alpha':0.3})
     # plt.scatter(x,y,color="black",alpha=0.3)
     
     ax[i//3,i%3].set_xlabel(labels[j],fontsize=16)
@@ -644,29 +649,39 @@ for chr in chrom:
     x_insertions.append(insertions_per_chrom_pd.loc["wt_merged"][chr])
 
 
-sns.lineplot(data=x_reads,ax=ax[0,0],color="black",ci="sd",err_style="band");
+ax[0,0].bar(np.arange(0,len(chrom),1),x_reads,color="black",alpha=0.5)
+# sns.barplot(x=chrom,y=reads_per_chrom_pd.loc["wt_merged"][chrom],
+# data=reads_per_chrom_pd.loc["wt_merged"],ax=ax[0,0],color="black",ci=0.95);
 ax[0,0].set_xticks(np.arange(0,len(chrom),1))
 ax[0,0].set_xticklabels(chrom,rotation=45,fontsize=12);
 ax[0,0].set_title("Reads per chrom",fontsize=16)
+ax[0,0].set_xlabel(" ",fontsize=16)
 
-sns.lineplot(data=x_insertions,ax=ax[0,1],color="black",ci="sd",err_style="band");
+
+ax[0,1].bar(np.arange(0,len(chrom),1),x_insertions,color="black",alpha=0.5)
+# sns.barplot(x=chrom,y=insertions_per_chrom_pd.loc["wt_merged"][chrom],
+# data=insertions_per_chrom_pd.loc["wt_merged"],ax=ax[0,1],color="black",ci=0.95);
 ax[0,1].set_xticks(np.arange(0,len(chrom),1))
 ax[0,1].set_xticklabels(chrom,rotation=45,fontsize=12);
 ax[0,1].set_title("Insertions per chrom",fontsize=16)
 
+ax[0,1].set_xlabel(" ",fontsize=16)
 
-sns.lineplot(data=data["reads_over_windows"],ax=ax[1,0],color="black",ci="sd",err_style="band");
+
+ax[1,0].bar(np.arange(0,len(data)),data["reads_over_windows"],color="black",alpha=0.5)
+# sns.lineplot(data=data["reads_over_windows"],ax=ax[1,0],color="black",ci="sd");
 
 ax[1,0].set_title("Reads over 10kb windows",fontsize=16)
 ax[1,0].set_ylabel(" ")
-# ax[1,0].tick_params(axis='x', labelsize=12)
-ax[1,0].set_xlabel("Genomic locations",fontsize=14)
+ax[1,0].set_xlabel("Genomic locations")
 
-sns.lineplot(data=data["insertions_over_windows"],ax=ax[1,1],color="black",ci="sd",err_style="band");
 
+# sns.lineplot(data=data["insertions_over_windows"],ax=ax[1,1],color="black");
+ax[1,1].bar(np.arange(0,len(data)),data["insertions_over_windows"],color="black",alpha=0.5)
 ax[1,1].set_title("Insertions over 10kb windows",fontsize=16)
 ax[1,1].set_ylabel(" ")
 ax[1,1].set_xlabel("Genomic locations",fontsize=14)
+
 
 for i in range(ax.shape[0]):
     for j in range(ax.shape[1]):
@@ -675,6 +690,8 @@ for i in range(ax.shape[0]):
 
 fig.savefig("../figures/figures_thesis_chapter_2/reads_insertions_per_chrom.png",bbox_inches="tight",dpi=400)
 # -
+
+reads_per_chrom_pd.loc["wt_merged"]
 
 # ## Make a quantile quantile plot of the reads counts over the genes to have an idea of how deviated from a normal distribution is this. 
 #
