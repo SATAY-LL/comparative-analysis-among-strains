@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
@@ -47,7 +47,7 @@ for i in pergene_files:
 
 # -
 
-keys= backgrounds= ['wt_merged','bem1-aid_a','bem1-aid_b','dbem1dbem3_a','dbem1dbem3_b',
+keys= ['wt_merged','bem1-aid_a','bem1-aid_b','dbem1dbem3_a','dbem1dbem3_b',
 'dnrp1_merged','dbem3_merged']
 
 # +
@@ -85,7 +85,7 @@ data.columns
 # +
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,5))
 data=list_data_post.loc["wt_merged"]
-plt.plot(data.index,data["Ninsertions"],color="gray",label="WT",alpha=0.8)
+plt.plot(data.index,data["Ninsertions"],color="purple",label="WT",alpha=0.5)
 
 coordinates_chrom=[]
 
@@ -93,25 +93,25 @@ for i in chrom:
     coordinates_chrom.append((np.where(data["Chromosome"]==i)[0][0]))
 
 plt.xticks(coordinates_chrom,chrom,fontsize=18,rotation=90);
-plt.ylim(0,2000)
+plt.ylim(0,1000)
 
 centromere_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Centromere")
 
 for centromere in centromere_pos:
-    plt.vlines(centromere,0,2000,color="black",linestyles="dashed",alpha=0.3,label="centromeres")
+    plt.vlines(centromere,0,1000,color="black",linestyles="dashed",alpha=0.7,label="centromeres")
 
 plt.ylabel("Transposon counts",fontsize=18)
 
 
-noncoding_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Noncoding_exon")
+# noncoding_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Noncoding_exon")
 
-plt.plot(noncoding_pos[0],data.loc[noncoding_pos,"Ninsertions"],alpha=0.5,
-color="purple",label="noncoding exons")
+# plt.plot(noncoding_pos[0],data.loc[noncoding_pos,"Ninsertions"],alpha=0.5,
+# color="purple",label="noncoding exons")
 
 gene_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Gene; Verified")
 
-plt.plot(gene_pos[0],data.loc[gene_pos,"Ninsertions"],alpha=0.3,color="green",label="CDS")
-plt.legend()
+plt.plot(gene_pos[0],data.loc[gene_pos,"Ninsertions"],alpha=0.5,color="green",label="CDS")
+plt.legend(loc="upper right",fontsize=16)
 plt.xlabel("Chromosomes",fontsize=18)
 plt.yticks(fontsize=18);
 plt.tight_layout()
@@ -124,7 +124,7 @@ dpi=400,transparent=True)
 # +
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,5))
 data=list_data_post.loc["wt_merged"]
-plt.plot(data.index,data["Nreads"],color="gray",label="WT",alpha=0.8)
+plt.plot(data.index,data["Nreads"],color="purple",label="WT",alpha=0.5)
 
 coordinates_chrom=[]
 
@@ -137,24 +137,24 @@ plt.xticks(coordinates_chrom,chrom,fontsize=18,rotation=90);
 centromere_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Centromere")
 
 for centromere in centromere_pos:
-    plt.vlines(centromere,0,1000000,color="black",linestyles="dashed",alpha=0.3,label="centromeres")
+    plt.vlines(centromere,0,200000,color="black",linestyles="dashed",alpha=0.7,label="centromeres")
 
 
 
 
-noncoding_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Noncoding_exon")
+# noncoding_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Noncoding_exon")
 
-plt.plot(noncoding_pos[0],data.loc[noncoding_pos,"Nreads"],alpha=0.5,
-color="purple",label="noncoding exons")
+# plt.plot(noncoding_pos[0],data.loc[noncoding_pos,"Nreads"],alpha=0.5,
+# color="purple",label="noncoding exons")
 
 gene_pos=np.where(list_data_post.loc["wt_merged"]["Feature_type"]=="Gene; Verified")
 
-plt.plot(gene_pos[0],data.loc[gene_pos,"Nreads"],alpha=0.3,color="green",label="CDS")
+plt.plot(gene_pos[0],data.loc[gene_pos,"Nreads"],alpha=0.5,color="green",label="CDS")
 plt.ylabel("Read counts",fontsize=18)
 plt.xlabel("Chromosomes",fontsize=18)
 plt.yticks(fontsize=18)
-plt.legend()
-plt.ylim(0,800000)
+plt.legend(loc="upper right",fontsize=16)
+plt.ylim(0,200000)
 plt.tight_layout()
 # -
 
@@ -187,18 +187,33 @@ fig.savefig("../figures/figures_thesis_chapter_2/read_distribution_per_chromosom
 dpi=400,transparent=True)
 
 # +
-fig,ax=plt.subplots(nrows=1,ncols=1,figsize=(10,5))
+fig,ax=plt.subplots(nrows=1,ncols=1,figsize=(5,5))
 
-sns.histplot(data.loc[:,"Nreads"],stat="density",binwidth=100,kde=True,color="black",
+sns.histplot(x="Nreads",data=data,stat="percent",binwidth=500,kde=False,color="black",
 alpha=0.5)
 plt.xlabel("Reads",fontsize=18)
-plt.ylabel("Density",fontsize=18)
+plt.ylabel("Percent",fontsize=18)
 plt.xlim(0,10000)
-plt.ylim(0,0.001)
-plt.yticks(ticks= [0,0.001],fontsize=16)
-plt.xticks(ticks= [0,10000],fontsize=16)
+plt.ylim(0,50)
+plt.yticks(ticks= [0,10,20,30,40],fontsize=16)# 
+plt.xticks(ticks= [0,5000,10000],fontsize=16)
 
 plt.title("Reads distribution WT genome",fontsize=18)
+plt.tight_layout()
+
+# +
+fig,ax=plt.subplots(nrows=1,ncols=1,figsize=(5,5))
+
+sns.histplot(x="Ninsertions",data=data,stat="percent",binwidth=10,kde=False,color="black",
+alpha=0.5)
+plt.xlabel("Insertions",fontsize=18)
+plt.ylabel("Percent",fontsize=18)
+plt.xlim(0,200)
+#plt.ylim(0,50)
+plt.yticks(ticks= [0,10,20,30],fontsize=16)# 
+plt.xticks(ticks= [0,100,200],fontsize=16)
+
+plt.title("Insertions distribution WT genome",fontsize=18)
 plt.tight_layout()
 # -
 
