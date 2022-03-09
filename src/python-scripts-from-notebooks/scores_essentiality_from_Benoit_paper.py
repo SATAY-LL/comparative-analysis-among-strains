@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
@@ -88,37 +88,26 @@ list_data_pd=pd.concat(list_data,axis=0,keys=keys)
 
 # -
 
+data_norm_pd=pd.read_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx",
+engine='openpyxl',index_col="background")
+data_norm_pd.drop(columns=["Unnamed: 0","Unnamed: 1"],inplace=True)
+
+a_norm=data_norm_pd.loc[backgrounds[3]]
+a_norm.loc[:,"tr_normalized_windows"].median(),a_norm.loc[:,"Insertions"].median()
+
+
+b_norm=a_norm[a_norm.loc[:,"Gene name"]=="ADE2"]["tr_normalized_windows"]
+b_norm/a_norm.loc[:,"tr_normalized_windows"].sum()
+
 a=list_data_pd.loc["wt_merged"]
 b=a[a.loc[:,"Gene name"]=="ADE2"]["Insertions"]
-a["Insertions"].sum()-b
-
-# ### Discard the genes that contain one insertion with one read
-
-# +
-## Discard insertions within the genes that have one read
-
-## The idea is that those insertions are noisy insertions and dont give any information. 
-
-# prototype
-
-a_0_reads=from_excel_to_list(a["Reads per insertion location"][0])
-
-## get locations of the reads that are equal to 1
-
-## discard the insertion at that location and the reads at that location
-
-# +
-## Data from the trimmed dataset 
-
-a=list_data_pd.loc["dbem3_a-trimmed"]
-a.index=a.loc[:,"Gene name"]
-# -
+b/a["Insertions"].sum()
 
 # ## Import Benoit's data to validate our scores implementation and find out the differences with my results
 
 # +
-benoit_wt_1=list_data_pd.loc["WT_1"]
-benoit_wt_2=list_data_pd.loc["WT_2"]
+benoit_wt_1=list_data_pd.loc["WT_1-Benoit"]
+benoit_wt_2=list_data_pd.loc["WT_2-Benoit"]
 
 benoit_wt_1.index=benoit_wt_1.loc[:,"Gene name"]
 benoit_wt_2.index=benoit_wt_2.loc[:,"Gene name"]
@@ -154,15 +143,12 @@ from functions_scores_essentiality import get_no_duplicates_gene_names
 # +
 scores_benoit=[]
 
-for key,index in zip(["WT_1","WT_2"],[benoit_wt_1.index,benoit_wt_2.index]) :
+for key,index in zip(["WT_1-Benoit","WT_2-Benoit"],[benoit_wt_1.index,benoit_wt_2.index]) :
     scores=get_essentiality_score_per_gene_per_background(index,key,list_data_pd)
     tmp=pd.DataFrame.from_dict(scores)
     scores_benoit.append(tmp)
 
-scores_benoit_pd=pd.concat(scores_benoit,axis=0,keys=["WT_1","WT_2"])
-# -
-
-backgrounds=['wt_merged','dbem3_merged',"dbem3_a-trimmed"]
+scores_benoit_pd=pd.concat(scores_benoit,axis=0,keys=["WT_1-Benoit","WT_2-Benoit"])
 
 # +
 ## Loop over all the backgrounds
@@ -177,6 +163,7 @@ for key in backgrounds:
     
    
     scores=get_essentiality_score_per_gene_per_background(useful_genes,key,list_data_pd)
+    
     tmp=pd.DataFrame.from_dict(scores)
     scores_all.append(tmp)
 
@@ -192,7 +179,7 @@ for key in backgrounds:
 scores_all_pd=pd.concat(scores_all,axis=0,keys=backgrounds) 
 
 scores_all_pd.sort_values(by="value",ascending=False,inplace=False)
-scores_all_pd
+
 
 # +
 #scores_all_pd.to_excel("../postprocessed-data/scores_essentiality_from_Benoit_paper_all_backgrounds.xlsx")
@@ -256,7 +243,7 @@ for names in essentials_satay.loc[:,"gene name"]:
 from functions_scores_essentiality import write_ones_if_essential
 
 scores_wt=write_ones_if_essential(scores_all_pd,"wt_merged",standard_essentials)
-scores_trimmed=write_ones_if_essential(scores_all_pd,"dbem3_a-trimmed",standard_essentials)
+#scores_trimmed=write_ones_if_essential(scores_all_pd,"dbem3_a-trimmed",standard_essentials)
 
 # scores_wt_1=scores_benoit_pd.loc["WT_1"]
 # scores_wt_2=scores_benoit_pd.loc["WT_2"]
@@ -268,7 +255,7 @@ scores_trimmed=write_ones_if_essential(scores_all_pd,"dbem3_a-trimmed",standard_
 
 # -
 
-scores_trimmed.sort_values(by="value",ascending=False,inplace=False)
+scores_wt.sort_values(by="value",ascending=False,inplace=False)
 
 # +
 ## Scores equal to zero
@@ -314,17 +301,17 @@ len(scores_wt[scores_wt["true essential"]==1]))
 # +
 ## Difference between benoit scores and mine
 
-a=scores_wt["value"].values # wt_merged Leila data 
-b=scores_wt_2["value"].values[0:len(a)] # benoit
-g=sns.displot(a-b,bins=50,kde=True);
-plt.xlabel("WT-merged_score-WT_1_benoit_score")
-sns.set(font_scale=1)
+# a=scores_wt["value"].values # wt_merged Leila data 
+# b=scores_wt_2["value"].values[0:len(a)] # benoit
+# g=sns.displot(a-b,bins=50,kde=True);
+# plt.xlabel("WT-merged_score-WT_1_benoit_score")
+# sns.set(font_scale=1)
 #plt.savefig("../figures/fig_histplot_benoit_vs_mine_wt_merged.png")
 # -
 
 #sns.histplot(scores_wt_2.loc[:,"value"],bins=50,kde=True,label="WT_1_Benoit");
 sns.histplot(scores_wt.loc[:,"value"],bins=50,kde=True,color="purple",label="WT_merged");
-sns.histplot(scores_trimmed.loc[:,"value"],bins=50,kde=True,color="green",label="dbem3_a-trimmed");
+#sns.histplot(scores_trimmed.loc[:,"value"],bins=50,kde=True,color="green",label="dbem3_a-trimmed");
 plt.legend()
 #plt.savefig("../figures/fig_histplot_benoit_vs_mine_wt_1.png")
 
@@ -352,8 +339,8 @@ for i in np.arange(0,len(backgrounds)):
     
     ax[i].hist(scores_all_pd.loc[backgrounds[i]]["value"], bins=50, alpha=0.8, label=backgrounds[i], color="black")
     # plt.legend(loc='upper right')
-    ax[i].set_xlim([0,1.3])
-    ax[i].set_ylim([0,300])
+    ax[i].set_xlim([0,2])
+    ax[i].set_ylim([0,500])
     ax[i].set_xlabel('Domain likelihood score')
 
 
@@ -370,7 +357,7 @@ tmp=np.abs(scores_all_pd.loc["bem1-aid_a"]["value"]-scores_all_pd.loc["bem1-aid_
 ax[0].hist(tmp, bins=100, alpha=0.8, label="dbem1-differences", color="black")
 # plt.legend(loc='upper right')
 ax[0].set_xlim([-0.05,1.3])
-ax[0].set_ylim([0,300])
+ax[0].set_ylim([0,500])
 ax[0].set_xlabel('Domain likelihood score difference')
 ax[0].legend(loc='upper right')
 
@@ -378,7 +365,7 @@ tmp=np.abs(scores_all_pd.loc["dbem1dbem3_a"]["value"]-scores_all_pd.loc["dbem1db
 ax[1].hist(tmp, bins=50, alpha=0.8, label="dbem1dbem3-differences", color="black")
 # plt.legend(loc='upper right')
 ax[1].set_xlim([-0.05,1.3])
-ax[1].set_ylim([0,300])
+ax[1].set_ylim([0,500])
 ax[1].set_xlabel('Domain likelihood score difference')
 ax[1].legend(loc='upper right')
     
@@ -453,7 +440,7 @@ import matplotlib.cm as cm
 from matplotlib.cm import ScalarMappable
 
 #data=scores_wt
-data=scores_trimmed
+data=scores_wt
 N=len(data)
 
 #N=1000
@@ -503,7 +490,7 @@ dpi=300,bbox_inches='tight')
 
 # +
 ## Pairplot of essentials vs scores
-data=scores_trimmed
+data=scores_wt
 
 fig=sns.pairplot(data,palette="Set1",diag_kind="kde",diag_kws={"shade":True})
 
