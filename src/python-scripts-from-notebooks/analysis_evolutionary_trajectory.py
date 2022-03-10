@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
@@ -285,12 +285,74 @@ keys_fitness=[ "dbem1dbem3_a", "dbem1dbem3_b",
 "bem1-aid_a","bem1-aid_b"]
 for i in np.arange(0,len(keys_fitness),2):
     
-    g=sns.jointplot(rates_norm_dict_pd.loc[:,keys_fitness[i]][0],rates_norm_dict_pd.loc[:,keys_fitness[i+1]][0],
+    g=sns.jointplot(rates_norm_dict_pd.loc[keys_fitness[i]][0],rates_norm_dict_pd.loc[keys_fitness[i+1]][0],
     kind="reg",height=5, ratio=2, marginal_ticks=True)
     g.set_axis_labels('fitness_'+keys_fitness[i], 'fitness_'+keys_fitness[i+1], fontsize=16)
     # g.ax_joint.set_xlim(0,2)
     # g.ax_joint.set_ylim(0,2)
     #g.savefig("../figures/fig_fitness_jointplot_normalized_"+keys_fitness[i]+"_"+keys_fitness[i+1]+".png",dpi=300)
+
+# +
+## Distribution of fitness values from WT
+
+list_data_pd_wt=list_data_pd.loc["wt_merged"]
+ho=np.where(list_data_pd_wt.loc[:,"Gene name"]=="HO")[0][0]
+
+fitness_wt=list_data_rates[0]
+fitness_wt_ho=fitness_wt[0][ho]
+
+values=np.array(fitness_wt[0])/fitness_wt_ho
+
+
+# +
+from statistics import NormalDist
+
+def confidence_interval(data, confidence=0.95):
+  dist = NormalDist.from_samples(data)
+  z = NormalDist().inv_cdf((1 + confidence) / 2.)
+  h = dist.stdev * z / ((len(data) - 1) ** .5)
+  return dist.mean - h, dist.mean + h
+
+values=values[np.where(values!=-np.inf)]
+
+a,b=confidence_interval(values)
+
+# +
+
+
+
+fig, axes = plt.subplots(2, 1,  gridspec_kw={"height_ratios":(.10, .30)}, figsize = (8, 5))
+
+
+sns.violinplot(values, ax=axes[0],color="gray",orient="h",inner="quartile")
+
+sns.histplot(values,bins=200,color="gray",ax=axes[1],stat="percent",label="WT",kde=True,element="step")
+
+axes[1].set_xlabel("Fitness values compared to HO locus",fontsize=16)
+axes[1].set_ylabel("Percent",fontsize=16)
+axes[1].tick_params(axis="both",labelsize=16)
+axes[0].tick_params(axis="both",labelsize=16)
+
+#axes[1].vlines(x=1,ymin=0,ymax=2.5,color="red",linestyle="--",linewidth=2,label="HO")
+#axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
+
+axes[1].legend()
+fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
+
+# +
+f, axes = plt.subplots(2, 1,  gridspec_kw={"height_ratios":(.10, .30)}, figsize = (13, 4))
+
+sns.boxplot(values, ax=axes[0],color="grey",orient="h")
+sns.histplot(values,bins=200,color="black",alpha=0.2,ax=axes[1],stat="percent",label="WT",kde=True,element="step")
+
+
+plt.tight_layout()
+# -
+
+
+
+
+np.mean(values),np.std(values)
 
 # +
 ## heatmap of fitnes values across backgrounds
@@ -322,7 +384,30 @@ for i in np.arange(0,len(backgrounds)):
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 15))
 sns.heatmap(array2heatmap,cmap="seismic",vmin=0,vmax=1,xticklabels=backgrounds,
 yticklabels=chosen_polarity_genes,cbar=True,annot=True,cbar_kws={'label': 'Fitness compared to WT'})
-fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_merged_polarity_genes.png",dpi=300)
+#fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_merged_polarity_genes.png",dpi=300)
+
+
+
+# +
+import math
+
+def sigmoid(x,k,n):
+    a = []
+    for item in x:
+        a.append(n/(n+math.exp(-item/k)))
+    return a
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.arange(-8, 8, 0.2)
+for k in np.arange(1,2,0.2):
+    plt.plot(x, sigmoid(x,k,1), color='black', linewidth=1.0, linestyle='-')
+    plt.xticks([])
+    plt.yticks([])
+
+plt.savefig("../figures/figures_thesis_chapter_2/fig_sigmoid_function.png",dpi=400)
+
 
 # +
 # from from_excel_to_list import from_excel_to_list
