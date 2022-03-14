@@ -47,8 +47,10 @@ keys=[]
 for i in np.arange(0,len(pergene_files)):
     keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
 
-backgrounds=['wt_merged', 'bem1-aid_a', 'bem1-aid_b', 'dbem1dbem3_a', 'dbem1dbem3_b',
+backgrounds=["wt_a","wt_b",'wt_merged', 'bem1-aid_a', 'bem1-aid_b', 'dbem1dbem3_a', 'dbem1dbem3_b',
        'dnrp1_merged', 'dbem3_merged']
+
+backgrounds=keys
 
 list_data_pd=pd.concat(list_data,axis=0,keys=keys)
 
@@ -234,6 +236,25 @@ for i in np.arange(0,len(backgrounds)):
     list_data_rates.append(getting_r(tmp))
 
 
+# -
+
+# ## Export fitness values to excel to be used in other notebooks 
+
+# +
+# fitness_all=[]
+# for i in np.arange(0,len(backgrounds)):
+
+#     tmp=list_data_rates[i][0].to_frame()
+#     tmp.columns=["fitness"]
+#     tmp.index=list_data_pd.loc[backgrounds[i],"Gene name"]
+#     fitness_all.append(tmp)
+
+# fitness_all_pd=pd.concat(fitness_all,axis=0,keys=backgrounds)
+# fitness_all_pd.reset_index(inplace=True)
+
+# fitness_all_pd.rename(columns={"level_0":"background"},inplace=True)
+# fitness_all_pd.to_excel("../postprocessed-data/fitness_coarse_grained_all_pd.xlsx")
+
 
 # +
 rates_dict=dict(zip(backgrounds,list_data_rates))
@@ -246,6 +267,10 @@ for i in np.arange(0,len(backgrounds)):
         rates_norm_dict[backgrounds[i]]["rates-intergenic"]=np.divide(tmp,rates_dict["wt_merged"])[0]
     else:
         rates_norm_dict[backgrounds[i]]["rates-intergenic"]=tmp[0]
+# -
+
+rates_norm_dict_pd=pd.DataFrame.from_dict(rates_norm_dict,orient="index")
+rates_norm_dict_pd.head(2)
 
 # +
 ## Fitness plots  normalized to the values of wt_merged
@@ -291,6 +316,9 @@ for i in np.arange(0,len(keys_fitness),2):
     # g.ax_joint.set_xlim(0,2)
     # g.ax_joint.set_ylim(0,2)
     #g.savefig("../figures/fig_fitness_jointplot_normalized_"+keys_fitness[i]+"_"+keys_fitness[i+1]+".png",dpi=300)
+# -
+
+backgrounds
 
 # +
 ## Distribution of fitness values from WT
@@ -298,11 +326,23 @@ for i in np.arange(0,len(keys_fitness),2):
 list_data_pd_wt=list_data_pd.loc["wt_merged"]
 ho=np.where(list_data_pd_wt.loc[:,"Gene name"]=="HO")[0][0]
 
-fitness_wt=list_data_rates[0]
+index_wt_merged=np.where(np.array(backgrounds)=="wt_merged")[0][0]
+
+fitness_wt=list_data_rates[index_wt_merged]
 fitness_wt_ho=fitness_wt[0][ho]
 
 values=np.array(fitness_wt[0])/fitness_wt_ho
 
+genes=list_data_pd_wt.loc[np.where(values!=-np.inf)[0],"Gene name"]
+values=values[np.where(values!=-np.inf)]
+
+# -
+
+low_fit=np.where(values<0.5)[0]
+len(low_fit)
+genes.reset_index(drop=True,inplace=True)
+x=np.where(genes=="CDC24")[0]
+values[x]
 
 # +
 from statistics import NormalDist
@@ -316,6 +356,9 @@ def confidence_interval(data, confidence=0.95):
 values=values[np.where(values!=-np.inf)]
 
 a,b=confidence_interval(values)
+# -
+
+a,b,np.mean(values)
 
 # +
 
@@ -337,22 +380,18 @@ axes[0].tick_params(axis="both",labelsize=16)
 #axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
 
 axes[1].legend()
-fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
+#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
 
 # +
-f, axes = plt.subplots(2, 1,  gridspec_kw={"height_ratios":(.10, .30)}, figsize = (13, 4))
+half_maximun=np.max(g.get_lines()[0].get_data()[1])/2
 
-sns.boxplot(values, ax=axes[0],color="grey",orient="h")
-sns.histplot(values,bins=200,color="black",alpha=0.2,ax=axes[1],stat="percent",label="WT",kde=True,element="step")
+index_half_maximun=[0,41]
 
+x0,x1=g.get_lines()[0].get_data()[0][0],g.get_lines()[0].get_data()[0][41]
+xf=g.get_lines()[0].get_data()[0][-1]
 
-plt.tight_layout()
-# -
-
-
-
-
-np.mean(values),np.std(values)
+print("The full width at half maximum is:",x1-x0, 
+"which represents the", (x1-x0)/xf*100,"% of the total width")
 
 # +
 ## heatmap of fitnes values across backgrounds
