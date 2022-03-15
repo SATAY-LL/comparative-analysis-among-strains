@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: ipynb,py
 #     text_representation:
 #       extension: .py
 #       format_name: light
@@ -47,8 +48,10 @@ keys=[]
 for i in np.arange(0,len(pergene_files)):
     keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
 
-backgrounds=["wt_a","wt_b",'wt_merged', 'bem1-aid_a', 'bem1-aid_b', 'dbem1dbem3_a', 'dbem1dbem3_b',
-       'dnrp1_merged', 'dbem3_merged']
+keys
+
+backgrounds=["wt_a","wt_b",'wt_merged', 'bem1-aid_a', 'bem1-aid_b', "bem1-aid_merged",
+ 'dbem1dbem3_a', 'dbem1dbem3_b','dnrp1_merged', 'dbem3_merged']
 
 backgrounds=keys
 
@@ -162,7 +165,7 @@ plt.legend()
 ## Plot the number of genes with less than 5 transposons in all mutants over the total number of transposons per library
 from scipy.optimize import curve_fit
 
-fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(10, 5))
+fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(15, 10))
 l_array=[]
 q_array=[]
 for keys in L_dict.keys():
@@ -275,8 +278,7 @@ rates_norm_dict_pd.head(2)
 # +
 ## Fitness plots  normalized to the values of wt_merged
 
-keys_fitness=[ "dbem1dbem3_a", "dbem1dbem3_b",
-"bem1-aid_a","bem1-aid_b"]
+keys_fitness=["bem1-aid_a","bem1-aid_b"]
 #keys_fitness=backgrounds
 
 rates_norm_dict_pd=pd.DataFrame.from_dict(rates_norm_dict,orient="index")
@@ -295,27 +297,6 @@ for i in np.arange(0,len(keys_fitness),2):
     
     j=j+1
 #plt.savefig("../figures/fig_fitness_scatter_normalized_wt_merged.png",dpi=300)
-# -
-
-rates_norm_dict_pd=pd.DataFrame.from_dict(rates_norm_dict,orient="index")
-
-
-# +
-
-
-# keys_fitness=["dbem3_a","dbem3_b", "dbem1dbem3_a", "dbem1dbem3_b",
-# "bem1-aid_a","bem1-aid_b","bem1-aid-dbem3_a", "bem1-aid-dbem3_b",
-# "dnrp1_a","dnrp1_b", "wt_a", "wt_b"]
-keys_fitness=[ "dbem1dbem3_a", "dbem1dbem3_b",
-"bem1-aid_a","bem1-aid_b"]
-for i in np.arange(0,len(keys_fitness),2):
-    
-    g=sns.jointplot(rates_norm_dict_pd.loc[keys_fitness[i]][0],rates_norm_dict_pd.loc[keys_fitness[i+1]][0],
-    kind="reg",height=5, ratio=2, marginal_ticks=True)
-    g.set_axis_labels('fitness_'+keys_fitness[i], 'fitness_'+keys_fitness[i+1], fontsize=16)
-    # g.ax_joint.set_xlim(0,2)
-    # g.ax_joint.set_ylim(0,2)
-    #g.savefig("../figures/fig_fitness_jointplot_normalized_"+keys_fitness[i]+"_"+keys_fitness[i+1]+".png",dpi=300)
 # -
 
 backgrounds
@@ -369,7 +350,7 @@ fig, axes = plt.subplots(2, 1,  gridspec_kw={"height_ratios":(.10, .30)}, figsiz
 
 sns.violinplot(values, ax=axes[0],color="gray",orient="h",inner="quartile")
 
-sns.histplot(values,bins=200,color="gray",ax=axes[1],stat="percent",label="WT",kde=True,element="step")
+g=sns.histplot(values,bins=200,color="gray",ax=axes[1],stat="percent",label="WT",kde=True,element="step")
 
 axes[1].set_xlabel("Fitness values compared to HO locus",fontsize=16)
 axes[1].set_ylabel("Percent",fontsize=16)
@@ -395,12 +376,6 @@ print("The full width at half maximum is:",x1-x0,
 
 # +
 ## heatmap of fitnes values across backgrounds
-
-
-rates_norm_dict_pd.loc["bem1-aid_a"].tolist()[0][3]
-
-
-# +
 list_data_pd_wt=list_data_pd.loc["wt_merged"]
 
 index_polarity_genes=[]
@@ -410,22 +385,36 @@ for i in np.arange(0,len(polarity_genes)):
     if tmp[0].size!=0:
         index_polarity_genes.append(tmp[0][0])
         chosen_polarity_genes.append(polarity_genes.index[i])
-
-# +
-array2heatmap=np.zeros((len(chosen_polarity_genes),len(backgrounds)))
-
-for i in np.arange(0,len(backgrounds)):
-    for j in np.arange(0,len(chosen_polarity_genes)):
-        array2heatmap[j,i]=rates_norm_dict_pd.loc[backgrounds[i]].tolist()[0][index_polarity_genes[j]]
-  
 # -
 
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 15))
-sns.heatmap(array2heatmap,cmap="seismic",vmin=0,vmax=1,xticklabels=backgrounds,
-yticklabels=chosen_polarity_genes,cbar=True,annot=True,cbar_kws={'label': 'Fitness compared to WT'})
-#fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_merged_polarity_genes.png",dpi=300)
+backgrounds_heatmap=["wt_a","wt_b",'wt_merged', 'dnrp1_a','dnrp1_b','dnrp1_merged', 'dbem3_a',
+'dbem3_b','dbem3_merged','bem1-aid_a', 'bem1-aid_b', "bem1-aid_merged",'dbem1dbem3_a', 'dbem1dbem3_b']
 
+# +
+array2heatmap=np.zeros((len(chosen_polarity_genes),len(backgrounds_heatmap)))
 
+for i in np.arange(0,len(backgrounds_heatmap)):
+    for j in np.arange(0,len(chosen_polarity_genes)):
+        array2heatmap[j,i]=rates_norm_dict_pd.loc[backgrounds_heatmap[i]].tolist()[0][index_polarity_genes[j]]
+  
+
+# +
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 15))
+array2heatmap[~np.isfinite(array2heatmap)] = 0
+sns.heatmap(array2heatmap,cmap="seismic",vmin=0,vmax=1,xticklabels=backgrounds_heatmap,
+yticklabels=chosen_polarity_genes ,cbar=True,annot=True,cbar_kws={'label': 'Fitness compared to WT'})
+
+labels=[]
+for i in np.arange(0,len(chosen_polarity_genes)):
+    labels.append(chosen_polarity_genes[i]+"-"+str(polarity_genes.loc[chosen_polarity_genes[i],:].unique()))
+ax.set_yticklabels(labels);
+fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_with_replicates-and-function.png",dpi=300)
+# -
+
+g=sns.clustermap(array2heatmap,cmap="seismic",vmin=0,vmax=1,xticklabels=backgrounds_heatmap,
+yticklabels=chosen_polarity_genes ,cbar=True,annot=True,cbar_kws={'label': 'Fitness compared to WT'})
+g.fig.set_size_inches((15,15))
+g.savefig("../figures/fig_heatmap_fitness_standarized_clustermap.png",dpi=300)
 
 # +
 import math
