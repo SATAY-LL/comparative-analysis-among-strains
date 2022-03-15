@@ -1,11 +1,12 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: ipynb,py
 #     text_representation:
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: 'Python 3.8.10 64-bit (''satay-dev'': conda)'
 #     name: python3
@@ -80,14 +81,14 @@ for root, dirs, files in os.walk(data_dir):
 
 cleanbed_files
 
-
+cleanbed_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_clean.bed']
 
 
 # +
 #transposonread_profileplot_genome.py (to check the insertion and read distribution throughout the genome)
 #example of file to analyse with profile_genome
 # bed_file=cleanbed_files[0]
-variable="reads" #"reads" "transposons"
+variable="transposons" #"reads" "transposons"
 bar_width=None
 savefig=True
 
@@ -98,12 +99,14 @@ for bed_file in cleanbed_files:
 
 # -
 
-cleanbed_files=["../data/WT_1-Benoit/ERR1533147_trimmed.sorted.bam_clean.bed",
-"../data/WT_2-Benoit/ERR1533148_trimmed.sorted.bam_clean.bed"]
-pergene_files=["../data/WT_1-Benoit/ERR1533147_trimmed.sorted.bam_pergene_insertions.txt",
-"../data/WT_2-Benoit/ERR1533148_trimmed.sorted.bam_pergene_insertions.txt"]
-cleanwig_files=["../data/WT_1-Benoit/ERR1533147_trimmed.sorted.bam_clean.wig",
-"../data/WT_2-Benoit/ERR1533148_trimmed.sorted.bam_clean.wig"]
+pergene_files
+
+# +
+cleanbed_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_clean.bed']
+
+pergene_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_pergene_insertions.txt']
+
+cleanwig_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_clean.wig']
 
 
 # +
