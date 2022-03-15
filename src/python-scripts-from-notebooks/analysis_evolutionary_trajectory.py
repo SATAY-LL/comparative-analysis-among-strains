@@ -408,11 +408,12 @@ labels=[]
 for i in np.arange(0,len(chosen_polarity_genes)):
     labels.append(chosen_polarity_genes[i]+"-"+str(polarity_genes.loc[chosen_polarity_genes[i],:].unique()))
 ax.set_yticklabels(labels);
-#fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_with_replicates-and-function.png",dpi=300)
+fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_with_replicates-and-function.png",dpi=300)
 # -
 
-g=sns.clustermap(array2heatmap,cmap="seismic",vmin=0,vmax=1,standard_scale=1,xticklabels=backgrounds_heatmap,
+g=sns.clustermap(array2heatmap,cmap="seismic",vmin=0,vmax=1,xticklabels=backgrounds_heatmap,
 yticklabels=chosen_polarity_genes ,cbar=True,annot=True,cbar_kws={'label': 'Fitness compared to WT'})
+g.fig.set_size_inches((15,15))
 g.savefig("../figures/fig_heatmap_fitness_standarized_clustermap.png",dpi=300)
 
 # +
