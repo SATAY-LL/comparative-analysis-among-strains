@@ -231,8 +231,12 @@ axes[1].set_ylabel("Standard deviation of number of reads per transposons per li
 
 plt.tight_layout(pad=3)
 #plt.savefig("../figures/fig_mean_and_std_number_reads_per_transposons_per_library.png",dpi=300)
+# -
+
+# ## Compute fitness from a coarse grained model, taking the total sum of reads per transposon per gene 
 
 # +
+
 list_data_rates=[]
 for i in np.arange(0,len(backgrounds)):
     tmp=(list_data_extended_pd.loc[backgrounds[i]])
