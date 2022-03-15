@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: ipynb,py
 #     text_representation:
 #       extension: .py
 #       format_name: light
@@ -80,9 +81,7 @@ for root, dirs, files in os.walk(data_dir):
 
 cleanbed_files
 
-cleanbed_files=['../data/bem1-aid_a/yWT03a_16_trimmed_out_restriction_sites_yWT03a_16_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.bed',
-'../data/bem1-aid_b/yWT0321_a_trimmed_out_restriction_sites_yWT0321_a_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.bed', 
-'../data/bem1-aid_merged/merged_yTW003_new_trimmed.sorted.bam_clean.bed']
+cleanbed_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_clean.bed']
 
 
 # +
@@ -100,20 +99,14 @@ for bed_file in cleanbed_files:
 
 # -
 
-cleanwig_files
+pergene_files
 
 # +
-cleanbed_files=['../data/bem1-aid_a/yWT03a_16_trimmed_out_restriction_sites_yWT03a_16_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.bed',
-'../data/bem1-aid_b/yWT0321_a_trimmed_out_restriction_sites_yWT0321_a_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.bed',
-'../data/bem1-aid_merged/merged_yTW003_new_trimmed.sorted.bam_clean.bed']
+cleanbed_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_clean.bed']
 
-pergene_files=['../data/bem1-aid_a/yWT03a_16_trimmed_out_restriction_sites_yWT03a_16_merged_cleaned_forward_reads_trimmed.sorted.bam_pergene_insertions.txt',
-'../data/bem1-aid_b/yWT0321_a_trimmed_out_restriction_sites_yWT0321_a_merged_cleaned_forward_reads_trimmed.sorted.bam_pergene_insertions.txt',
-'../data/bem1-aid_merged/merged_yTW003_new_trimmed.sorted.bam_pergene_insertions.txt']
+pergene_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_pergene_insertions.txt']
 
-cleanwig_files=['../data/bem1-aid_a/yWT03a_16_trimmed_out_restriction_sites_yWT03a_16_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig',
-'../data/bem1-aid_b/yWT0321_a_trimmed_out_restriction_sites_yWT0321_a_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig',
-'../data/bem1-aid_merged/merged_yTW003_new_trimmed.sorted.bam_clean.wig']
+cleanwig_files=['../data/bem1-aid_merged/merged_datasets_trimmed_out_restriction_sites_merged_yTW003_new_trimmed.sorted.bam_clean.wig']
 
 
 # +
