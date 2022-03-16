@@ -244,11 +244,11 @@ insertions_per_domain_df=pd.DataFrame.from_dict(insertions_per_domain_dict,orien
 keys
 
 from plot_reads_per_gene_with_domains import plot_reads_per_gene_with_domains
-gene="ABP140"
-key="bem1-aid_a"
+gene="BUD28"
+key="wt_merged"
 data=list_data_pd_merged_pd.loc[key]
 plot_reads_per_gene_with_domains(data=data,gene=gene,domain_genomics_coordinates=domain_genomics_df,key=key)
-#plt.tight_layout()
+plt.tight_layout()
 plt.savefig("../figures/fig_reads_per_gene_with_domains_" + gene + "_"+key+ ".png",dpi=300)
 
 # +

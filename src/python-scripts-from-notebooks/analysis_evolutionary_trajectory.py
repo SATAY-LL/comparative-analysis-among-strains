@@ -62,25 +62,27 @@ list_data_pd=list_data_pd.loc[backgrounds]
 # +
 # import excel file with the normalized data
 
-data_norm_pd=pd.read_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx",
-engine='openpyxl',index_col="background")
-data_norm_pd.drop(columns=["Unnamed: 0","Unnamed: 1"],inplace=True)
-# -
+# data_norm_pd=pd.read_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx",
+# engine='openpyxl',index_col="background")
+# data_norm_pd.drop(columns=["Unnamed: 0","Unnamed: 1"],inplace=True)
 
-data_norm_pd.index.unique()
+# +
+# data_norm_pd.index.unique()
+# -
 
 polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt",index_col="Gene")
 polarity_genes.fillna(0,inplace=True)
 
-data_norm_pd_wt=data_norm_pd.loc["wt_merged"]
-data_norm_pd_wt.columns
-x_norm=data_norm_pd_wt.loc[:,"reads_normalized_windows"]/data_norm_pd_wt.loc[:,"tr_normalized_windows"]
-x=data_norm_pd_wt.loc[:,"Reads"]/data_norm_pd_wt.loc[:,"Insertions"]
-# plt.subplot(1,2,1)
-# plt.hist(x_norm,bins=100);
-# plt.subplot(1,2,2)
-# plt.hist(x,bins=100);
-x_norm.std()/x_norm.mean(),x.std()/x.mean()
+# +
+# data_norm_pd_wt=data_norm_pd.loc["wt_merged"]
+# data_norm_pd_wt.columns
+# x_norm=data_norm_pd_wt.loc[:,"reads_normalized_windows"]/data_norm_pd_wt.loc[:,"tr_normalized_windows"]
+# x=data_norm_pd_wt.loc[:,"Reads"]/data_norm_pd_wt.loc[:,"Insertions"]
+# # plt.subplot(1,2,1)
+# # plt.hist(x_norm,bins=100);
+# # plt.subplot(1,2,2)
+# # plt.hist(x,bins=100);
+# x_norm.std()/x_norm.mean(),x.std()/x.mean()
 
 # +
 # Number of genes with less than 2 transposons and 2 reads in all mutants
@@ -142,11 +144,11 @@ from scipy.optimize import curve_fit
 def func(x, a,b):
     return a*x +b
 
-fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(10, 5))
+fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(8,5))
 
 data=list_data_pd.loc["wt_merged"]
 xaxis=(data.loc[:,"End location"]-data.loc[:,"Start location"])
-sns.regplot(x=xaxis,y=data.loc[:,"Insertions"],ax=axes,color="black",scatter_kws={"s":80,"alpha":0.2},label="WT")
+sns.regplot(x=xaxis,y=data.loc[:,"Insertions"],ax=axes,color="gray",scatter_kws={"s":80,"alpha":0.2},label="WT")
 
 # plt.plot(xaxis,data.loc[:,"Insertions"],"o",markersize=10,alpha=0.5)
 
@@ -155,11 +157,11 @@ sns.regplot(x=xaxis,y=data.loc[:,"Insertions"],ax=axes,color="black",scatter_kws
 # plt.plot(x, func(x, *popt), 'ko', label="Fitted Curve->" + str(popt[0]) + '*x+'+str(popt[1]),alpha=0.6)
 
 plt.ylabel("gene length",fontsize=18)
-plt.xscale("log")
-plt.yscale("log")
+# plt.xscale("log")
+# plt.yscale("log")
 plt.xlabel("# transposons",fontsize=18)
 plt.legend()
-#plt.savefig("../figures/fig_length_vs_number_of_transposons.png",dpi=300)
+plt.savefig("../figures/figures_thesis_chapter_2/supp_fig_length_vs_number_of_transposons_linear.png",dpi=300)
 
 # +
 ## Plot the number of genes with less than 5 transposons in all mutants over the total number of transposons per library
@@ -318,16 +320,19 @@ fitness_wt_ho=fitness_wt[0][ho]
 
 values=np.array(fitness_wt[0])/fitness_wt_ho
 
-genes=list_data_pd_wt.loc[np.where(values!=-np.inf)[0],"Gene name"]
-values=values[np.where(values!=-np.inf)]
+values[~np.isfinite(values)]=0
 
-# -
+# genes=list_data_pd_wt.loc[np.where(values!=-np.inf)[0],"Gene name"]
+# values=values[np.where(values!=-np.inf)]
 
-low_fit=np.where(values<0.5)[0]
-len(low_fit)
+
+# +
+genes=list_data_pd_wt.loc[:,"Gene name"]
+low_fit=np.where(values<0.55)[0]
+
 genes.reset_index(drop=True,inplace=True)
 x=np.where(genes=="CDC24")[0]
-values[x]
+values[x],len(low_fit)/len(genes)
 
 # +
 from statistics import NormalDist
@@ -365,7 +370,42 @@ axes[0].tick_params(axis="both",labelsize=16)
 #axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
 
 axes[1].legend()
-#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
+fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
+
+# +
+high=[1.1,np.max(values)]
+low=[high[0]*0.5,high[0]*0.7]
+neutral=[low[1],high[0]]
+essential=low[0]
+
+high,low,neutral,essential
+
+# +
+## make a pie chart with the mean fitness values compared to HO
+
+high=[1.1,np.max(values)]
+low=[high[0]*0.5,high[0]*0.7]
+neutral=[low[1],high[0]]
+essential=low[0]
+
+values_neutral=values[np.where((values>neutral[0]) & (values<neutral[1]))]
+values_high=values[np.where((values>high[0]) & (values<high[1]))]
+values_low=values[np.where((values<low[1]) & (values>low[0]))]
+values_essential=values[np.where(values<essential)]
+
+fig,axes=plt.subplots(1,1,figsize=(8,8))
+#define data
+data = [len(values_neutral),len(values_high),len(values_low),len(values_essential)]
+labels = ['Neutral', 'Advantageous', 'Disadvantageous', 'Possible essentials']
+
+#define Seaborn color palette to use
+#colors = sns.color_palette('pastel')[0:4]
+colors=["blue","green","red","pink"]
+
+#create pie chart
+plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 18});
+plt.tight_layout()
+fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_pie_normalized_wt2HO.png",dpi=400)
 
 # +
 half_maximun=np.max(g.get_lines()[0].get_data()[1])/2
@@ -418,7 +458,7 @@ fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_with_replicates-and-fu
 g=sns.clustermap(array2heatmap,cmap="seismic",vmin=0,vmax=1,xticklabels=backgrounds_heatmap,
 yticklabels=chosen_polarity_genes ,cbar=True,annot=True,cbar_kws={'label': 'Fitness compared to WT'})
 g.fig.set_size_inches((15,15))
-g.savefig("../figures/fig_heatmap_fitness_standarized_clustermap.png",dpi=300)
+g.savefig("../figures/fig_heatmap_fitness_normalized2WT_coarse_grained_model.png",dpi=400)
 
 # +
 import math
