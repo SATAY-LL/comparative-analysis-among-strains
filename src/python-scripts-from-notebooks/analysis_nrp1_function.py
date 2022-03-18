@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
@@ -45,6 +45,37 @@ list_data=[]
 for i in pergene_files:
     list_data.append(pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0"))
 
+
+# +
+## import essential genes used in transposonmapper
+
+essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0,sep="\t")
+
+essentials_satay.columns=["gene name"]
+
+# import conversion file from systematic names to standard names 
+conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
+header=0,sep=",")
+
+conversion.columns=["systematic name","standard name"]
+
+# save the standard names of the essential genes in a systematic format
+standard_essentials=[]
+for names in essentials_satay.loc[:,"gene name"]:
+    
+    if names in conversion["systematic name"].values:
+        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard name"].values[0])
+
+
+# +
+# import excel file with the normalized data
+
+data_norm_pd=pd.read_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx",
+engine='openpyxl',index_col="background")
+data_norm_pd.drop(columns=["Unnamed: 0","Unnamed: 1"],inplace=True)
+
+polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt",index_col="Gene")
+polarity_genes.fillna(0,inplace=True)
 # -
 
 keys= ['wt_merged','dnrp1_merged']
@@ -60,7 +91,7 @@ filelist_b = ["dnrp1_a/dnrp1-1_merged-techrep-a_techrep-b_trimmed.sorted.bam_per
 "dnrp1_b/dnrp1-2_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt"]
 
 
-variable = 'tn_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
+variable = 'read_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
 significance_threshold = 0.01 #set threshold above which p-values are regarded significant
 normalize=True
 
@@ -76,25 +107,19 @@ volcano_df_nrp1_wt = volcano(path_a=path_a, filelist_a=filelist_a,
             normalize=normalize,
             trackgene_list=trackgene_list,
             figure_title=figure_title)
+# -
+
+from annotate_volcano import annotate_volcano   #import annotate_volcano function
+annotate_volcano(volcano_df_nrp1_wt,[2,-2],[2,2])
 
 # +
 volcano_df_nrp1_wt.sort_values(by=['fold_change'], inplace=True)
 
-volcano_df_nrp1_wt[volcano_df_nrp1_wt["significance"]==True][0:20]
+dnrp1_genes_positive_enriched=volcano_df_nrp1_wt[volcano_df_nrp1_wt["significance"]==True][0:50]
 
-# +
+dnrp1_genes_negative_enriched=volcano_df_nrp1_wt[volcano_df_nrp1_wt["significance"]==True][-50:]
 
-# import excel file with the normalized data
-
-data_norm_pd=pd.read_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx",
-engine='openpyxl',index_col="background")
-data_norm_pd.drop(columns=["Unnamed: 0","Unnamed: 1"],inplace=True)
-# -
-
-polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt",index_col="Gene")
-
-polarity_genes.fillna(0,inplace=True)
-polarity_genes
+dnrp1_genes_positive_enriched
 
 # +
 ## Plot number of normalized insertions from WT/ total number of insertions of the library 
@@ -111,31 +136,29 @@ y_1=data.loc["dnrp1_merged"][variable[0]]/data.loc["dnrp1_merged"][var_norm[0]].
 x_0=data.loc["wt_merged"][variable[1]]/data.loc["wt_merged"][var_norm[1]].sum()
 y_0=data.loc["dnrp1_merged"][variable[1]]/data.loc["dnrp1_merged"][var_norm[1]].sum()
 
-# x_1=data.loc["wt_merged"]["reads_over_windows"]
-# y_1=data.loc["dnrp1_merged"]["reads_over_windows"]
 
-# x_0=data.loc["wt_merged"]["insertions_over_windows"]
-# y_0=data.loc["dnrp1_merged"]["insertions_over_windows"]
+fig , ax = plt.subplots(ncols=2,figsize=(8,3))
 
-# x=data.loc["wt_merged"]["Reads"]
-# y=data.loc["dnrp1_merged"]["Reads"]
+plt.subplots_adjust(wspace=0.3)
 
-fig , ax = plt.subplots(ncols=2,figsize=(6,2))
+sns.regplot(x_0,y_0,fit_reg=True,color="black",marker="o",ax=ax[0],label="Normalized \n Insertions",
+            scatter_kws={"s":30,"alpha":0.2})
+sns.regplot(x_1,y_1,fit_reg=True,color="black",marker="o",ax=ax[1],label="Normalized \n Reads",
+            scatter_kws={"s":30,"alpha":0.2})
 
-plt.subplots_adjust(wspace=0.5)
+# ax[0].scatter(x_0,y_0,color="black",marker="o",alpha=0.5,label="Insertions")
 
-#sns.regplot(x,y,fit_reg=True,color="black",marker="o")
-
-ax[0].scatter(x_0,y_0,color="black",marker="o",alpha=0.5,label="Insertions")
-
-ax[1].scatter(x_1,y_1,color="black",marker="o",alpha=0.5,label="Reads")
+# ax[1].scatter(x_1,y_1,color="black",marker="o",alpha=0.5,label="Reads")
 
 for axes in ax:
     # axes.set_xscale("log")
     # axes.set_yscale("log")    
+    xmin,xmax = axes.get_xlim()
+    axes.set_ylim(xmin,xmax)
+    axes.set_xlabel("WT",fontsize=14)
 
-    axes.set_xlabel("WT")
-    axes.set_ylabel("$\Delta$nrp1")
+    axes.set_ylabel("$\Delta$nrp1",fontsize=14)
+    axes.tick_params(axis='both', which='major', labelsize=16)
     axes.legend()
 
 # -
@@ -184,6 +207,141 @@ for axes in ax:
 
 
 # +
+
+def pie_chart_enrichment(data,process,type,savefig=False):
+
+    
+    
+
+    terms=[]
+    for i in data.loc[:,"Term"].tolist():
+        terms.append(i.split(" (")[0])
+
+    ## Data to plot
+    
+    data2plot = data.loc[:,"Combined Score"][0:10]
+    labels = terms[0:10]
+
+    #define Seaborn color palette to use
+    colors = sns.color_palette('pastel')[0:10]
+
+
+    #create pie chart
+    fig,axes=plt.subplots(1,1,figsize=(10,10))
+    #patches,texts=plt.pie(data2plot, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 25});
+    
+    explode = list()
+    for k in labels:
+        explode.append(0.1)
+        
+    pie = plt.pie(data2plot, explode=explode, shadow=True, autopct='%1.1f%%', colors=colors)
+    plt.legend(pie[0], labels, loc="best",fontsize=12)
+    
+    plt.tight_layout()
+    if savefig==True:
+        plt.savefig("../postprocessed-data/enrich-analysis_dnrp1/pie_chart_enrichment_"+process+"_"+type+".png")
+
+    return 
+
+# +
+## Enrichment analysis with gseapy library of genes that have different enrichment score in the volcano plot:
+import gseapy as gp 
+type_gi="Negative"
+goi=dnrp1_genes_negative_enriched.loc[:,"gene_names"].tolist()
+yeast = gp.get_library_name(organism='Yeast')
+yeast
+sets=[yeast[2],yeast[5],yeast[8],yeast[11],yeast[16] ] #['GO_Biological_Process_2018', 'GO_Cellular_Component_2018', 'GO_Molecular_Function_2018',
+#'Gene_Interaction_Hubs_BioGRID_2018','Pfam_Domains_2019']
+# #%% enrichment 
+for i in np.arange(0,len(sets)): 
+
+  enr = gp.enrichr(gene_list=goi,
+                  gene_sets=sets[i],
+                  organism='Yeast', # don't forget to set organism to the one you desired! e.g. Yeast
+                  description=type_gi +'_enrichment_dnrp1',
+                  outdir='../postprocessed-data/enrich-analysis_dnrp1/'+type_gi+'/',
+                  # no_plot=True,
+                  cutoff=0.5 # test dataset, use lower value from range(0,1)
+                )
+
+
+
+# +
+## Import analyzed data and plot it :
+type_gi="Negative"
+out_dir='../postprocessed-data/enrich-analysis_dnrp1/'+type_gi+'/'
+filename_bio="GO_Biological_Process_2018.Yeast.enrichr.reports.txt"
+filename_cell="GO_Cellular_Component_2018.Yeast.enrichr.reports.txt"
+filename_mol="GO_Molecular_Function_2018.Yeast.enrichr.reports.txt"
+
+path=out_dir+filename_bio
+biological_process=pd.read_csv(path,sep="\t")
+
+path=out_dir+filename_cell
+cellular_component=pd.read_csv(path,sep="\t")
+
+path=out_dir+filename_mol
+molecular_function=pd.read_csv(path,sep="\t")
+
+pie_chart_enrichment(biological_process,"biological_process",type=type_gi,savefig=True)
+
+# +
+goi_systematic=[]
+
+goi=dnrp1_genes_negative_enriched.loc[:,"gene_names"].tolist()
+
+for i in goi:
+    tmp=conversion[conversion.loc[:,"standard name"]==i]["systematic name"].values
+    if len(tmp)>0:
+        goi_systematic.append(tmp[0])
+    else:
+        goi_systematic.append(i)
+
+# +
+type_int="NRP1 GI PG" # NRP1 GI NG
+cell_map_goi=pd.read_excel("../postprocessed-data/cell-map-data-on-NRP1.xlsx",header=0,
+sheet_name=type_int)
+
+cell_map_goi=cell_map_goi.loc[:,"ORF"].tolist()
+
+goi_standard=[]
+
+for i in cell_map_goi:
+    tmp=conversion[conversion.loc[:,"systematic name"]==i]["standard name"].values
+    if len(tmp)>0:
+
+        if type(tmp[0])!=float:
+        
+            goi_standard.append(tmp[0])
+            
+        else:
+            goi_standard.append(i)
+       
+    
+    else:
+        goi_standard.append(i)
+# -
+
+yeast = gp.get_library_name(organism='Yeast')
+yeast
+sets=[yeast[2],yeast[5],yeast[8],yeast[11],yeast[16] ] #['GO_Biological_Process_2018', 'GO_Cellular_Component_2018', 'GO_Molecular_Function_2018',
+#'Gene_Interaction_Hubs_BioGRID_2018','Pfam_Domains_2019']
+# #%% enrichment 
+for i in np.arange(0,len(sets)): 
+
+  enr = gp.enrichr(gene_list=goi_standard,
+                  gene_sets=sets[i],
+                  organism='Yeast', # don't forget to set organism to the one you desired! e.g. Yeast
+                  description='cellmap_enrichment_dnrp1',
+                  outdir='../postprocessed-data/enrich-analysis_dnrp1/cellmap/'+type_int+'/',
+                  # no_plot=True,
+                  cutoff=0.5 # test dataset, use lower value from range(0,1)
+                )
+
+biological_process=pd.read_csv("../postprocessed-data/enrich-analysis_dnrp1/cellmap/"+type_int+"/"+ "GO_Biological_Process_2018.Yeast.enrichr.reports.txt",sep="\t")
+pie_chart_enrichment(biological_process,"biological_process_cell_map",type=type_int,savefig=True)
+
+# +
 ## Analysis of essential genes in WT and dnrp1
 # - import the genes that are duplicated 
 # - import the genes that have low insertions in the flanking regions
@@ -194,30 +352,7 @@ for axes in ax:
 # - genes with the longest region void  of transposons (FI) 
 # - Highest domain likelihood scores (Benoit score) 
 
-# Compare low NI with known essential genes. 
-
-
-# +
-## import essential genes used in transposonmapper
-
-essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0,sep="\t")
-
-essentials_satay.columns=["gene name"]
-
-# import conversion file from systematic names to standard names 
-conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
-header=0,sep=",")
-
-conversion.columns=["systematic name","standard  name"]
-
-# save the standard names of the essential genes in a systematic format
-standard_essentials=[]
-for names in essentials_satay.loc[:,"gene name"]:
-    
-    if names in conversion["systematic name"].values:
-        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard  name"].values[0])
-
-
+# Compare low NI with known essential genes.
 # -
 
 data_wt=data_norm_pd.loc["wt_merged"]
