@@ -59,46 +59,56 @@ def get_no_duplicates_gene_names(data_genes_names,data_discarded_genes_by_duplic
 
 
 def get_essentiality_score_per_gene_per_background(useful_genes,background,data_insertions):
-    """[summary]
+    """Get the domain likelihood scores pointed out by Benoit in his
+    paper https://elifesciences.org/articles/23570#fig2s1
 
     Parameters
     ----------
-    useful_genes : [type]
-        [description]
-    background : [type]
-        [description]
-    data_insertions : [type]
-        [description]
+    useful_genes : array
+        Array of genes names as str that have multiple genomic locations 
+    background : str
+        The name of the genetic background yhe user wish to analyze 
+    data_insertions : pd.DataFrame
+        The data where you can find the insertions locations per genomic locations and the 
+        total number of insertions. 
 
     Returns
     -------
-    [type]
-        [description]
-    """    """"""
+    dict
+        The scores per genomic location
+    """    
+
+    ## Get the data from the background inserted by the user 
     data_background=data_insertions.loc[background]
     data_background.index=data_background["Gene name"]
+
+    ## Get the name of the genes that are valid , that is , the one inserted in the useful_genes variable. 
     valid_index=[x for x in data_background.index if x in useful_genes] # useful indexes
 
+    ## Compute the scores for each gene
     score=defaultdict(dict)
     for gene in valid_index:
+        # Get the insertion locations for each gene 
         insertion_float=from_excel_to_list(data_background.loc[gene,"Insertion locations"])
+        # for genes with more than one insertion location
 
-        if type(insertion_float)!=int : # for genes with more than one insertion location
-            n = 5 # to ensure the number of locations is big enough, more than 5 
-            if len(insertion_float)>n : # for genes which number of insertion locations bigger than 5
+        if type(insertion_float)!=int : 
+            # Setting a the minimum number of insertions a gene should have to compute a score
+            n = 5 
+            # for genes which number of insertion locations bigger than 5
+            if len(insertion_float)>n : 
 
-                ## Step 2: Compute largest interval free of transposons between the transposon n and the n+5
+                ##Compute largest interval free of transposons between the transposon n and the n+5
                 
                 x=np.array(insertion_float)
-                #L=np.max(np.diff(insertion_float))
-                
+                ### Shifting the array by n to the right and then to left and substract them and take the maximum
                 L=np.max(x[n:] - x[:-n])
 
-                ## Step 2: Compute length gene
+                ## Compute length gene
 
                 l=data_background.loc[gene,"End location"]-data_background.loc[gene,"Start location"]
 
-                ## Step 3: Compute the number of insertions per gene 
+                ## Compute the number of insertions per gene 
 
                 N=data_background.loc[gene,"Insertions"]
                 #N=data_background.loc[gene,"tr_normalized_windows"]
