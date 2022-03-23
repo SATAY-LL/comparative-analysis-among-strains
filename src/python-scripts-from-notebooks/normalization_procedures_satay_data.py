@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -6,7 +7,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
@@ -89,8 +90,10 @@ list_data_post.fillna(1,inplace=True)
 # improve detection of conditionally essential genes between conditions by eliminating any
 # skew and making the datasets more closely fit this Geometric-like distribution.
 
-backgrounds= ['wt_merged','bem1-aid_a','bem1-aid_b','dbem1dbem3_a','dbem1dbem3_b',
-'dnrp1_merged','dbem3_merged']
+backgrounds= ['wt_merged','dnrp1_merged','dbem3_merged','bem1-aid_merged',
+'dbem1dbem3_a','dbem1dbem3_b']
+
+backgrounds=keys
 
 chrom_length=pd.read_excel("../postprocessed-data/chromosome_length.xlsx",index_col="Chromosome")
 chrom_length.drop(columns=["Unnamed: 0"],inplace=True)
@@ -205,11 +208,12 @@ data_norm_pd.loc["wt_merged"][0:3]
 reads_per_chrom_pd.loc["wt_merged"]["I"]
 
 # comparison of libraries in terms of normalized transposon densityies 
-mutant="dbem1dbem3_a"
+mutant="bem1-aid_merged"
 plt.scatter(data_norm_pd.loc["wt_merged","Linear-norm-tr-density"],data_norm_pd.loc[mutant,"Linear-norm-tr-density"],color="black")
 plt.xscale("log")
 plt.yscale("log")
 plt.xlabel("wt_merged")
+plt.title("Transposon density normalized")
 plt.ylabel(mutant)
 plt.ylim(0.1,100)
 plt.xlim(0.1,100)
@@ -465,6 +469,7 @@ def linear_transformations_plots(normalized_data,type,background,saveFigure=Fals
     
 # -
 
+linear_transformations_plots(data_norm_pd,type="plot-genome-insertions",background="bem1-aid_merged")
 linear_transformations_plots(data_norm_pd,type="plot-genome-insertions",background="wt_merged")
 
 types=["insertions","reads","transposon density","plot-genome-reads",

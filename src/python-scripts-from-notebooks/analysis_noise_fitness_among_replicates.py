@@ -6,13 +6,14 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
 #     name: python3
 # ---
 
+# +
 ## Importing the required python libraries 
 import os, sys
 import warnings
@@ -25,11 +26,20 @@ import re
 import seaborn as sns
 from collections import defaultdict
 
+from from_excel_to_list import from_excel_to_list
+from scipy.stats import pearsonr
+
 # +
 ## Importing fitness values 
 
 fitness_all = pd.read_excel('../postprocessed-data/fitness_coarse_grained_all_pd.xlsx',
 engine='openpyxl',index_col="Unnamed: 0")
+
+#fitness_non_coarse = pd.read_excel('../postprocessed-data/fitness_non_coarsed_fitness_model.xlsx',engine='openpyxl')
+
+fitness_mean = pd.read_excel('../postprocessed-data/mean_values_non_coarsed_fitness_model.xlsx',index_col="Unnamed: 0")
+fitness_std= pd.read_excel('../postprocessed-data/std_values_non_coarsed_fitness_model.xlsx',index_col="Unnamed: 0")
+fitness_sem= pd.read_excel('../postprocessed-data/sem_values_non_coarsed_fitness_model.xlsx',index_col="Unnamed: 0")
 
 # +
 backgrounds=fitness_all["background"].unique()
@@ -56,10 +66,10 @@ for i in backgrounds:
 backgrounds
 
 # +
-## Viz of differences between replicates, compared to HO
+## Viz of differences between replicates, compared to HO, for the coarse model
 
-replicate_1="bem1-aid_a"
-replicate_2="bem1-aid_b"
+replicate_1="dnrp1_a"
+replicate_2="dnrp1_b"
 
 value_a=fitness_all[fitness_all["background"]==replicate_1]
 value_b=fitness_all[fitness_all["background"]==replicate_2]
@@ -93,13 +103,16 @@ values_diff=values_diff[np.where(values_diff!=-np.inf)]
 values_diff=values_diff[np.where(values_diff!=np.inf)]
 values_diff=values_diff[np.where(values_diff!=np.nan)]
 
-
+value_a_norm[~np.isfinite(value_a_norm)]=0
+value_b_norm[~np.isfinite(value_b_norm)]=0
 
 
 
 # +
 fig, axes = plt.subplots(3, 1,  gridspec_kw={"height_ratios":(.10, .40,.40)}, figsize = (8, 8))
 
+## Pearson correlation coefficient
+coeff=pearsonr(value_a_norm,value_b_norm)
 
 sns.violinplot(np.abs(values_diff), ax=axes[0],color="gray",orient="h",inner="quartile")
 
@@ -109,7 +122,7 @@ axes[1].set_xlabel("Fitness values of " + replicate_1 +"-" + replicate_2+ " comp
 axes[1].set_ylabel("Percent",fontsize=16)
 
 
-sns.regplot(value_a_norm,value_b_norm,ax=axes[2],scatter_kws={"s":30,"color":"gray"})
+sns.regplot(value_a_norm,value_b_norm,ax=axes[2],scatter_kws={"s":30,"color":"gray"},color="gray")
 #axes[1].vlines(x=1,ymin=0,ymax=2.5,color="red",linestyle="--",linewidth=2,label="HO")
 #axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
 
@@ -118,12 +131,89 @@ sns.regplot(value_a_norm,value_b_norm,ax=axes[2],scatter_kws={"s":30,"color":"gr
 
 axes[2].set_xlabel("Fitness values of "+replicate_1,fontsize=16)
 axes[2].set_ylabel("Fitness values of "+ replicate_2,fontsize=16)
+axes[2].set_title('Pearson Correlation ='+ str(float("{:.2f}".format(coeff[0]))),fontsize=16)
 
 for axes in axes:
     axes.tick_params(axis="both",labelsize=16)
 
 plt.tight_layout()
-fig.savefig("../figures/figures_thesis_chapter_2/supp_fig_fitness_differences_"+replicate_1+"_"+replicate_2+".png",dpi=400)
+#fig.savefig("../figures/figures_thesis_chapter_2/supp_fig_fitness_differences_"+replicate_1+"_"+replicate_2+".png",dpi=400)
+    
+
+
+# +
+## Viz of differences between replicates, compared to HO, for the Coarse model
+
+replicate_1="dnrp1_a"
+replicate_2="dnrp1_b"
+
+value_a=fitness_mean.loc[:,replicate_1]
+value_b=fitness_mean.loc[:,replicate_2]
+
+ho=np.where(fitness_all.loc[:,"Gene name"]=="HO")[0][0]
+
+value_a_ho=value_a[ho] # fitness value of HO in replicate_a
+value_b_ho=value_b[ho] # fitness value of HO in replicate_b
+
+value_a_norm=[]
+for i in value_a:
+    if value_a_ho!=np.inf and value_a_ho!=0 and value_a_ho!=np.nan and value_a_ho!=-np.inf:
+        value_a_norm.append(i/value_a_ho)
+    else:
+        value_a_norm.append(i)
+
+value_b_norm=[]
+for i in value_b:
+    if value_b_ho!=np.inf and value_b_ho!=0 and value_b_ho!=np.nan and value_b_ho!=-np.inf:
+        value_b_norm.append(i/value_b_ho)
+    else:
+        value_b_norm.append(i)
+
+
+
+value_a_norm=np.array(value_a_norm)
+value_b_norm=np.array(value_b_norm)
+values_diff=value_a_norm-value_b_norm
+
+values_diff=values_diff[np.where(values_diff!=-np.inf)]
+values_diff=values_diff[np.where(values_diff!=np.inf)]
+values_diff=values_diff[np.where(values_diff!=np.nan)]
+
+value_a_norm[~np.isfinite(value_a_norm)]=0
+value_b_norm[~np.isfinite(value_b_norm)]=0
+
+
+
+# +
+fig, axes = plt.subplots(3, 1,  gridspec_kw={"height_ratios":(.10, .40,.40)}, figsize = (8, 8))
+
+## Pearson correlation coefficient
+coeff=pearsonr(value_a_norm,value_b_norm)
+
+sns.violinplot(np.abs(values_diff), ax=axes[0],color="gray",orient="h",inner="quartile")
+
+g=sns.histplot(np.abs(values_diff),bins=200,color="gray",ax=axes[1],stat="percent",label="wt_a-wt_b",kde=True,element="step")
+
+axes[1].set_xlabel("Fitness values of " + replicate_1 +"-" + replicate_2+ " compared to HO locus",fontsize=16)
+axes[1].set_ylabel("Percent",fontsize=16)
+
+
+sns.regplot(value_a_norm,value_b_norm,ax=axes[2],scatter_kws={"s":30,"color":"gray"},color="gray")
+#axes[1].vlines(x=1,ymin=0,ymax=2.5,color="red",linestyle="--",linewidth=2,label="HO")
+#axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
+
+# axes[2].set_ylim(np.min(value_b_norm),np.max(value_b_norm))
+# axes[2].set_xlim(np.min(value_a_norm),np.max(value_a_norm))
+
+axes[2].set_xlabel("Fitness values of "+replicate_1,fontsize=16)
+axes[2].set_ylabel("Fitness values of "+ replicate_2,fontsize=16)
+axes[2].set_title('Pearson Correlation ='+ str(float("{:.2f}".format(coeff[0]))),fontsize=16)
+
+for axes in axes:
+    axes.tick_params(axis="both",labelsize=16)
+
+plt.tight_layout()
+fig.savefig("../figures/figures_thesis_chapter_2/supp_fig_non_coarse_fitness_differences_"+replicate_1+"_"+replicate_2+".png",dpi=400)
     
 
 
@@ -132,7 +222,7 @@ half_maximun=np.max(g.get_lines()[0].get_data()[1])/2
 
 index_half_maximun=[0,41] # index of the half maximmun value in the histogram
 
-x0,x1=g.get_lines()[0].get_data()[0][0],g.get_lines()[0].get_data()[0][41]
+x0,x1=g.get_lines()[0].get_data()[0][0],g.get_lines()[0].get_data()[0][35]
 xf=g.get_lines()[0].get_data()[0][-1]
 
 print("The full width at half maximum is:",x1-x0, 

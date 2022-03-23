@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.8.10 64-bit (''satay-dev'': conda)'
 #     name: python3
@@ -46,14 +46,14 @@ filelist_b = ["dnrp1_a/dnrp1-1_merged-techrep-a_techrep-b_trimmed.sorted.bam_per
 "dnrp1_b/dnrp1-2_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt"]
 
 
-variable = 'tn_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
-significance_threshold = 0.01 #set threshold above which p-values are regarded significant
+variable = 'read_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
+significance_threshold = 0.05 #set threshold above which p-values are regarded significant
 normalize=True
 
-trackgene_list = ['nrp1','bem3','bem1','bem2'] # ["cdc42"]
+trackgene_list = ['MEC1','Nrp1'] # ["cdc42"]
 
 
-figure_title = "WT vs dnrp1"
+figure_title = "WT vs $\Delta$ nrp1"
 
 volcano_df_nrp1_wt = volcano(path_a=path_a, filelist_a=filelist_a,
             path_b=path_b, filelist_b=filelist_b,
@@ -62,6 +62,13 @@ volcano_df_nrp1_wt = volcano(path_a=path_a, filelist_a=filelist_a,
             normalize=normalize,
             trackgene_list=trackgene_list,
             figure_title=figure_title)
+
+# +
+from annotate_volcano import annotate_volcano   #import annotate_volcano function
+volcano_df=volcano_df_nrp1_wt
+fig=annotate_volcano(volcano_df,[3.2,-3],[0.5,0.5],figure_title=figure_title,variable=variable)
+
+fig.savefig('../figures/volcano_plot_wt_vs_dnrp1.png', dpi=300)
 
 # +
 path_a = r"../data/"
@@ -173,7 +180,8 @@ volcano_df = volcano(path_a=path_a, filelist_a=filelist_a,
 # -
 
 from annotate_volcano import annotate_volcano   #import annotate_volcano function
-annotate_volcano(volcano_df,[2.1,-1.5],[2,2])
+volcano_df=volcano_df_nrp1_wt
+fig=annotate_volcano(volcano_df,[2.1,-1.5],[2,2])
 
 # +
 path_a = r"../data/"
