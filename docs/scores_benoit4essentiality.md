@@ -61,5 +61,17 @@ max_interval=max(interval)=506bp
 ```
 
 ---
+## How does the DLS score parameters are represented in the annotated essential genes ? 
 
-![w:650 center](fig_wt_new_pairplot_dls_with_essentials.png)
+![w:1000 center](DLS_params_distribution_in_annotated_essentials.png)
+
+- it follows that most of the annotated essential genes received a DLS=0.
+
+---
+
+## Summary using the DLS score implementation-
+
+- The number of predicted essential genes for WT that are also annotated as essential genes is: 216 which means  19.963031423290204 %
+- The number of non predicted essential genes, because they dont have essential domains, for WT that are  annotated as essential genes is: 759 which means  70.14787430683919 %
+- The number of predicted essential genes for WT  is: 2110
+- The number of annotated essential genes for WT  is: 1082
