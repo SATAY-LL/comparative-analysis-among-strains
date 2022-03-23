@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def annotate_volcano(volcano_df,fold_change_interval,p_value_interval):
+def annotate_volcano(volcano_df,fold_change_interval,p_value_interval,figure_title,
+variable):
     """Annotate genes according the fold change and p values of the volcano plot.
 
     Parameters
@@ -27,11 +28,15 @@ def annotate_volcano(volcano_df,fold_change_interval,p_value_interval):
 
 
 
-    colors = {False:'black', True:'red'} # based on p-value significance 
-    sc = ax.scatter(x=volcano_df['fold_change'], y=volcano_df['p_value'], alpha=0.4, marker='.', c=volcano_df['significance'].apply(lambda x:colors[x]))
+    colors = {False:'gray', True:'red'} # based on p-value significance 
+    sc = ax.scatter(x=volcano_df['fold_change'], y=volcano_df['p_value'], alpha=0.4,
+     s=100,marker='.', c=volcano_df['significance'].apply(lambda x:colors[x]),label= variable)
     ax.grid(True, which='major', axis='both', alpha=0.4)
-    ax.set_xlabel('Log2 FC')
-    ax.set_ylabel('-1*Log10 p-value')
+    ax.set_xlabel('Log2 FC',fontsize=16)
+    ax.set_ylabel('-1*Log10 p-value',fontsize=16)
+    ax.set_title(figure_title,fontsize=20)
+    ax.tick_params(labelsize=14)
+    ax.legend()
 
 
 
@@ -47,7 +52,7 @@ def annotate_volcano(volcano_df,fold_change_interval,p_value_interval):
 
             trackgene_annot = ax.annotate(volcano_df.iloc[index,:]['gene_names'], (volcano_df.iloc[index,:]['fold_change'],
                                         volcano_df.iloc[index,:]['p_value']),
-                                        size=10, c='green', bbox=dict(boxstyle="round", fc="w"))
+                                        size=12, c='green', bbox=dict(boxstyle="round", fc="w"))
             trackgene_annot.get_bbox_patch().set_alpha(0.6)
 
     if len(target_left)!=0:
@@ -59,5 +64,9 @@ def annotate_volcano(volcano_df,fold_change_interval,p_value_interval):
 
             trackgene_annot = ax.annotate(volcano_df.iloc[index,:]['gene_names'], (volcano_df.iloc[index,:]['fold_change'],
                                         volcano_df.iloc[index,:]['p_value']),
-                                        size=10, c='green', bbox=dict(boxstyle="round", fc="w"))
+                                        size=12, c='green', bbox=dict(boxstyle="round", fc="w"))
             trackgene_annot.get_bbox_patch().set_alpha(0.6)
+
+
+    
+    return fig
