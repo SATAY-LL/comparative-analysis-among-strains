@@ -87,6 +87,7 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
 
     ## Compute the scores for each gene
     score=defaultdict(dict)
+    longest_interval=defaultdict(dict)
     for gene in valid_index:
         # Get the insertion locations for each gene 
         insertion_float=from_excel_to_list(data_background.loc[gene,"Insertion locations"])
@@ -103,6 +104,8 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
                 x=np.array(insertion_float)
                 ### Shifting the array by n to the right and then to left and substract them and take the maximum
                 L=np.max(x[n:] - x[:-n])
+                longest_interval["value"][gene]=L
+
 
                 ## Compute length gene
 
@@ -116,7 +119,7 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
 
                 ## Compute the score per gene per background
 
-                if all((N>N_median,L>200,L>0.1*l,L<0.9*l)):
+                if all((N>N_median,L>200,L>0.1*l,L<0.9*l)): 
                     #print(L,N,l)
                     score["value"][gene]=L*N/pow(l,1.5)
                     
@@ -129,7 +132,7 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
                 score["value"][gene]=0
         else:
             score["value"][gene]=0
-    return score
+    return score,longest_interval
 
 
 def write_ones_if_essential(data_scores,background,essential_genes):
