@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
@@ -37,6 +37,57 @@ positions_float_pd.rename(columns={'Unnamed: 0':'Gene name', "Unnamed: 1": "back
 discarded_genes_by_duplication=np.loadtxt("../postprocessed-data/discarded_genes_by_duplication.txt",dtype=str)
 # -
 
+discarded_genes_by_duplication[0:10]
+
+# +
+## Importing pergene files 
+
+pergene_files=[]
+data_dir="../postprocessed-data/"
+#data_dir="../transposonmapper/data_files/"
+for root, dirs, files in os.walk(data_dir):
+    for file in files:
+        if file.endswith("pergene_insertions.xlsx"):
+            pergene_files.append(os.path.join(root, file))
+
+list_data=[]
+for i in pergene_files:
+    list_data.append(pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0"))
+
+keys=[]
+for i in np.arange(0,len(pergene_files)):
+    keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
+
+list_data_pd=pd.concat(list_data,axis=0,keys=keys)
+
+
+
+# +
+# import essential genes used in transposonmapper
+
+essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0
+,sep="\t")
+
+essentials_satay.columns=["gene name"]
+
+# import conversion file from systematic names to standard names 
+conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
+header=0,sep=",")
+
+conversion.columns=["systematic name","standard  name"]
+
+# save the standard names of the essential genes in a systematic format
+standard_essentials=[]
+for names in essentials_satay.loc[:,"gene name"]:
+    
+    if names in conversion["systematic name"].values:
+        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard  name"].values[0])
+
+
+
+
+# -
+
 backgrounds= ['wt_merged','bem1-aid_a','bem1-aid_b','dbem1dbem3_a','dbem1dbem3_b',
 'dnrp1_merged','dbem3_merged']
 
@@ -63,31 +114,9 @@ for key in backgrounds:
 genes_out_float_pd=pd.DataFrame.from_dict(genes_out_float)
 
 genes_out_float_pd.loc[:,"threshold coverage"]=genes_out_by_neighborhood_pd.loc[:,"threshold coverage"]
-
-# +
-## Importing pergene files 
-
-pergene_files=[]
-data_dir="../postprocessed-data/"
-#data_dir="../transposonmapper/data_files/"
-for root, dirs, files in os.walk(data_dir):
-    for file in files:
-        if file.endswith("pergene_insertions.xlsx"):
-            pergene_files.append(os.path.join(root, file))
-
-list_data=[]
-for i in pergene_files:
-    list_data.append(pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0"))
-
-keys=[]
-for i in np.arange(0,len(pergene_files)):
-    keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
-
-list_data_pd=pd.concat(list_data,axis=0,keys=keys)
-
-
-
 # -
+
+list_data_pd.head(3)
 
 data_norm_pd=pd.read_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx",
 engine='openpyxl',index_col="background")
@@ -143,17 +172,23 @@ from functions_scores_essentiality import get_no_duplicates_gene_names
 
 # +
 scores_benoit=[]
+L_benoit=[]
 
 for key,index in zip(["WT_1-Benoit","WT_2-Benoit"],[benoit_wt_1.index,benoit_wt_2.index]) :
-    scores=get_essentiality_score_per_gene_per_background(index,key,list_data_pd)
+    scores,L=get_essentiality_score_per_gene_per_background(index,key,list_data_pd)
     tmp=pd.DataFrame.from_dict(scores)
     scores_benoit.append(tmp)
+    tmp=pd.DataFrame.from_dict(L)
+    L_benoit.append(tmp)
+
 
 scores_benoit_pd=pd.concat(scores_benoit,axis=0,keys=["WT_1-Benoit","WT_2-Benoit"])
+L_benoit_pd=pd.concat(L_benoit,axis=0,keys=["WT_1-Benoit","WT_2-Benoit"])
 
 # +
 ## Loop over all the backgrounds
 scores_all=[]
+L_all=[]
 # discard genes only if they duplicated (considering the WT background)
 useful_genes=get_no_duplicates_gene_names(list_data_pd,discarded_genes_by_duplication)
 
@@ -163,10 +198,14 @@ for key in backgrounds:
     #useful_genes=get_genes_names_for_essentiality(list_data_pd,discarded_genes_by_duplication,genes_out_float_pd,key)
     
    
-    scores=get_essentiality_score_per_gene_per_background(useful_genes,key,list_data_pd)
+    scores,L=get_essentiality_score_per_gene_per_background(useful_genes,key,list_data_pd)
     
     tmp=pd.DataFrame.from_dict(scores)
+
     scores_all.append(tmp)
+
+    tmp=pd.DataFrame.from_dict(L)
+    L_all.append(tmp)
 
 
 
@@ -178,9 +217,80 @@ for key in backgrounds:
 # the essentiality of the gene. 
 
 scores_all_pd=pd.concat(scores_all,axis=0,keys=backgrounds) 
+L_all_pd=pd.concat(L_all,axis=0,keys=backgrounds)
 
 scores_all_pd.sort_values(by="value",ascending=False,inplace=False)
 
+
+# +
+## Relationship of annotated essential genes in WT with their total insertions and gene length 
+
+# +
+a=list_data_pd.loc["wt_merged"]
+median_a=np.median(a["Insertions"])
+insertions_essentials=[]
+for i in np.arange(0,len(standard_essentials)): 
+    insertions_essentials.append(a[a.loc[:,"Gene name"]==standard_essentials[i]]["Insertions"].values)
+
+insertions_bellow_median=len(np.where(insertions_essentials<median_a)[0])/len(insertions_essentials)
+
+
+length_essentials=[]
+for i in np.arange(0,len(standard_essentials)): 
+    length_essentials.append(a[a.loc[:,"Gene name"]==standard_essentials[i]]["End location"].values
+    -a[a.loc[:,"Gene name"]==standard_essentials[i]]["Start location"].values)
+
+
+length_bellow_200=len(np.where(length_essentials<np.array(200))[0])/len(length_essentials)
+
+
+a_L=L_all_pd.loc["wt_merged"]
+a_L_essentials=[]
+for i in np.arange(0,len(standard_essentials)): 
+    a_L_essentials.append(a_L[a_L.index==standard_essentials[i]]["value"].values)
+
+a_L_essentials_bellow_10l=len(np.where(a_L_essentials<np.array(0.1)*length_essentials)[0])/len(a_L_essentials)
+a_L_essentials_above_90l=len(np.where(a_L_essentials>np.array(0.9)*length_essentials)[0])/len(a_L_essentials)
+a_L_bellow_200=len(np.where(a_L_essentials<np.array(200))[0])/len(length_essentials)
+
+# +
+index_above_90l=np.where(a_L_essentials>np.array(0.9)*length_essentials)[0]
+
+
+
+# +
+fig,axes=plt.subplots(1,3,figsize=(15,5))
+axes[0].hist(np.concatenate(insertions_essentials),color="gray",bins=30,label="annotated essentials",alpha=0.5);
+axes[0].vlines(median_a,0,250,color="red",linestyle="dashed",linewidth=2,label="median")
+axes[0].annotate(str(np.round(insertions_bellow_median*100,2)) + "%",xy=(0,220),fontsize=14)
+axes[0].annotate(str(np.round(100-insertions_bellow_median*100,2))+ "%",xy=(70,100),fontsize=14)
+axes[0].set_xlabel("Insertions",fontsize=14)
+axes[0].set_ylabel("Count",fontsize=14)
+axes[0].set_title("Insertions of annotated essential genes",fontsize=14)
+axes[0].tick_params(axis="both",labelsize=14)
+axes[0].legend()
+
+axes[1].hist(np.concatenate(length_essentials),color="gray",bins=30,label="annotated essentials",alpha=0.5);
+axes[1].vlines(200,0,200,color="red",linestyle="dashed",linewidth=2,label="Threshold")
+axes[1].annotate(str(np.round(length_bellow_200*100,2)) + "%",xy=(0,150),fontsize=14)
+axes[1].set_title("Length of annotated essential genes",fontsize=14)
+axes[1].set_xlabel("Length",fontsize=14)
+axes[1].set_ylabel("Count",fontsize=14)
+axes[1].legend()
+axes[1].tick_params(axis="both",labelsize=14)
+
+axes[2].hist(np.concatenate(a_L_essentials),color="gray",bins=30,label="annotated essentials",alpha=0.5);
+axes[2].vlines(200,0,150,color="red",linestyle="dashed",linewidth=2,label="Threshold")
+axes[2].annotate(str(np.round(a_L_bellow_200*100,2)) + "%",xy=(0,60),fontsize=14)
+axes[2].annotate(str(np.round(a_L_essentials_bellow_10l*100,2)) + "%" + "bellow 0.1*l",xy=(1000,100),fontsize=14)
+axes[2].annotate(str(np.round(a_L_essentials_above_90l*100,2)) + "%" + "above 0.9*l",xy=(1000,80),fontsize=14)
+axes[2].legend()
+axes[2].tick_params(axis="both",labelsize=14)
+axes[2].set_xlabel("Longest interval between tr=n and tr=n+5",fontsize=14)
+axes[2].set_ylabel("Count",fontsize=14)
+axes[2].set_title("Longest interval essential genes",fontsize=14)
+plt.tight_layout()
+#fig.savefig("../figures/DLS_params_distribution_in_annotated_essentials.png",dpi=300)
 
 # +
 #scores_all_pd.to_excel("../postprocessed-data/scores_essentiality_from_Benoit_paper_all_backgrounds.xlsx")
@@ -219,41 +329,22 @@ for k in np.arange(0,len(all_genes_array_unique)):
             if tmp!=0: 
                 matrix_differential_score[k,i]=tmp
             
+# -
+
+
+
 
 # +
-# import essential genes used in transposonmapper
-
-essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0
-,sep="\t")
-
-essentials_satay.columns=["gene name"]
-
-# import conversion file from systematic names to standard names 
-conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
-header=0,sep=",")
-
-conversion.columns=["systematic name","standard  name"]
-
-# save the standard names of the essential genes in a systematic format
-standard_essentials=[]
-for names in essentials_satay.loc[:,"gene name"]:
-    
-    if names in conversion["systematic name"].values:
-        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard  name"].values[0])
-
 from functions_scores_essentiality import write_ones_if_essential
 
 scores_wt=write_ones_if_essential(scores_all_pd,"wt_merged",standard_essentials)
 #scores_trimmed=write_ones_if_essential(scores_all_pd,"dbem3_a-trimmed",standard_essentials)
 
-# scores_wt_1=scores_benoit_pd.loc["WT_1"]
-# scores_wt_2=scores_benoit_pd.loc["WT_2"]
+scores_wt_1=scores_benoit_pd.loc["WT_1-Benoit"]
+scores_wt_2=scores_benoit_pd.loc["WT_2-Benoit"]
 
-# scores_wt_1=write_ones_if_essential(scores_benoit_pd,"WT_1",standard_essentials)
-# scores_wt_2=write_ones_if_essential(scores_benoit_pd,"WT_2",standard_essentials)
-
-
-
+scores_wt_1=write_ones_if_essential(scores_benoit_pd,"WT_1-Benoit",standard_essentials)
+scores_wt_2=write_ones_if_essential(scores_benoit_pd,"WT_2-Benoit",standard_essentials)
 # -
 
 scores_wt.sort_values(by="value",ascending=False,inplace=False)

@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.10.3
 #   kernelspec:
 #     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
 #     language: python
@@ -144,6 +144,13 @@ for i in np.arange(0,len(keys)):
             sem_values[j,i]=0
 
 
+
+# +
+# values2excel_pd=pd.DataFrame(mean_values,columns=keys)
+# values2excel_pd=pd.DataFrame(std_values,columns=keys)
+# values2excel_pd=pd.DataFrame(sem_values,columns=keys)
+
+# values2excel_pd.to_excel("../postprocessed-data/sem_values_non_coarsed_fitness_model.xlsx")
 
 # +
 index_wt_merged=np.where(np.array(keys)=="wt_merged")[0][0]

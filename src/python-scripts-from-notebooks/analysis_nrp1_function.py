@@ -45,6 +45,12 @@ list_data=[]
 for i in pergene_files:
     list_data.append(pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0"))
 
+keys=[]
+for i in np.arange(0,len(pergene_files)):
+    keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
+
+list_data_pd=pd.concat(list_data,axis=0,keys=keys)
+
 
 # +
 ## import essential genes used in transposonmapper
@@ -78,7 +84,9 @@ polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt
 polarity_genes.fillna(0,inplace=True)
 # -
 
-keys= ['wt_merged','dnrp1_merged']
+keys
+
+keys= ['wt_merged','dnrp1_merged','dbem3_merged','dbem1dbem3_a']
 
 # ## Volcano plots
 
@@ -91,26 +99,26 @@ filelist_b = ["dnrp1_a/dnrp1-1_merged-techrep-a_techrep-b_trimmed.sorted.bam_per
 "dnrp1_b/dnrp1-2_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt"]
 
 
-variable = 'read_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
+variable = 'tn_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
 significance_threshold = 0.01 #set threshold above which p-values are regarded significant
 normalize=True
 
-trackgene_list = ['nrp1','bem3','bem1','bem2'] # ["cdc42"]
+trackgene_list = ['nrp1','bem3','bem1','bem2',"mec1"] # ["cdc42"]
 
 
-figure_title = "WT vs dnrp1"
+figure_title = "$\Delta$nrp1 vs WT "
+
+fc_interval=[1.1,-0.8]
+pv_values=[2,2]
 
 volcano_df_nrp1_wt = volcano(path_a=path_a, filelist_a=filelist_a,
-            path_b=path_b, filelist_b=filelist_b,
+            path_b=path_b, filelist_b=filelist_b, 
+            fold_change_interval=fc_interval,p_value_interval=pv_values,
             variable=variable,
             significance_threshold=significance_threshold,
             normalize=normalize,
             trackgene_list=trackgene_list,
-            figure_title=figure_title)
-# -
-
-from annotate_volcano import annotate_volcano   #import annotate_volcano function
-annotate_volcano(volcano_df_nrp1_wt,[2,-2],[2,2])
+            figure_title=figure_title,savefigure=True)
 
 # +
 volcano_df_nrp1_wt.sort_values(by=['fold_change'], inplace=True)
@@ -119,7 +127,8 @@ dnrp1_genes_positive_enriched=volcano_df_nrp1_wt[volcano_df_nrp1_wt["significanc
 
 dnrp1_genes_negative_enriched=volcano_df_nrp1_wt[volcano_df_nrp1_wt["significance"]==True][-50:]
 
-dnrp1_genes_positive_enriched
+volcano_df_nrp1_wt[volcano_df_nrp1_wt.loc[:,"gene_names"]=="CLA4"]
+#dnrp1_genes_positive_enriched[dnrp1_genes_positive_enriched.loc[:,"gene_names"]=="whi3"]
 
 # +
 ## Plot number of normalized insertions from WT/ total number of insertions of the library 
@@ -139,25 +148,26 @@ y_0=data.loc["dnrp1_merged"][variable[1]]/data.loc["dnrp1_merged"][var_norm[1]].
 
 fig , ax = plt.subplots(ncols=2,figsize=(8,3))
 
-plt.subplots_adjust(wspace=0.3)
+plt.subplots_adjust(wspace=0.4)
 
-sns.regplot(x_0,y_0,fit_reg=True,color="black",marker="o",ax=ax[0],label="Normalized \n Insertions",
-            scatter_kws={"s":30,"alpha":0.2})
-sns.regplot(x_1,y_1,fit_reg=True,color="black",marker="o",ax=ax[1],label="Normalized \n Reads",
-            scatter_kws={"s":30,"alpha":0.2})
+# sns.regplot(x_0,y_0,fit_reg=True,color="black",marker="o",ax=ax[0],label="Normalized \n Insertions",
+#             scatter_kws={"s":30,"alpha":0.2})
+# sns.regplot(x_1,y_1,fit_reg=True,color="black",marker="o",ax=ax[1],label="Normalized \n Reads",
+#             scatter_kws={"s":30,"alpha":0.2})
 
-# ax[0].scatter(x_0,y_0,color="black",marker="o",alpha=0.5,label="Insertions")
+ax[0].scatter(x_0,y_0,color="black",marker="o",s=30,alpha=0.2,label="Normalized \n Insertions")
 
-# ax[1].scatter(x_1,y_1,color="black",marker="o",alpha=0.5,label="Reads")
+ax[1].scatter(x_1,y_1,color="black",marker="o",s=30,alpha=0.2,label="Normalized \n Reads")
 
 for axes in ax:
-    # axes.set_xscale("log")
-    # axes.set_yscale("log")    
+    axes.set_xscale("log")
+    axes.set_yscale("log")    
     xmin,xmax = axes.get_xlim()
     axes.set_ylim(xmin,xmax)
-    axes.set_xlabel("WT",fontsize=14)
+    axes.set_xlim(xmin,xmax)
+    axes.set_xlabel("WT-log",fontsize=14)
 
-    axes.set_ylabel("$\Delta$nrp1",fontsize=14)
+    axes.set_ylabel("$\Delta$nrp1-log",fontsize=14)
     axes.tick_params(axis='both', which='major', labelsize=16)
     axes.legend()
 
