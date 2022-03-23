@@ -49,6 +49,29 @@ for i in np.arange(0,len(pergene_files)):
     keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
 
 list_data_pd=pd.concat(list_data,axis=0,keys=keys)
+
+# +
+# import essential genes used in transposonmapper
+
+essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0
+,sep="\t")
+
+essentials_satay.columns=["gene name"]
+
+# import conversion file from systematic names to standard names 
+conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
+header=0,sep=",")
+
+conversion.columns=["systematic name","standard  name"]
+
+# save the standard names of the essential genes in a systematic format
+standard_essentials=[]
+for names in essentials_satay.loc[:,"gene name"]:
+    
+    if names in conversion["systematic name"].values:
+        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard  name"].values[0])
+
+
 # -
 
 polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt",index_col="Gene")
@@ -105,12 +128,6 @@ for i in keys:
     rates.append(rates_non_coarsed_model(list_data_pd,background=i))
 
 rates_pd=pd.concat(rates,axis=1)
-
-# +
-list_data_pd_wt=list_data_pd.loc["wt_merged"]
-ho=np.where(list_data_pd_wt.loc[:,"Gene name"]=="HO")[0][0]
-
-plt.bar(np.arange(0,len(rates_pd.loc[a[0][0],"wt_merged"])),rates_pd.loc[a[0][0],"wt_merged"]/rates_pd.loc[ho,"wt_merged"].mean())
 
 # +
 # export to excel 
@@ -179,6 +196,7 @@ norm_sem_values_pd=pd.DataFrame(norm_sem_values,columns=keys)
 
 # +
 list_data_pd_wt=list_data_pd.loc["wt_merged"]
+index_wt_merged=np.where(np.array(keys)=="wt_merged")[0][0]
 ho=np.where(list_data_pd_wt.loc[:,"Gene name"]=="HO")[0][0]
 
 fitness_wt_ho=mean_values[ho,index_wt_merged]
@@ -242,7 +260,7 @@ plt.ylim(0,1e-10)
 
 plt.title("2D histogram : SEM vs MEAN",fontsize=18)
 plt.tight_layout()
-plt.savefig("../figures/figures_thesis_chapter_2/fig_sem_mean_fitness_distribution_normalized_wt2HO_non_coarse_model.png",dpi=400)
+#plt.savefig("../figures/figures_thesis_chapter_2/fig_sem_mean_fitness_distribution_normalized_wt2HO_non_coarse_model.png",dpi=400)
 
 # +
 fig=plt.figure(figsize=(8,5))
@@ -259,7 +277,7 @@ plt.xlim(0,3e-10)
 plt.ylim(0,2e-10)
 plt.title("2D histogram : STD vs MEAN",fontsize=18)
 plt.tight_layout()
-plt.savefig("../figures/figures_thesis_chapter_2/fig_std_mean_fitness_distribution_normalized_wt2HO_non_coarse_model.png",dpi=400)
+#plt.savefig("../figures/figures_thesis_chapter_2/fig_std_mean_fitness_distribution_normalized_wt2HO_non_coarse_model.png",dpi=400)
 
 # +
 high=[1.1,np.max(values)]
@@ -298,6 +316,53 @@ plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fon
 plt.tight_layout()
 #fig.savefig("../figures/figures_thesis_chapter_2/fig_pie_fitness_distribution_normalized_wt2HO_non_coarse_model.png",dpi=400)
 
+
+# +
+## Mean fitness for essential genes
+
+## Distribution of fitness values for annotated essential genes
+genes=list_data_pd_wt.loc[:,"Gene name"]
+genes.reset_index(drop=True,inplace=True)
+values_essentials=[]
+
+
+for i in standard_essentials:
+    x=np.where(genes==i)[0]
+    values_essentials.append(values[x])
+   
+
+values_essentials=np.array(values_essentials)
+
+# values_essentials_below_low_fit=np.where(np.array(values_essentials)<np.array(low[0]))[0]
+# values_essentials_above_low_fit=np.where(np.array(values_essentials)>np.array(low[0]) & np.array(values_essentials)< np.array(1))[0]
+
+values_essentials_below_low_fit=values_essentials[(values_essentials<np.array(low[0]))]
+values_essentials_above_low_fit=values_essentials[(values_essentials>np.array(low[0])) & (values_essentials< np.array(1))]
+values_essentials_high=values_essentials[(values_essentials>np.array(1))]
+
+a=len(values_essentials_below_low_fit)/len(standard_essentials)
+b=len(values_essentials_above_low_fit)/len(standard_essentials)
+c=len(values_essentials_high)/len(standard_essentials)
+
+
+
+# +
+fig,axes=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+
+axes.hist(np.concatenate(values_essentials),bins=30,alpha=0.5,color="gray");
+axes.vlines(1,0,150,color="red",linestyle="dashed",linewidth=2,label="HO");
+axes.vlines(low[0],0,150,color="blue",linestyle="dashed",linewidth=2,label="Low fitness threshold")
+axes.annotate(f"{a*100:.2f}" +"%",xy=(0.1,150),fontsize=16)
+axes.annotate(f"{b*100:.2f}" +"%",xy=(0.6,150),fontsize=16)
+axes.annotate(f"{c*100:.2f}" +"%",xy=(1.1,150),fontsize=16)
+axes.set_title("Distribution of fitness values for annotated essential genes",fontsize=16)
+axes.tick_params(axis="both",labelsize=16)
+axes.set_xlabel("Fitness values compared to HO locus",fontsize=16)
+axes.set_ylabel("Count",fontsize=16)
+axes.legend(loc="best")
+plt.tight_layout()
+
+#fig.savefig("../figures/figures_thesis_chapter_2/fig_non_coarse_fitness_distribution_normalized_wt2HO_essentials.png",dpi=400)
 
 # +
 ## Histplot for individual gene fitness gaussian distribution 
