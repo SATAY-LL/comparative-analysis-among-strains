@@ -48,6 +48,30 @@ keys=[]
 for i in np.arange(0,len(pergene_files)):
     keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
 
+# +
+# import essential genes used in transposonmapper
+
+essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0
+,sep="\t")
+
+essentials_satay.columns=["gene name"]
+
+# import conversion file from systematic names to standard names 
+conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
+header=0,sep=",")
+
+conversion.columns=["systematic name","standard  name"]
+
+# save the standard names of the essential genes in a systematic format
+standard_essentials=[]
+for names in essentials_satay.loc[:,"gene name"]:
+    
+    if names in conversion["systematic name"].values:
+        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard  name"].values[0])
+
+
+# -
+
 keys
 
 backgrounds=["wt_a","wt_b",'wt_merged', 'bem1-aid_a', 'bem1-aid_b', "bem1-aid_merged",
@@ -303,9 +327,6 @@ for i in np.arange(0,len(keys_fitness),2):
     
     j=j+1
 #plt.savefig("../figures/fig_fitness_scatter_normalized_wt_merged.png",dpi=300)
-# -
-
-backgrounds
 
 # +
 ## Distribution of fitness values from WT
@@ -333,6 +354,9 @@ low_fit=np.where(values<0.55)[0]
 genes.reset_index(drop=True,inplace=True)
 x=np.where(genes=="CDC24")[0]
 values[x],len(low_fit)/len(genes)
+# -
+
+
 
 # +
 from statistics import NormalDist
@@ -370,7 +394,7 @@ axes[0].tick_params(axis="both",labelsize=16)
 #axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
 
 axes[1].legend()
-fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
+#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
 
 # +
 high=[1.1,np.max(values)]
@@ -405,7 +429,47 @@ colors=["blue","green","red","pink"]
 #create pie chart
 plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 18});
 plt.tight_layout()
-fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_pie_normalized_wt2HO.png",dpi=400)
+#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_pie_normalized_wt2HO.png",dpi=400)
+
+# +
+## Distribution of fitness values for annotated essential genes
+genes=list_data_pd_wt.loc[:,"Gene name"]
+genes.reset_index(drop=True,inplace=True)
+values_essentials=[]
+
+for i in standard_essentials:
+    x=np.where(genes==i)[0]
+    values_essentials.append(values[x])
+
+values_essentials=np.array(values_essentials)
+# values_essentials_below_low_fit=np.where(np.array(values_essentials)<np.array(low[0]))[0]
+# values_essentials_above_low_fit=np.where(np.array(values_essentials)>np.array(low[0]) & np.array(values_essentials)< np.array(1))[0]
+
+values_essentials_below_low_fit=values_essentials[(values_essentials<np.array(low[0]))]
+values_essentials_above_low_fit=values_essentials[(values_essentials>np.array(low[0])) & (values_essentials< np.array(1))]
+values_essentials_high=values_essentials[(values_essentials>np.array(1))]
+
+a=len(values_essentials_below_low_fit)/len(standard_essentials)
+b=len(values_essentials_above_low_fit)/len(standard_essentials)
+c=len(values_essentials_high)/len(standard_essentials)
+
+# +
+fig,axes=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+
+axes.hist(np.concatenate(values_essentials),bins=30,alpha=0.5,color="gray");
+axes.vlines(1,0,150,color="red",linestyle="dashed",linewidth=2,label="HO");
+axes.vlines(low[0],0,150,color="blue",linestyle="dashed",linewidth=2,label="Low fitness threshold")
+axes.annotate(f"{a*100:.2f}" +"%",xy=(0.1,150),fontsize=16)
+axes.annotate(f"{b*100:.2f}" +"%",xy=(0.6,150),fontsize=16)
+axes.annotate(f"{c*100:.2f}" +"%",xy=(1.1,120),fontsize=16)
+axes.set_title("Distribution of fitness values for annotated essential genes",fontsize=16)
+axes.tick_params(axis="both",labelsize=16)
+axes.set_xlabel("Fitness values compared to HO locus",fontsize=16)
+axes.set_ylabel("Count",fontsize=16)
+axes.legend(loc="best")
+plt.tight_layout()
+
+fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO_essentials.png",dpi=400)
 
 # +
 half_maximun=np.max(g.get_lines()[0].get_data()[1])/2

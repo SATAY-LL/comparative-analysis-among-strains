@@ -386,6 +386,23 @@ print("The number of predicted essential genes for WT  is:",len(predicted_essent
 
 print("The number of annotated essential genes for WT  is:",
 len(scores_wt[scores_wt["true essential"]==1]))
+
+# +
+## Pie charts visualizing how the scores matches the essential genes
+
+fig,axes=plt.subplots(1,1,figsize=(8,8))
+#define data
+data = [len_predicted_essentials_domains,len_true_essentials-len_predicted_essentials_domains]
+labels = ['Truly \n essentials'," "]
+
+#define Seaborn color palette to use
+#colors = sns.color_palette('pastel')[0:4]
+colors=["pink","green"]
+
+#create pie chart
+plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 18});
+plt.tight_layout()
+#plt.savefig("../figures/figures_thesis_chapter_2/pie_chart_DLS_predicted_essentials_domains.png",dpi=400)
 # -
 
 # ## Visualizations
@@ -399,13 +416,40 @@ len(scores_wt[scores_wt["true essential"]==1]))
 # plt.xlabel("WT-merged_score-WT_1_benoit_score")
 # sns.set(font_scale=1)
 #plt.savefig("../figures/fig_histplot_benoit_vs_mine_wt_merged.png")
-# -
 
+# +
 #sns.histplot(scores_wt_2.loc[:,"value"],bins=50,kde=True,label="WT_1_Benoit");
-sns.histplot(scores_wt.loc[:,"value"],bins=50,kde=True,color="purple",label="WT_merged");
-#sns.histplot(scores_trimmed.loc[:,"value"],bins=50,kde=True,color="green",label="dbem3_a-trimmed");
-plt.legend()
-#plt.savefig("../figures/fig_histplot_benoit_vs_mine_wt_1.png")
+fig,axes=plt.subplots(1,1,figsize=(8,5))
+
+a=np.max(scores_wt["value"])/4 
+b=scores_wt[scores_wt["value"]>a]
+
+
+sns.histplot(scores_wt.loc[:,"value"],bins=20,kde=True,color="gray",label="WT_merged",ax=axes);
+axes.vlines(a,0,4000,linestyles="dashed",color="red",linewidth=2,label="DLS threshold")
+axes.annotate(f"{len(b)/len(scores_wt)*100:.2f}" +"%",xy=(0.3,3000),fontsize=16)
+axes.tick_params(axis='both', which='major', labelsize=16)
+axes.set_xlabel("Domain Likelihood score",fontsize=16)
+axes.set_ylabel("Counts",fontsize=16)
+axes.set_title("Distribution of domain likelihood scores for WT",fontsize=16)
+axes.legend(loc="upper right",fontsize=16)
+
+
+# These are in unitless percentages of the figure size. (0,0 is bottom left)
+left, bottom, width, height = [0.5, 0.3, 0.4, 0.4]
+ax2 = fig.add_axes([left, bottom, width, height])
+
+data = [len_predicted_essentials_domains,len_true_essentials-len_predicted_essentials_domains]
+labels = ['Truly \n essentials'," "]
+
+colors=["pink","gray"]
+
+
+plt.tight_layout()
+ax2.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 14});
+
+plt.savefig("../figures/figures_thesis_chapter_2/fig_DLS_histogram_inset_pie_chart.png",dpi=400)
+
 
 # +
 ## Plot of how essential genes vary across backgrounds
