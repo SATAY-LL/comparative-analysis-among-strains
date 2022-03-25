@@ -308,7 +308,7 @@ scores_wt_1=write_ones_if_essential(scores_benoit_pd,"WT_1-Benoit",standard_esse
 scores_wt_2=write_ones_if_essential(scores_benoit_pd,"WT_2-Benoit",standard_essentials)
 
 # +
-n=3
+n=4
 a_wt=scores_all_pd.loc["wt_merged","value"]
 a_bem1=scores_all_pd.loc["bem1-aid_b","value"]
 a_bem1_bem3=scores_all_pd.loc["dbem1dbem3_b","value"]
