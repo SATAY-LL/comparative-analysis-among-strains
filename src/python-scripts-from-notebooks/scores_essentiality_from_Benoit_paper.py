@@ -232,7 +232,7 @@ insertions_essentials=[]
 for i in np.arange(0,len(standard_essentials)): 
     insertions_essentials.append(a[a.loc[:,"Gene name"]==standard_essentials[i]]["Insertions"].values)
 
-insertions_bellow_median=len(np.where(insertions_essentials<median_a)[0])/len(insertions_essentials)
+insertions_bellow_median=len(np.where(insertions_essentials<median_a/5)[0])/len(insertions_essentials)
 
 
 length_essentials=[]
@@ -261,7 +261,7 @@ index_above_90l=np.where(a_L_essentials>np.array(0.9)*length_essentials)[0]
 # +
 fig,axes=plt.subplots(1,3,figsize=(15,5))
 axes[0].hist(np.concatenate(insertions_essentials),color="gray",bins=30,label="annotated essentials",alpha=0.5);
-axes[0].vlines(median_a,0,250,color="red",linestyle="dashed",linewidth=2,label="median")
+axes[0].vlines(median_a/5,0,250,color="red",linestyle="dashed",linewidth=2,label="median/5")
 axes[0].annotate(str(np.round(insertions_bellow_median*100,2)) + "%",xy=(0,220),fontsize=14)
 axes[0].annotate(str(np.round(100-insertions_bellow_median*100,2))+ "%",xy=(70,100),fontsize=14)
 axes[0].set_xlabel("Insertions",fontsize=14)
@@ -286,7 +286,7 @@ axes[2].annotate(str(np.round(a_L_essentials_bellow_10l*100,2)) + "%" + "bellow 
 axes[2].annotate(str(np.round(a_L_essentials_above_90l*100,2)) + "%" + "above 0.9*l",xy=(1000,80),fontsize=14)
 axes[2].legend()
 axes[2].tick_params(axis="both",labelsize=14)
-axes[2].set_xlabel("Longest interval between tr=n and tr=n+5",fontsize=14)
+axes[2].set_xlabel("Longest interval void of tr",fontsize=14)
 axes[2].set_ylabel("Count",fontsize=14)
 axes[2].set_title("Longest interval essential genes",fontsize=14)
 plt.tight_layout()
@@ -296,18 +296,50 @@ plt.tight_layout()
 #scores_all_pd.to_excel("../postprocessed-data/scores_essentiality_from_Benoit_paper_all_backgrounds.xlsx")
 
 # +
+from functions_scores_essentiality import write_ones_if_essential
+
+scores_wt=write_ones_if_essential(scores_all_pd,"wt_merged",standard_essentials)
+#scores_trimmed=write_ones_if_essential(scores_all_pd,"dbem3_a-trimmed",standard_essentials)
+
+scores_wt_1=scores_benoit_pd.loc["WT_1-Benoit"]
+scores_wt_2=scores_benoit_pd.loc["WT_2-Benoit"]
+
+scores_wt_1=write_ones_if_essential(scores_benoit_pd,"WT_1-Benoit",standard_essentials)
+scores_wt_2=write_ones_if_essential(scores_benoit_pd,"WT_2-Benoit",standard_essentials)
+
+# +
+n=3
 a_wt=scores_all_pd.loc["wt_merged","value"]
 a_bem1=scores_all_pd.loc["bem1-aid_b","value"]
 a_bem1_bem3=scores_all_pd.loc["dbem1dbem3_b","value"]
-predicted_essentials_wt=a_wt[a_wt>np.max(a_wt)/4].index
-predicted_essentials_bem1=a_bem1[a_bem1>np.max(a_bem1)/4].index
-predicted_essentials_bem1_bem3=a_bem1_bem3[a_bem1_bem3>np.max(a_bem1_bem3)/4].index
+predicted_essentials_wt=a_wt[a_wt>np.max(a_wt)/n].index
+predicted_essentials_bem1=a_bem1[a_bem1>np.max(a_bem1)/n].index
+predicted_essentials_bem1_bem3=a_bem1_bem3[a_bem1_bem3>np.max(a_bem1_bem3)/n].index
 
 ## Different genes per background (lost and gaine essentiality)
 diff_wt_bem1=np.setdiff1d(predicted_essentials_wt,predicted_essentials_bem1) # lost essentials from WT
 diff_bem1_wt=np.setdiff1d(predicted_essentials_bem1,predicted_essentials_wt) # gained essentials from WT
 diff_bem1_bem3_bem1=np.setdiff1d(predicted_essentials_bem1_bem3,predicted_essentials_bem1) # gained essentials from dbem1
 diff_bem1_bem1_bem3=np.setdiff1d(predicted_essentials_bem1,predicted_essentials_bem1_bem3) # lost essentials from dbem1
+
+# +
+len_predicted_essentials_domains=len(scores_wt[(scores_wt["true essential"]==1) 
+& (scores_wt["value"]>np.max(scores_wt["value"])/n)])
+
+len_true_essentials=len(scores_wt[scores_wt["true essential"]==1])
+
+print("The number of predicted essential genes for WT that are also annotated as essential genes is:",
+len_predicted_essentials_domains,"which means ",100*len_predicted_essentials_domains/len_true_essentials,"%")
+
+print("The number of non predicted essential genes, because they dont have essential domains, for WT that are  annotated as essential genes is:",
+len(scores_wt[(scores_wt["true essential"]==1) & (scores_wt["value"]==0)]),
+"which means ",100*len(scores_wt[(scores_wt["true essential"]==1) & (scores_wt["value"]==0)])/len(scores_wt[scores_wt["true essential"]==1]),
+"%")
+
+print("The number of predicted essential genes for WT  is:",len(predicted_essentials_wt))
+
+print("The number of annotated essential genes for WT  is:",
+len(scores_wt[scores_wt["true essential"]==1]))
 
 # +
 ## Matrix where the rows are the unique genes from the scores and the columns are the backgrounds.
@@ -331,22 +363,6 @@ for k in np.arange(0,len(all_genes_array_unique)):
             
 # -
 
-
-
-
-# +
-from functions_scores_essentiality import write_ones_if_essential
-
-scores_wt=write_ones_if_essential(scores_all_pd,"wt_merged",standard_essentials)
-#scores_trimmed=write_ones_if_essential(scores_all_pd,"dbem3_a-trimmed",standard_essentials)
-
-scores_wt_1=scores_benoit_pd.loc["WT_1-Benoit"]
-scores_wt_2=scores_benoit_pd.loc["WT_2-Benoit"]
-
-scores_wt_1=write_ones_if_essential(scores_benoit_pd,"WT_1-Benoit",standard_essentials)
-scores_wt_2=write_ones_if_essential(scores_benoit_pd,"WT_2-Benoit",standard_essentials)
-# -
-
 scores_wt.sort_values(by="value",ascending=False,inplace=False)
 
 # +
@@ -367,67 +383,43 @@ scores_wt.sort_values(by="value",ascending=False,inplace=False)
 #         scores_wt.loc[true_genes,"true essential"]=1
     
 # scores_wt.fillna(0,inplace=True)
-
-# +
-len_predicted_essentials_domains=len(scores_wt[(scores_wt["true essential"]==1) 
-& (scores_wt["value"]>np.max(scores_wt["value"])/4)])
-
-len_true_essentials=len(scores_wt[scores_wt["true essential"]==1])
-
-print("The number of predicted essential genes for WT that are also annotated as essential genes is:",
-len_predicted_essentials_domains,"which means ",100*len_predicted_essentials_domains/len_true_essentials,"%")
-
-print("The number of non predicted essential genes, because they dont have essential domains, for WT that are  annotated as essential genes is:",
-len(scores_wt[(scores_wt["true essential"]==1) & (scores_wt["value"]==0)]),
-"which means ",100*len(scores_wt[(scores_wt["true essential"]==1) & (scores_wt["value"]==0)])/len(scores_wt[scores_wt["true essential"]==1]),
-"%")
-
-print("The number of predicted essential genes for WT  is:",len(predicted_essentials_wt))
-
-print("The number of annotated essential genes for WT  is:",
-len(scores_wt[scores_wt["true essential"]==1]))
-
-# +
-## Pie charts visualizing how the scores matches the essential genes
-
-fig,axes=plt.subplots(1,1,figsize=(8,8))
-#define data
-data = [len_predicted_essentials_domains,len_true_essentials-len_predicted_essentials_domains]
-labels = ['Truly \n essentials'," "]
-
-#define Seaborn color palette to use
-#colors = sns.color_palette('pastel')[0:4]
-colors=["pink","green"]
-
-#create pie chart
-plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 18});
-plt.tight_layout()
-#plt.savefig("../figures/figures_thesis_chapter_2/pie_chart_DLS_predicted_essentials_domains.png",dpi=400)
 # -
 
 # ## Visualizations
 
 # +
-## Difference between benoit scores and mine
+## Scores for essential genes
 
-# a=scores_wt["value"].values # wt_merged Leila data 
-# b=scores_wt_2["value"].values[0:len(a)] # benoit
-# g=sns.displot(a-b,bins=50,kde=True);
-# plt.xlabel("WT-merged_score-WT_1_benoit_score")
-# sns.set(font_scale=1)
-#plt.savefig("../figures/fig_histplot_benoit_vs_mine_wt_merged.png")
+fig,axes=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+
+data=scores_wt[scores_wt.loc[:,"true essential"]==1]["value"].values
+
+a=np.max(scores_wt["value"])/n
+d=len(data[data>a])/len(data)
+axes.hist(data,bins=30,alpha=0.5,color="gray",label="essential genes");
+axes.vlines(a,0,600,color="red",linestyle="--",linewidth=2,label="DLS threshold")
+axes.vlines(scores_wt.loc["HO"]["value"],0,600,color="red",linestyle="--",linewidth=2,label="HO DLS",alpha=0.2)
+axes.annotate("DLS>"+f"{a:.2f}"+"="+f"{d*100:.2f}" +"%",xy=(0.2,650),fontsize=16)
+axes.tick_params(axis='both', which='major', labelsize=16)
+axes.set_xlabel("DLS for annotated essentials",fontsize=16)
+axes.set_ylabel("Counts",fontsize=16)
+axes.set_title("Distribution of domain likelihood scores for essential genes",fontsize=16)
+axes.legend(loc="upper right",fontsize=16)
+plt.tight_layout()
+#fig.savefig("../figures/figures_thesis_chapter_2/DLS_essential_genes.png",dpi=400)
+
 
 # +
 #sns.histplot(scores_wt_2.loc[:,"value"],bins=50,kde=True,label="WT_1_Benoit");
 fig,axes=plt.subplots(1,1,figsize=(8,5))
 
-a=np.max(scores_wt["value"])/4 
+a=np.max(scores_wt["value"])/n
 b=scores_wt[scores_wt["value"]>a]
 
 
 sns.histplot(scores_wt.loc[:,"value"],bins=20,kde=True,color="gray",label="WT_merged",ax=axes);
 axes.vlines(a,0,4000,linestyles="dashed",color="red",linewidth=2,label="DLS threshold")
-axes.annotate(f"{len(b)/len(scores_wt)*100:.2f}" +"%",xy=(0.3,3000),fontsize=16)
+axes.annotate(f"{len(b)/len(scores_wt)*100:.2f}" +"%",xy=(a,3000),fontsize=16)
 axes.tick_params(axis='both', which='major', labelsize=16)
 axes.set_xlabel("Domain Likelihood score",fontsize=16)
 axes.set_ylabel("Counts",fontsize=16)
@@ -448,7 +440,7 @@ colors=["pink","gray"]
 plt.tight_layout()
 ax2.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 14});
 
-plt.savefig("../figures/figures_thesis_chapter_2/fig_DLS_histogram_inset_pie_chart.png",dpi=400)
+#plt.savefig("../figures/figures_thesis_chapter_2/fig_DLS_histogram_inset_pie_chart.png",dpi=400)
 
 
 # +
@@ -466,74 +458,13 @@ plt.grid()
 #fig.savefig("../figures/fig_number_of_essential_genes_varying_backgrounds.png",dpi=300)
 
 # +
-## Distributions of the scores per backgrounds
-
-fig, ax = plt.subplots(nrows=1, ncols=len(backgrounds), figsize=(25, 5))
-cm = plt.cm.get_cmap('RdYlBu_r')
-#color=cm(i/len(backgrounds))
-for i in np.arange(0,len(backgrounds)):
-    
-    ax[i].hist(scores_all_pd.loc[backgrounds[i]]["value"], bins=50, alpha=0.8, label=backgrounds[i], color="black")
-    # plt.legend(loc='upper right')
-    ax[i].set_xlim([0,2])
-    ax[i].set_ylim([0,500])
-    ax[i].set_xlabel('Domain likelihood score')
-
-
-    ax[i].legend(loc='upper right')
-
-#fig.savefig("../figures/fig_histogram_domain_likelihood_score_per_background.png",dpi=300)
-
-# +
-## Differences in score between replicates histogram
-fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
-cm = plt.cm.get_cmap('RdYlBu_r')
-#color=cm(i/len(backgrounds))
-tmp=np.abs(scores_all_pd.loc["bem1-aid_a"]["value"]-scores_all_pd.loc["bem1-aid_b"]["value"])
-ax[0].hist(tmp, bins=100, alpha=0.8, label="dbem1-differences", color="black")
-# plt.legend(loc='upper right')
-ax[0].set_xlim([-0.05,1.3])
-ax[0].set_ylim([0,500])
-ax[0].set_xlabel('Domain likelihood score difference')
-ax[0].legend(loc='upper right')
-
-tmp=np.abs(scores_all_pd.loc["dbem1dbem3_a"]["value"]-scores_all_pd.loc["dbem1dbem3_b"]["value"])
-ax[1].hist(tmp, bins=50, alpha=0.8, label="dbem1dbem3-differences", color="black")
-# plt.legend(loc='upper right')
-ax[1].set_xlim([-0.05,1.3])
-ax[1].set_ylim([0,500])
-ax[1].set_xlabel('Domain likelihood score difference')
-ax[1].legend(loc='upper right')
-    
-#fig.savefig("../figures/fig_histogram_domain_likelihood_score_differences_between_backgrounds.png",dpi=300)
-
-# +
-## Differences in score between replicates scatter
-
-# fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
-
-# ax[0].scatter(scores_all_pd.loc["bem1-aid_a"]["value"][0:6239],scores_all_pd.loc["bem1-aid_b"]["value"],color="black",alpha=0.5,label="dbem1-replicates")
-# ax[1].scatter(scores_all_pd.loc["dbem1dbem3_a"]["value"][0:6220],scores_all_pd.loc["dbem1dbem3_b"]["value"],color="black",alpha=0.5,label="dbem1dbem3-replicates")
-
-# ax[0].set_xlim([0,1.3])
-# ax[0].set_ylim([0,1.3])
-# ax[0].set_xlabel('dbem1_a scores')
-# ax[0].set_ylabel('dbem1_b scores')
-
-# ax[1].set_xlim([0,1.3])
-# ax[1].set_ylim([0,1.3])
-# ax[1].set_xlabel('dbem1dbem3_a scores')
-# ax[1].set_ylabel('dbem1dbem3_b scores')
-
-#fig.savefig("../figures/fig_scatter_domain_likelihood_score_differences_between_backgrounds.png",dpi=300)
-
-# +
 ## heatmap variation of scores with backgrounds
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
 
 n=20
+a=np.max(scores_wt["value"])
 sns.heatmap(matrix_differential_score[0:n,:], xticklabels=backgrounds,
-yticklabels=all_genes_array_unique[0:n], cmap="seismic", vmin=0, vmax=1.5)
+yticklabels=all_genes_array_unique[0:n], cmap="seismic", vmin=0, vmax=a)
 plt.tight_layout()
 #fig.savefig("../figures/fig_prototype_heatmap_domain_likelihood_score_per_background.png",dpi=300)
 
@@ -559,7 +490,7 @@ for i in goi:
 
 goi_matrix=matrix_differential_score[tmp,:]
 sns.heatmap(goi_matrix, xticklabels=backgrounds, yticklabels=goi, 
-cmap="RdGy", vmin=0, vmax=1,alpha=0.8,annot_kws={"fontsize":4})
+cmap="RdGy", vmin=0, vmax=a,alpha=0.8,annot_kws={"fontsize":4})
 sns.set(font_scale=1) # font size 2
 
 #g.savefig("../figures/fig_heatmap_domain_likelihood_score_per_background_goi.png",dpi=300)
@@ -594,7 +525,7 @@ for x0,x1 in zip(Y,Y[1:]):
     c = cmap((x0-Y.min())/Y.max())
     #print(x0,Y.min(),Y.max(),c)
     data_colors.append(c)
-    ax[1].bar([x0,],0.5,0.01,
+    ax[1].bar([x0,],0.05,0.01,
             color=c,
             linewidth=0)
 
