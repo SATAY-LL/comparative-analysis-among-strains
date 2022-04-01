@@ -95,7 +95,7 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
 
         if type(insertion_float)!=int : 
             # Setting a the minimum number of insertions a gene should have to compute a score
-            n = 5 
+            n = 5
             # for genes which number of insertion locations bigger than 5
             if len(insertion_float)>n : 
 
@@ -119,9 +119,13 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
 
                 ## Compute the score per gene per background
 
-                if all((N>N_median,L>200,L>0.1*l,L<0.9*l)): 
+                if all((N>N_median/5,L>200,L>0.1*l,L<0.9*l)): # L>200 if n=5, L>40 if n=1
                     #print(L,N,l)
                     score["value"][gene]=L*N/pow(l,1.5)
+
+                    # add another conditional if N<median/4 but tn_normalized_windows>median_normalized/4
+                    # then compute score[value][gene]=L/l
+                    # if not then score=0 
                     
                 else:
                     score["value"][gene]=0
