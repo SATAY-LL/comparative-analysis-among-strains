@@ -102,6 +102,13 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
                 ##Compute largest interval free of transposons between the transposon n and the n+5
                 
                 x=np.array(insertion_float)
+                # x=x.astype(int)
+                start=data_background.loc[gene,"Start location"]
+                end=data_background.loc[gene,"End location"]
+                # data=np.arange(start,end+1) # building the genomic locations array with the length of the gene and zeros where we dont have insertions
+                # data=np.zeros_like(data)
+                # data[x-start]=x
+                
                 ### Shifting the array by n to the right and then to left and substract them and take the maximum
                 L=np.max(x[n:] - x[:-n])
                 longest_interval["value"][gene]=L
@@ -109,11 +116,13 @@ def get_essentiality_score_per_gene_per_background(useful_genes,background,data_
 
                 ## Compute length gene
 
-                l=data_background.loc[gene,"End location"]-data_background.loc[gene,"Start location"]
+                #l=end-start
+                l=end-start
 
                 ## Compute the number of insertions per gene 
 
                 N=data_background.loc[gene,"Insertions"]
+                #N=len(data[data!=0]) # Number of insertions of the gene 
                 #N=data_background.loc[gene,"tr_normalized_windows"]
                 N_median=np.median(data_background.loc[:,"Insertions"])
 

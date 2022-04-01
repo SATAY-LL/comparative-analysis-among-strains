@@ -22,6 +22,7 @@ import pandas as pd
 import pkg_resources
 import matplotlib.pyplot as plt
 import re
+import scipy.stats as stats
 import seaborn as sns
 from collections import defaultdict
 
@@ -452,6 +453,59 @@ values_essentials_high=values_essentials[(values_essentials>np.array(1))]
 a=len(values_essentials_below_low_fit)/len(standard_essentials)
 b=len(values_essentials_above_low_fit)/len(standard_essentials)
 c=len(values_essentials_high)/len(standard_essentials)
+# -
+
+# ### ROC curve to assess the performance of the low fitness values with essentiality.
+#
+
+# +
+fitness=values
+fitness2roc=1-fitness
+fitness2rocprob=(fitness2roc-np.min(fitness2roc))/(np.max(fitness2roc)-np.min(fitness2roc))
+
+y=np.zeros(len(values)) ## labels for ROC curve
+
+for i in np.arange(0,len(standard_essentials)):
+    if standard_essentials[i] in list_data_pd_wt.loc[:,"Gene name"].tolist():
+        x=np.where(list_data_pd_wt.loc[:,"Gene name"]==standard_essentials[i])[0][0]
+        y[x]=1
+    
+#
+
+# -
+
+# plt.hist(fitness2rocprob)
+#corr,p=stats.pearsonr(fitness2rocprob,y)
+figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+plt.hist(fitness2rocprob[y==0],bins=100,alpha=0.4,label="Non essential genes",color="gray");
+plt.hist(fitness2rocprob[y==1],bins=100,label="Essential genes",color="pink");
+plt.xlabel("Fitness translated to probabilities of gene essentiality",fontsize=16)
+ax.tick_params(axis="both",labelsize=16)
+plt.ylabel("Counts",fontsize=16)
+plt.legend(fontsize=16)
+
+# +
+from sklearn import metrics
+
+fpr, tpr, thresholds = metrics.roc_curve(y, fitness2rocprob)
+area=metrics.auc(fpr,tpr)
+
+figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+
+plt.plot([0, 1], [0, 1], color="navy", lw=2, linestyle="--")
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False Positive Rate",fontsize=16)
+plt.ylabel("True Positive Rate",fontsize=16)
+plt.title("Receiver operating characteristic Coarse fitness",fontsize=16)
+
+plt.plot(fpr, tpr ,label=f"AUC={area:.2f}",color="darkorange",lw=2)
+ax.tick_params(axis="both",labelsize=16)
+ax.legend(loc="lower right",fontsize=16)
+# -
+
+np.where(list_data_pd_wt.loc[:,"Gene name"]=="CDC42")
+y[4292]
 
 # +
 fig,axes=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
@@ -469,7 +523,7 @@ axes.set_ylabel("Count",fontsize=16)
 axes.legend(loc="best")
 plt.tight_layout()
 
-fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO_essentials.png",dpi=400)
+#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO_essentials.png",dpi=400)
 
 # +
 half_maximun=np.max(g.get_lines()[0].get_data()[1])/2
@@ -516,7 +570,7 @@ labels=[]
 for i in np.arange(0,len(chosen_polarity_genes)):
     labels.append(chosen_polarity_genes[i]+"-"+str(polarity_genes.loc[chosen_polarity_genes[i],:].unique()))
 ax.set_yticklabels(labels);
-fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_with_replicates-and-function.png",dpi=300)
+#fig.savefig("../figures/fig_heatmap_fitness_normalized_wt_with_replicates-and-function.png",dpi=300)
 # -
 
 g=sns.clustermap(array2heatmap,cmap="seismic",vmin=0,vmax=1,xticklabels=backgrounds_heatmap,
@@ -542,7 +596,7 @@ for k in np.arange(1,2,0.2):
     plt.xticks([])
     plt.yticks([])
 
-plt.savefig("../figures/figures_thesis_chapter_2/fig_sigmoid_function.png",dpi=400)
+#plt.savefig("../figures/figures_thesis_chapter_2/fig_sigmoid_function.png",dpi=400)
 
 
 # +
