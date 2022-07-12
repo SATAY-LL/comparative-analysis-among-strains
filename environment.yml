@@ -23,4 +23,6 @@ dependencies:
   - openpyxl
   - jedi
   - networkx
+  - streamlit
+  - plotly-express
 
