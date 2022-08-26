@@ -79,10 +79,38 @@ with middle_column:
     st.subheader("Total reads:")
     st.subheader(f'{total_reads}')
 
+st.markdown("---")
+
+st.title(" :bar_chart: Insertions and reads distributions of the selection")
+st.markdown("##")
+
+fig_histogram_insertions=px.histogram(
+    df_selection["Insertions"],title="Insertions histogram",
+    template="plotly_white"
+)
+fig_histogram_reads=px.histogram(
+    df_selection["Reads"],title="Reads histograms",
+    template="plotly_white"
+)
+
+fig_histogram_insertions.update_layout(
+    plot_bgcolor="rgba(0,0,0,0)",
+    xaxis=(dict(showgrid=False))
+)
+
+fig_histogram_reads.update_layout(
+    plot_bgcolor="rgba(0,0,0,0)",
+    xaxis=(dict(showgrid=False))
+)
+
+left_column,right_column=st.columns(2)
+left_column.plotly_chart(fig_histogram_insertions,use_container_width=True)
+right_column.plotly_chart(fig_histogram_reads,use_container_width=True)
+
 
 st.markdown("---")
 
-st.title(" :bar_chart: Insertions and reads distributions")
+st.title(" :bar_chart: Insertions and reads distributions of the library")
 st.markdown("##")
 
 fig_histogram_insertions=px.histogram(
