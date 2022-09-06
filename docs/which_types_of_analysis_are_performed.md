@@ -1,5 +1,8 @@
 # Analyses of datasets from SATAY sequencing 
 
+## Basic analyses
+- src/analysis_evolutionary_trajectory.ipynb
+
 ## Computation of the fitness from SATAY using a coarse grained model.
 - src/analysis_evolutionary_trajectory.ipynb
   - *getting_r function* to compute  fitness values using a coarse model , where it is applied the intergenic model , and every gene gets a value given by the total number of reads over the total number of insertions in the gene.
@@ -13,3 +16,6 @@
  - Visualizations of how fitness values are distributed in essential and non essential genes.
  - Heat map to visualize how fitness values for some polarity genes( normalized to wt merged genotype) change across backgrounds.
  - ROC curve to assess the performance of the low fitness values with essentiality.
+
+ ## Linear normalization methods 
+ - src/normalization_procedures_satay_data.ipynb
