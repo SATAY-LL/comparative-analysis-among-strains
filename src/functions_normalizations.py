@@ -6,21 +6,26 @@ import seaborn as sns
 def linear_transformation_per_background(pergene_insertions_all_data,background,chrom_length,
 windows_size=10000):
     """Executes the linear transformation procedure for a given background.
-    It will divide the insertions and reads per gene over the total amount in each chromosome.
+    It will divide the insertions and reads per gene over the total amount in each chromosome.It 
+    will also gives the insertions and reads per gene over the total amount in each 10kb window, as default.
 
     Parameters
     ----------
     pergene_insertions_all_data : pandas.dataframe
-        _description_
-    background : list
-        _description_
+        The dataframe given info about the insertions and reads per gene per background. The background 
+        is given as key of the dataframe.
+    background : str
+        the name of the background to be used as a string, for example "wt_merged"
     chrom_length : pandas.dataframe
-        _description_
+        A dataframe where the length of each chromosome is given and the name of the chromosomes 
+        is the index of the dataframe. 
+    windows_size : int, optional
 
     Returns
     -------
-    _type_
-        _description_
+    pandas dataframe 
+        A copy of the input datframe with added columns representing 
+        the linear transformation of the  reads and insertions. 
     """
 
     chrom=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV",
@@ -31,21 +36,21 @@ windows_size=10000):
     data_background=data.loc[background]
     
 
-    reads_per_chrom=data_background.groupby(by=["Chromosome"]).sum()["Reads"]
-    insertions_per_chrom=data_background.groupby(by=["Chromosome"]).sum()["Insertions"]
+    reads_per_chrom=data_background.groupby(by=["Chromosome"]).sum()["Reads"]#Total number of reads per chromosome
+    insertions_per_chrom=data_background.groupby(by=["Chromosome"]).sum()["Insertions"]#Total number of insertions per chromosome
 
-    data_background.index=data_background["Chromosome"]
+    data_background.index=data_background["Chromosome"]#setting the index as the chromosome number 
 
     
     for i in chrom:
 
-        data_background_chrom=data_background.loc[data_background["Chromosome"]==i]
-        lengths_genes=data_background_chrom.loc[:,"End location"]-data_background_chrom.loc[:,"Start location"]
+        data_background_chrom=data_background.loc[data_background["Chromosome"]==i] # filtering the dataframe by the chromosome number
+        lengths_genes=data_background_chrom.loc[:,"End location"]-data_background_chrom.loc[:,"Start location"] # computing the length of every gene
 
-        data_background.loc[data_background["Chromosome"]==i,"Linear-norm-reads"]=data_background_chrom.loc[:,"Reads"]/reads_per_chrom[i]
-        data_background.loc[data_background["Chromosome"]==i,"Linear-norm-insertions"]=data_background_chrom.loc[:,"Insertions"]/insertions_per_chrom[i]
+        data_background.loc[data_background["Chromosome"]==i,"Linear-norm-reads"]=data_background_chrom.loc[:,"Reads"]/reads_per_chrom[i] # dividing the reads per gene by the total number of reads in the chromosome
+        data_background.loc[data_background["Chromosome"]==i,"Linear-norm-insertions"]=data_background_chrom.loc[:,"Insertions"]/insertions_per_chrom[i] # dividing the insertions per gene by the total number of insertions in the chromosome
         
-        data_background.loc[data_background["Chromosome"]==i,"Linear-norm-tr-density"]=data_background.loc[data_background["Chromosome"]==i,"Linear-norm-insertions"]*np.divide(np.array(chrom_length.loc[i]),np.array(lengths_genes))
+        data_background.loc[data_background["Chromosome"]==i,"Linear-norm-tr-density"]=data_background.loc[data_background["Chromosome"]==i,"Linear-norm-insertions"]*np.divide(np.array(chrom_length.loc[i]),np.array(lengths_genes)) # insertions/gene length/length of chrom=insertions*length of chrom/gene length
 
         data_background.loc[data_background["Chromosome"]==i,"tr-density"]=data_background_chrom.loc[:,"Insertions"]/lengths_genes
         data_background.loc[data_background["Chromosome"]==i,"length gene"]=lengths_genes
@@ -65,16 +70,16 @@ windows_size=10000):
         windows_location=[location_gene[0]-windows_size,location_gene[1]+windows_size]
 
 
-        locations_ups=np.where((windows_location[0]<data_without_index["Start location"]) & (data_without_index["Start location"]<location_gene[0]))[0]
-        locations_down=np.where((location_gene[1]<data_without_index["End location"]) & (data_without_index["End location"] < windows_location[1]))[0]
+        locations_ups=np.where((windows_location[0]<data_without_index["Start location"]) & (data_without_index["Start location"]<location_gene[0]))[0] #indexes of the genes that are upstream within the window of interest
+        locations_down=np.where((location_gene[1]<data_without_index["End location"]) & (data_without_index["End location"] < windows_location[1]))[0] #indexes of the genes that are downstream the windows of interest
 
-        locations_total=np.unique(np.concatenate((locations_ups,locations_down)))
+        locations_total=np.unique(np.concatenate((locations_ups,locations_down))) # total number of gene locations inside the window.setdefault()
 
-        total_insertions=data_without_index.loc[locations_total,"Insertions"].sum()
-        total_reads=data_without_index.loc[locations_total,"Reads"].sum()
+        total_insertions=data_without_index.loc[locations_total,"Insertions"].sum() # total number of insertionsfor genes within the window
+        total_reads=data_without_index.loc[locations_total,"Reads"].sum() # total number  of reads for genes within the window
 
         index_gene=np.where(data_without_index["Gene name"]==gene)[0][0]
-
+         # filling the dataframe with the new values
         data_without_index.loc[index_gene,"tr_normalized_windows"]=data_without_index.loc[index_gene,"Insertions"]/total_insertions
         data_without_index.loc[index_gene,"reads_normalized_windows"]=data_without_index.loc[index_gene,"Reads"]/total_reads
         data_without_index.loc[index_gene,"insertions_over_windows"]=total_insertions
