@@ -88,6 +88,18 @@ def getting_r(datasets):
 
 #### adding features for analysis . File required: pergene_insertions files 
 def adding_features2dataframe(data):
+    """_summary_
+
+    Parameters
+    ----------
+    data : pandas dataframe with the reads and insertions per gene
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
     #data["N_reads"]=np.nan
     data["tr-density"]=np.nan
     #data["std-reads"]=np.nan

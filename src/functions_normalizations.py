@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+## Optimize this function it takes a lot of time!!! almost 40 mins for all backgrounds!!
 def linear_transformation_per_background(pergene_insertions_all_data,background,chrom_length,
 windows_size=10000):
     """Executes the linear transformation procedure for a given background.
