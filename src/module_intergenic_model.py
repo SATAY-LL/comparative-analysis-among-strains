@@ -50,8 +50,8 @@ def getting_r(datasets):
         
             
             
-            K=np.sum(datasets[i]['reads-per-tr']) # carrying capacity
-            N=datasets[i]['reads-per-tr'] # contribution of each mutant to the population density 
+            K=np.sum(datasets[i]['reads-per-tr-central']) # carrying capacity
+            N=datasets[i]['reads-per-tr-central'] # contribution of each mutant to the population density 
             # it will compute a carrying capacity per dataset 
         
                         
@@ -65,9 +65,9 @@ def getting_r(datasets):
             # r_non_filter.append(np.log(N_n*K_n/(K_n-N_n))/T)
     else: 
             datasets.replace([np.inf, -np.inf], np.nan, inplace=True) # replace inf by the max number of the dataset
-            datasets.fillna(max(datasets["reads-per-tr"]),inplace=True)
-            K=np.sum(datasets['reads-per-tr']) # carrying capacity
-            N=datasets['reads-per-tr'] # contribution of each mutant to the population density 
+            datasets.fillna(max(datasets["reads-per-tr-central"]),inplace=True)
+            K=np.sum(datasets['reads-per-tr-central']) # carrying capacity
+            N=datasets['reads-per-tr-central'] # contribution of each mutant to the population density 
             # it will compute a carrying capacity per dataset 
         
                         
@@ -100,13 +100,32 @@ def adding_features2dataframe(data):
     _type_
         _description_
     """
+    from from_excel_to_list import from_excel_to_list
+    
     #data["N_reads"]=np.nan
     data["tr-density"]=np.nan
     #data["std-reads"]=np.nan
     #data["mean-reads"]=np.nan
     data["reads-per-tr"]=np.nan
+    data["reads-central"]=np.nan
+    data["tr-central"]=np.nan
+    data["reads-per-tr-central"]=np.nan
     #data["tranposons"]=np.nan
     for j in data.index:
+        coi=from_excel_to_list(data.loc[j]["Reads per insertion location"])
+
+        if type(coi)!=int:
+            start=len(coi)*0.1+1
+            end=len(coi)*0.9-1
+            data_center=coi[int(start):int(end)]
+            data["tr-central"][j]=len(data_center)
+        else:
+            data_center=coi
+            data["tr-central"][j]=coi
+
+        data["reads-central"][j]=np.sum(data_center)
+        
+        
         #data["N_reads"][j]=np.sum(data["Reads per insertion location"][j])
         data["tr-density"][j]=data["Insertions"][j]/(data["End location"][j]-data["Start location"][j])
         #data["std-reads"][j]=np.std(data["Reads per insertion location"][j])
@@ -115,6 +134,10 @@ def adding_features2dataframe(data):
             data["reads-per-tr"][j]=data["Reads"][j]/((data["Insertions"][j])-1)
         else:
             data["reads-per-tr"][j]=0
+        if data["tr-central"][j]>5:
+            data["reads-per-tr-central"][j]=data["reads-central"][j]/((data["tr-central"][j])-1)
+        else:
+            data["reads-per-tr-central"][j]=0
         #data["tranposons"][j]=len(data["Reads per insertion location"][j])
     return data 
 
