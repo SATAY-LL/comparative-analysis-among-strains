@@ -233,6 +233,8 @@ for i in np.arange(0,len(backgrounds)):
 
 list_data_extended_pd=pd.concat(list_data_extended,axis=0,keys=backgrounds)
 
+list_data_extended_pd.head(2)
+
 # +
 # Number of reads per transposons per library
 L=[]
@@ -259,27 +261,6 @@ axes[1].set_ylabel("Standard deviation of number of reads per transposons per li
 
 plt.tight_layout(pad=3)
 #plt.savefig("../figures/fig_mean_and_std_number_reads_per_transposons_per_library.png",dpi=300)
-
-# +
-
-# example of taking the central part of the insertions
-from from_excel_to_list import from_excel_to_list
-coi=list_data_extended_pd.loc[:,"Reads per insertion location"]
-
-coi_example=from_excel_to_list(coi["wt_merged"][0])
-start=len(coi_example)*0.1+1
-end=len(coi_example)*0.9-1
-data_center=coi_example[int(start):int(end)]
-data_center_reads=np.sum(data_center)
-data_center_insertions=len(data_center)
-
-data_center_reads,np.sum(coi_example),data_center_insertions,len(coi_example),
-data_center_reads/data_center_insertions, np.sum(coi_example)/len(coi_example)
-
-
-# Implement this example throughout the whole library
-# the idea is to compute the fitness only for the central part of all genes (10% to 90%)
-
 # -
 
 # ## Compute fitness from a coarse grained model, taking the total sum of reads per transposon per gene 
@@ -297,19 +278,20 @@ for i in np.arange(0,len(backgrounds)):
 # ## Export fitness values to excel to be used in other notebooks 
 
 # +
-# fitness_all=[]
-# for i in np.arange(0,len(backgrounds)):
+fitness_all=[]
+for i in np.arange(0,len(backgrounds)):
 
-#     tmp=list_data_rates[i][0].to_frame()
-#     tmp.columns=["fitness"]
-#     tmp.index=list_data_pd.loc[backgrounds[i],"Gene name"]
-#     fitness_all.append(tmp)
+    tmp=list_data_rates[i][0].to_frame()
+    tmp.columns=["fitness"]
+    tmp.index=list_data_pd.loc[backgrounds[i],"Gene name"]
+    fitness_all.append(tmp)
 
-# fitness_all_pd=pd.concat(fitness_all,axis=0,keys=backgrounds)
-# fitness_all_pd.reset_index(inplace=True)
+fitness_all_pd=pd.concat(fitness_all,axis=0,keys=backgrounds)
+fitness_all_pd.reset_index(inplace=True)
 
-# fitness_all_pd.rename(columns={"level_0":"background"},inplace=True)
-# fitness_all_pd.to_excel("../postprocessed-data/fitness_coarse_grained_all_pd.xlsx")
+fitness_all_pd.rename(columns={"level_0":"background"},inplace=True)
+
+fitness_all_pd.to_excel("../postprocessed-data/fitness_coarse_grained_all_pd.xlsx")
 
 
 # +
