@@ -128,18 +128,21 @@ data2excel.to_excel("../postprocessed-data/data_norm_linear_transformation_per_b
 
 data_norm_pd.loc["wt_merged"][0:3]
 
-reads_per_chrom_pd.loc["wt_merged"]["I"]
+data_norm_pd.columns
+
 
 # comparison of libraries in terms of normalized transposon densityies 
 mutant="bem1-aid_merged"
-plt.scatter(data_norm_pd.loc["wt_merged","Linear-norm-tr-density"],data_norm_pd.loc[mutant,"Linear-norm-tr-density"],color="black")
+data_wt= data_norm_pd.loc["wt_merged","Reads"]/data_norm_pd.loc["wt_merged","Reads"].sum()
+data_mutant=data_norm_pd.loc[mutant,'Reads']/data_norm_pd.loc[mutant,'Reads'].sum()
+plt.scatter(data_wt,data_mutant,color="black")
 plt.xscale("log")
 plt.yscale("log")
 plt.xlabel("wt_merged")
-plt.title("Transposon density normalized")
+plt.title("Reads comparison across libraries")
 plt.ylabel(mutant)
-plt.ylim(0.1,100)
-plt.xlim(0.1,100)
+# plt.ylim(0.1,100)
+# plt.xlim(0.1,100)
 
 # +
 ## make a function that looks for the gene names that have more than 10 as transposon density

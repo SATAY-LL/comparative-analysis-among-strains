@@ -321,6 +321,9 @@ print(area)
 fi2roc_values=fi_wt.loc[:,"free index"].values/fi_ho.values
 ni2roc_values=ni/ni_ho
 
+fi2roc_values=fi_wt.loc[:,"free index"].values
+ni2roc_values=ni
+
 # +
 fi_all_pd_2roc=(fi2roc_values-np.min(fi2roc_values))/(np.max(fi2roc_values)-np.min(fi2roc_values))
 y_pd=write_ones_if_essential(fi_all_pd,"wt_merged",standard_essentials)
@@ -329,30 +332,30 @@ y=y_pd.loc[:,"true essential"].values
 ni2roc=1-(ni2roc_values-np.min(ni2roc_values))/(np.max(ni2roc_values)-np.min(ni2roc_values)) # for the ni the highest the value the least probable is , that is why I need to substract that value to 1
 
 # +
-figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+figure,ax=plt.subplots(nrows=1,ncols=2,figsize=(10,5))
+plt.subplots_adjust(wspace=0.3)
 
-plt.xlabel("NI translated to probabilities of gene essentiality",fontsize=16)
-ax.tick_params(axis="both",labelsize=16)
-plt.ylabel("Counts",fontsize=16)
-plt.hist(ni2roc[y==0],bins=300,alpha=0.5,label="Non essential genes",color="gray");
-plt.hist(ni2roc[y==1],bins=80,label="Essential genes",color="pink");
-plt.legend(fontsize=16)
-plt.title("Probability dist. of the Neighborhood Index relative to HO ",fontsize=16)
-plt.xlim(0.7,1)
+ax[1].set_xlabel("Probability of being essential",fontsize=16)
+ax[1].tick_params(axis="both",labelsize=16)
+ax[1].set_ylabel("Counts",fontsize=16)
+ax[1].hist(ni2roc[y==0],bins=300,alpha=0.5,label="Non essential genes",color="gray");
+ax[1].hist(ni2roc[y==1],bins=80,label="Essential genes",color="pink");
+ax[1].legend(fontsize=16)
+ax[1].set_title("Neighborhood Index",fontsize=16)
+ax[1].set_xlim(0.7,1)
 
 
+ax[0].set_xlabel("Probability of being essential",fontsize=16)
+ax[0].tick_params(axis="both",labelsize=16)
+ax[0].set_ylabel("Counts",fontsize=16)
+ax[0].hist(fi_all_pd_2roc[y==0],bins=100,alpha=0.5,label="Non essential genes",color="gray");
+ax[0].hist(fi_all_pd_2roc[y==1],bins=100,label="Essential genes",color="pink");
+ax[0].legend(fontsize=16)
+ax[0].set_title("Free Index",fontsize=16)
 
+plt.tight_layout()
 
-# +
-figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
-
-plt.xlabel("FI translated to probabilities of gene essentiality",fontsize=16)
-ax.tick_params(axis="both",labelsize=16)
-plt.ylabel("Counts",fontsize=16)
-plt.hist(fi_all_pd_2roc[y==0],bins=100,alpha=0.5,label="Non essential genes",color="gray");
-plt.hist(fi_all_pd_2roc[y==1],bins=100,label="Essential genes",color="pink");
-plt.legend(fontsize=16)
-plt.title("Probability dist. of the Free Index relative to HO ",fontsize=16)
+figure.savefig("../figures/figures_thesis_chapter_2/fig_prob_distributions_fi_ni.png",dpi=400)
 
 
 # +

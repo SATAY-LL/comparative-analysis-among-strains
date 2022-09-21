@@ -133,6 +133,7 @@ plt.tight_layout(pad=3)
 #plt.savefig("../figures/fig_number_genes_with_less_than_5_reads.png",dpi=300)
 
 
+
 # +
 # Number of transposons in each library 
 L=[]
@@ -258,6 +259,27 @@ axes[1].set_ylabel("Standard deviation of number of reads per transposons per li
 
 plt.tight_layout(pad=3)
 #plt.savefig("../figures/fig_mean_and_std_number_reads_per_transposons_per_library.png",dpi=300)
+
+# +
+
+# example of taking the central part of the insertions
+from from_excel_to_list import from_excel_to_list
+coi=list_data_extended_pd.loc[:,"Reads per insertion location"]
+
+coi_example=from_excel_to_list(coi["wt_merged"][0])
+start=len(coi_example)*0.1+1
+end=len(coi_example)*0.9-1
+data_center=coi_example[int(start):int(end)]
+data_center_reads=np.sum(data_center)
+data_center_insertions=len(data_center)
+
+data_center_reads,np.sum(coi_example),data_center_insertions,len(coi_example),
+data_center_reads/data_center_insertions, np.sum(coi_example)/len(coi_example)
+
+
+# Implement this example throughout the whole library
+# the idea is to compute the fitness only for the central part of all genes (10% to 90%)
+
 # -
 
 # ## Compute fitness from a coarse grained model, taking the total sum of reads per transposon per gene 
@@ -291,6 +313,7 @@ for i in np.arange(0,len(backgrounds)):
 
 
 # +
+## Normalization with respect the values of the fitness of the wild type merged genotype
 rates_dict=dict(zip(backgrounds,list_data_rates))
 
 rates_norm_dict=defaultdict(dict)
@@ -330,7 +353,7 @@ for i in np.arange(0,len(keys_fitness),2):
 #plt.savefig("../figures/fig_fitness_scatter_normalized_wt_merged.png",dpi=300)
 
 # +
-## Distribution of fitness values from WT
+## Distribution of fitness values from WT/normalization to the HO locus values
 
 list_data_pd_wt=list_data_pd.loc["wt_merged"]
 ho=np.where(list_data_pd_wt.loc[:,"Gene name"]=="HO")[0][0]
@@ -342,7 +365,7 @@ fitness_wt_ho=fitness_wt[0][ho]
 
 values=np.array(fitness_wt[0])/fitness_wt_ho
 
-values[~np.isfinite(values)]=0
+values[~np.isfinite(values)]=0 # make zero values if nan or inf values 
 
 # genes=list_data_pd_wt.loc[np.where(values!=-np.inf)[0],"Gene name"]
 # values=values[np.where(values!=-np.inf)]
@@ -355,9 +378,6 @@ low_fit=np.where(values<0.55)[0]
 genes.reset_index(drop=True,inplace=True)
 x=np.where(genes=="CDC24")[0]
 values[x],len(low_fit)/len(genes)
-# -
-
-
 
 # +
 from statistics import NormalDist
@@ -406,6 +426,12 @@ essential=low[0]
 high,low,neutral,essential
 
 # +
+## Normalization of values from 0 to 1
+
+valuesnorm=(values-np.min(values))/(np.max(values)-np.min(values))
+
+
+# +
 ## make a pie chart with the mean fitness values compared to HO
 
 high=[1.1,np.max(values)]
@@ -417,6 +443,18 @@ values_neutral=values[np.where((values>neutral[0]) & (values<neutral[1]))]
 values_high=values[np.where((values>high[0]) & (values<high[1]))]
 values_low=values[np.where((values<low[1]) & (values>low[0]))]
 values_essential=values[np.where(values<essential)]
+
+
+# high=[0.8,1]
+# neutral=[0.65,0.8]
+# low=[0.3,0.65]
+# essential=[0,0.3]
+
+# values_neutral=valuesnorm[np.where((valuesnorm>neutral[0]) & (valuesnorm<neutral[1]))]
+# values_high=valuesnorm[np.where((valuesnorm>high[0]) & (valuesnorm<high[1]))]
+# values_low=valuesnorm[np.where((valuesnorm<low[1]) & (valuesnorm>low[0]))]
+# values_essential=valuesnorm[np.where(valuesnorm<essential[1])]
+
 
 fig,axes=plt.subplots(1,1,figsize=(8,8))
 #define data
@@ -468,7 +506,7 @@ y=np.zeros(len(values)) ## labels for ROC curve
 for i in np.arange(0,len(standard_essentials)):
     if standard_essentials[i] in list_data_pd_wt.loc[:,"Gene name"].tolist():
         x=np.where(list_data_pd_wt.loc[:,"Gene name"]==standard_essentials[i])[0][0]
-        y[x]=1
+        y[x]=1 # write 1 in the position of essential genes
     
 #
 
@@ -479,10 +517,12 @@ for i in np.arange(0,len(standard_essentials)):
 figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
 plt.hist(fitness2rocprob[y==0],bins=100,alpha=0.4,label="Non essential genes",color="gray");
 plt.hist(fitness2rocprob[y==1],bins=100,label="Essential genes",color="pink");
-plt.xlabel("Fitness translated to probabilities of gene essentiality",fontsize=16)
+plt.xlabel("Probability of being essential",fontsize=16)
 ax.tick_params(axis="both",labelsize=16)
 plt.ylabel("Counts",fontsize=16)
 plt.legend(fontsize=16)
+plt.title("Coarse grained fitness",fontsize=16)
+#figure.savefig("../figures/figures_thesis_chapter_2/fig_fitness_prob_distribution_over_essentials.png",dpi=400)
 
 # +
 from sklearn import metrics
@@ -497,11 +537,13 @@ plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.xlabel("False Positive Rate",fontsize=16)
 plt.ylabel("True Positive Rate",fontsize=16)
-plt.title("Receiver operating characteristic Coarse fitness",fontsize=16)
+plt.title("ROC of the coarse grained fitness values",fontsize=16)
 
 plt.plot(fpr, tpr ,label=f"AUC={area:.2f}",color="darkorange",lw=2)
 ax.tick_params(axis="both",labelsize=16)
 ax.legend(loc="lower right",fontsize=16)
+
+#figure.savefig("../figures/figures_thesis_chapter_2/fig_fitness_ROC_curve.png",dpi=400)
 # -
 
 np.where(list_data_pd_wt.loc[:,"Gene name"]=="CDC42")

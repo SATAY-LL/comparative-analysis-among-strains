@@ -100,6 +100,7 @@ def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,s
     plt.text(10000, 10000, 'y=%.3fx+%.1f' % (model[0], model[1]), fontsize=10)
     axes.legend()
     if save==True:
+        plt.tight_layout()
         fig.savefig("../figures/fig_centromere_bias.png",transparent=True,dpi=300)
     else:
         pass

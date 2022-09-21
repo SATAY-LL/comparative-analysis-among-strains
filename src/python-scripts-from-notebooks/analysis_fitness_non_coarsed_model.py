@@ -244,10 +244,13 @@ for i in np.arange(0,len(standard_essentials)):
 figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
 plt.hist(fitness2rocprob[y==0],bins=100,alpha=0.4,label="Non essential genes",color="gray");
 plt.hist(fitness2rocprob[y==1],bins=100,label="Essential genes",color="pink");
-plt.xlabel("Fitness translated to probabilities of gene essentiality",fontsize=16)
+plt.xlabel("Probability of being essential",fontsize=16)
 ax.tick_params(axis="both",labelsize=16)
 plt.ylabel("Counts",fontsize=16)
 plt.legend(fontsize=16)
+plt.title("Non coarse grained fitness",fontsize=16)
+plt.tight_layout()
+figure.savefig("../figures/figures_thesis_chapter_2/fig_prob_dist_non_coarse_grained_fitness.png",dpi=400)
 
 # +
 from sklearn import metrics
@@ -262,11 +265,13 @@ plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.xlabel("False Positive Rate",fontsize=16)
 plt.ylabel("True Positive Rate",fontsize=16)
-plt.title("Receiver operating characteristic Non-Coarse fitness",fontsize=16)
+plt.title("ROC Non-Coarse fitness values",fontsize=16)
 
 plt.plot(fpr, tpr ,label=f"AUC={area:.2f}",color="darkorange",lw=2)
 ax.tick_params(axis="both",labelsize=16)
 ax.legend(loc="lower right",fontsize=16)
+
+figure.savefig("../figures/figures_thesis_chapter_2/fig_ROC_non_coarse_grained_fitness.png",dpi=400)
 # -
 
 np.mean(std_values_wt)/np.mean(mean_values_wt)
