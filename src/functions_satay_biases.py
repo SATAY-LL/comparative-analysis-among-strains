@@ -64,9 +64,9 @@ def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,s
 
     ## Plotting
 
-    fig,axes=plt.subplots(1,1,figsize=(5,5))
+    fig,axes=plt.subplots(1,1,figsize=(6,5))
 
-    x=np.arange(0,300000,10000)
+    x=np.arange(0,500000,10000)
     curves=[]
     for j in chrom_names:
         distance2cent=distance2cent_all[j]
@@ -89,12 +89,12 @@ def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,s
     axes.plot(x,df.mean(),color="red",label="Mean")
     axes.set_xlabel("Distance to centromere[$\pm$kb]")
     axes.set_ylabel("Number of transposons")
-    axes.set_xlim(0,300000)
+    axes.set_xlim(0,500000)
 
 
     ## Linear fit
-    x2fit=np.arange(200000,300000,10000)
-    model = np.polyfit(x2fit, data2fit[20:30], 1)
+    x2fit=np.arange(200000,500000,10000)
+    model = np.polyfit(x2fit, data2fit[20:50], 1)
     axes.plot(x,model[0]*x+model[1],color="black",label="Linear fit",alpha=0.8)
     #plt.plot(model[0]*x+model[1],color="blue",label="Linear fit")
     plt.text(10000, 10000, 'y=%.3fx+%.1f' % (model[0], model[1]), fontsize=10)
