@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: 'Python 3.9.7 64-bit (''transposonmapper'': conda)'
+#     display_name: Python 3.8.10 ('satay-dev')
 #     language: python
 #     name: python3
 # ---
@@ -26,7 +26,6 @@ from from_excel_to_list import from_excel_to_list
 from transposonmapper.statistics import volcano
 
 # +
-## Plot transposons along the whole genome
 
 
 ## Importing pergene files 
@@ -82,9 +81,196 @@ data_norm_pd.drop(columns=["Unnamed: 0","Unnamed: 1"],inplace=True)
 
 polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt",index_col="Gene")
 polarity_genes.fillna(0,inplace=True)
+
+# +
+# Importing fitness data from the intergenic model 
+
+fitness_data=pd.read_excel("../postprocessed-data/fitness_coarse_grained_all_pd.xlsx",index_col="Unnamed: 0")
+
+# +
+satay_wt=fitness_data[fitness_data.loc[:,"background"]=="wt_merged"]
+satay_wt.index=satay_wt.loc[:,"Gene name"]
+
+#satay_wt_ho=satay_wt[satay_wt.loc[:,"Gene name"]=="HO"]
+satay_wt_ho=satay_wt.loc["HO"]
+satay_wt["fitness2HO"]=satay_wt["fitness"]/satay_wt_ho["fitness"]
+
 # -
 
-keys
+satay_nrp1=fitness_data[fitness_data.loc[:,"background"]=="dnrp1_merged"]
+satay_nrp1.index=satay_nrp1.loc[:,"Gene name"]
+satay_nrp1_ho=satay_nrp1.loc["HO"]#HO locus seems to not interact with Nrp1 according SGD so I could normalize the fitness values of the double mutants to this value as well 
+## the normalization of fitnesses value sin the dnrp1 background should be to what is considered the "WT" which is the HO locus in the wt background
+satay_nrp1["fitness2HO"]=satay_nrp1["fitness"]/satay_wt_ho["fitness"]
+#satay_nrp1["fitness2wt"]=satay_nrp1["fitness"]/satay_wt["fitness"]# fitness of the double mutants in nrp1 background
+
+fitness_wt_nrp1=satay_wt.loc["NRP1","fitness2HO"]
+
+satay_nrp1.loc["POL31"],satay_wt.loc["POL31"]
+
+# +
+## Genetic interactions on nrp1 
+## mutants such that the fitness of nrp1 double mutants-f(nrp1)f(mutant) is different than zero 
+gi_score=defaultdict(dict)
+
+for i in satay_wt.index:
+    if satay_nrp1.loc[i,"fitness2HO"]!=np.inf or satay_nrp1.loc[i,"fitness2wt"]!=-np.inf:
+        
+        tmp=satay_nrp1.loc[i,"fitness2HO"]-fitness_wt_nrp1*satay_wt.loc[i,"fitness2HO"]
+        gi_score[i]["score"]=tmp
+    else:
+        tmp=0 # No interaction by default because they cant be measured 
+    
+gi_score_pd=pd.DataFrame.from_dict(gi_score,orient="index")      
+
+# +
+## Removing inf from the score 
+
+gi_score_pd[gi_score_pd.loc[:,"score"]==np.inf]=0
+gi_score_pd[gi_score_pd.loc[:,"score"]==-np.inf]=0
+gi_score_pd[gi_score_pd.loc[:,"score"]==np.nan]=0
+#gi_score_pd.loc[gi_score_pd.loc[:,"score"]==np.inf,"score"]=0
+# -
+
+# Probable interval for GI
+min_bound=float(np.min(gi_score_pd)/4)
+max_bound=float(np.max(gi_score_pd)/2)
+print("The minimum value of the interaction score is",float(np.min(gi_score_pd)),
+"and the maximum is",float(np.max(gi_score_pd)))
+print("A nice interval to search for nrp1 interactors are genes whose score is below",min_bound,
+"and above",max_bound)
+
+
+# +
+## selecting same number of interactors 
+
+N_gi=100
+gi_score_pd_sorted_pos=gi_score_pd.sort_values(by="score",ascending=False)
+gi_score_pd_sorted_pos.fillna(0,inplace=True)
+
+
+
+gi_score_pd_sorted_neg=gi_score_pd.sort_values(by="score",ascending=True)
+gi_score_pd_sorted_neg.fillna(0,inplace=True)
+
+pos_interactors=gi_score_pd_sorted_pos[0:N_gi]
+neg_interactors=gi_score_pd_sorted_neg[0:N_gi]
+
+
+
+# -
+
+gi_score_pd.loc["MEC1","score"]
+
+# +
+## selecting interactors based on their values with respect the interaction scores 
+
+neg_interactors=gi_score_pd[gi_score_pd.loc[:,"score"]<min_bound] # presumably negative interactions
+pos_interactors=gi_score_pd[gi_score_pd.loc[:,"score"]>max_bound] # presumably positive interactions
+
+# -
+
+gi_score_pd_sorted_pos[0:50]["score"].iloc[-1]
+
+# +
+## exploring the scores and interactors 
+
+fig,ax=plt.subplots(1,1,figsize=(5,5))
+
+N,bins,patches=ax.hist(gi_score_pd.loc[:,"score"],bins=50,color="red",alpha=0.4);
+
+ax.set_xlabel("GI score")
+ax.set_ylabel("Frequency")
+ax.set_xlim(-1,1)
+ax.set_title("Distribution of GI scores for Nrp1")
+
+# ax.vlines(x=min_bound,ymin=0,ymax=1000,color="black",linestyle="--")
+# ax.vlines(x=max_bound,ymin=0,ymax=1000,color="black",linestyle="--")
+ax.text(x=-0.9,y=np.max(N)-30,s="Negative\ninteractors",rotation=0,fontsize=12)
+ax.text(x=0.5,y=np.max(N)-30,s="Positive\ninteractors",rotation=0,fontsize=12)
+
+ax.text(x=-0.9,y=np.max(N)-100,s=str(len(neg_interactors))+" genes",rotation=0,fontsize=12)
+ax.text(x=0.5,y=np.max(N)-100,s=str(len(pos_interactors))+" genes",rotation=0,fontsize=12)
+
+## if the interactors are selected based on their scores
+# ni_patches=len(bins)-np.where(bins[bins>min_bound])[0]-1 # patches in the neutral part
+# pi_patches=len(bins)-np.where(bins[bins>max_bound])[0]-1 # patches in the positive part
+
+## if the interactors are sleected based on their number 
+ni_patches=len(bins)-np.where(bins[bins>gi_score_pd_sorted_neg[0:N_gi]["score"].iloc[-1]])[0]-1 # patches in the neutral part
+pi_patches=len(bins)-np.where(bins[bins>gi_score_pd_sorted_pos[0:N_gi]["score"].iloc[-1]])[0]-1 # patches in the positive part
+
+for i in ni_patches:
+    patches[i-1].set_facecolor('gray')
+for i in pi_patches:
+    patches[i-1].set_facecolor('green')
+
+genes=["BEM1","BEM3","MEC1"]
+i=0
+j=0
+colors=["black","black","black","purple","black"]
+for gene in genes:
+    ax.vlines(x=gi_score_pd.loc[gene,"score"],ymin=0,ymax=np.max(N)-200,color=colors[j],linestyle="--",alpha=0.5)
+    ax.text(x=gi_score_pd.loc[gene,"score"],y=100+i,s=gene,rotation=0,fontsize=12,color=colors[j])
+    i=i+50
+    j=j+1
+
+
+plt.tight_layout()
+
+fig.savefig("../figures/fig_distribution_of_GI_scores_for_Nrp1_genes_annotated_same_number_interactors.png",dpi=300)
+
+# +
+## Plot the gene enrichment pie plot of the negative and positive interactors 
+
+neg_interactors_name=neg_interactors.index
+pos_interactors_name=pos_interactors.index
+
+## Investigate how them correlate with our current knowledge about it 
+
+
+
+# +
+import gseapy as gp
+from gseapy import barplot, dotplot
+type_gi="Neg_GI_from_fitness_same_number_interactors"
+goi=neg_interactors_name.tolist()
+yeast = gp.get_library_name(organism='Yeast')
+
+sets=[yeast[2],yeast[5],yeast[8],yeast[11],yeast[16] ] 
+#['GO_Biological_Process_2018', 'GO_Cellular_Component_2018', 'GO_Molecular_Function_2018',
+#'Gene_Interaction_Hubs_BioGRID_2018','Pfam_Domains_2019']
+# #%% enrichment 
+
+for i in np.arange(0,len(sets)): 
+
+  enr=gp.enrichr(gene_list=goi,
+                  gene_sets=sets[i],
+                  organism='Yeast', # don't forget to set organism to the one you desired! e.g. Yeast
+                
+                  outdir='../postprocessed-data/enrich-analysis_dnrp1/'+type_gi+'/',
+                  # no_plot=True,
+                  cutoff=0.5 # test dataset, use lower value from range(0,1)
+                )
+      
+# to save your figure, make sure that ``ofname`` is not None
+  ax = dotplot(enr.res2d, title=sets[i],cmap='viridis_r', size=20, figsize=(3,5),ofname=sets[i]+type_gi)
+  
+    
+# -
+
+sets
+
+# +
+# simple plotting function
+from gseapy import barplot, dotplot
+for i in np.arange(0,len(sets)):
+    
+# to save your figure, make sure that ``ofname`` is not None
+    ax = dotplot(enr[i].res2d, title=sets[i],cmap='viridis_r', size=20, figsize=(3,5),ofname=sets[i])
+# -
+
+enr[3].res2d.head(2)
 
 keys= ['wt_merged','dnrp1_merged','dbem3_merged','dbem1dbem3_a']
 
@@ -99,8 +285,8 @@ filelist_b = ["dnrp1_a/dnrp1-1_merged-techrep-a_techrep-b_trimmed.sorted.bam_per
 "dnrp1_b/dnrp1-2_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt"]
 
 
-variable = 'tn_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
-significance_threshold = 0.01 #set threshold above which p-values are regarded significant
+variable = 'read_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
+significance_threshold = 0.001 #set threshold above which p-values are regarded significant
 normalize=True
 
 trackgene_list = ['nrp1','bem3','bem1','bem2',"mec1"] # ["cdc42"]
@@ -108,8 +294,8 @@ trackgene_list = ['nrp1','bem3','bem1','bem2',"mec1"] # ["cdc42"]
 
 figure_title = "$\Delta$nrp1 vs WT "
 
-fc_interval=[1.1,-0.8]
-pv_values=[2,2]
+fc_interval=[1.5,-1.5]
+pv_values=[3,3]
 
 volcano_df_nrp1_wt = volcano(path_a=path_a, filelist_a=filelist_a,
             path_b=path_b, filelist_b=filelist_b, 
@@ -308,7 +494,7 @@ for i in goi:
         goi_systematic.append(i)
 
 # +
-type_int="NRP1 GI PG" # NRP1 GI NG
+type_int="NRP1 GI NG" # NRP1 GI NG
 cell_map_goi=pd.read_excel("../postprocessed-data/cell-map-data-on-NRP1.xlsx",header=0,
 sheet_name=type_int)
 
@@ -336,17 +522,26 @@ yeast = gp.get_library_name(organism='Yeast')
 yeast
 sets=[yeast[2],yeast[5],yeast[8],yeast[11],yeast[16] ] #['GO_Biological_Process_2018', 'GO_Cellular_Component_2018', 'GO_Molecular_Function_2018',
 #'Gene_Interaction_Hubs_BioGRID_2018','Pfam_Domains_2019']
-# #%% enrichment 
+# #%% enrichment
+enr=[] 
 for i in np.arange(0,len(sets)): 
 
-  enr = gp.enrichr(gene_list=goi_standard,
+  enr.append( gp.enrichr(gene_list=goi_standard,
                   gene_sets=sets[i],
                   organism='Yeast', # don't forget to set organism to the one you desired! e.g. Yeast
-                  description='cellmap_enrichment_dnrp1',
                   outdir='../postprocessed-data/enrich-analysis_dnrp1/cellmap/'+type_int+'/',
                   # no_plot=True,
                   cutoff=0.5 # test dataset, use lower value from range(0,1)
-                )
+                ))
+
+# +
+# simple plotting function
+from gseapy import barplot, dotplot
+for i in np.arange(0,len(sets)):
+    
+# to save your figure, make sure that ``ofname`` is not None
+    ax = dotplot(enr[i].res2d, title=sets[i],cmap='viridis_r', size=20, figsize=(3,5),ofname=sets[i])
+# -
 
 biological_process=pd.read_csv("../postprocessed-data/enrich-analysis_dnrp1/cellmap/"+type_int+"/"+ "GO_Biological_Process_2018.Yeast.enrichr.reports.txt",sep="\t")
 pie_chart_enrichment(biological_process,"biological_process_cell_map",type=type_int,savefig=True)
