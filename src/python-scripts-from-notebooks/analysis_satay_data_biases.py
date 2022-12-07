@@ -35,12 +35,30 @@ wigfile="../data/wt_merged/WT_merged-techrep-a_techrep-b_trimmed.sorted.bam_clea
 centromeres_file="../data/centromeres_genomic_locations.csv"
 
 wigfile_mutant="../data/dbem3_merged/merged_ylic137_trimmed.sorted.bam_clean.wig"
-
+wigfile_mutant2="../data/dnrp1_merged/dnrp1_merged_dnrp1-1_dnrp1-2_trimmed.sorted.bam_clean.wig"
 
 # +
 from functions_satay_biases import transposon_bias2centromeres
 
-fig, distance2cent_all = transposon_bias2centromeres(wigfile,centromeres_file,save=True)
+fig, distance2cent_all = transposon_bias2centromeres(wigfile_mutant,centromeres_file,save=False)
+# -
+
+distance2cent_all_chrom=(list(distance2cent_all.values()))
+plt.hist(np.concatenate(distance2cent_all_chrom),bins=200,alpha=0.6);
+plt.xlabel("Distance to centromere (bp)")
+plt.ylabel("Number of transposons insertions")
+
+figure=plt.figure(figsize=(10,5))
+# using colormap plasma 
+color = plt.get_cmap('jet') 
+for i in np.arange(0,len(distance2cent_all_chrom)):
+    plt.hist(distance2cent_all_chrom[i],bins=50,alpha=0.4,label=list(distance2cent_all.keys())[i],
+             density=True,color=color(i/len(distance2cent_all_chrom)));
+    
+    plt.xlabel("Distance to centromere (bp)")
+    plt.ylabel("Transposons insertions")
+    plt.legend()
+  
 
 # +
 ### Independence of this behaviour in a different genetic background (for sumplementary material)
@@ -54,17 +72,18 @@ fig,distance2cent_all=transposon_bias2centromeres(wigfile_mutant,centromeres_fil
 
 file="../postprocessed-data/wt_merged_pergene_insertions.xlsx"
 file_mutant="../postprocessed-data/dbem3_merged_pergene_insertions.xlsx"
-pergene_data=pd.read_excel(file,engine='openpyxl',index_col="Unnamed: 0")
+file_mutant2="../postprocessed-data/dnrp1_merged_pergene_insertions.xlsx"
+pergene_data=pd.read_excel(file_mutant2,engine='openpyxl',index_col="Unnamed: 0")
 
 # import wig file for all the regions
 
-wigfile_path="../data/wt_merged/WT_merged-techrep-a_techrep-b_trimmed.sorted.bam_clean.wig"
+wigfile="../data/wt_merged/WT_merged-techrep-a_techrep-b_trimmed.sorted.bam_clean.wig"
 wigfile_mutant="../data/dbem3_merged/merged_ylic137_trimmed.sorted.bam_clean.wig"
-
+wigfile_mutant2="../data/dnrp1_merged/dnrp1_merged_dnrp1-1_dnrp1-2_trimmed.sorted.bam_clean.wig"
 
 wig_reads=[]
 
-for x in wg.walk(open(wigfile_path)):
+for x in wg.walk(open(wigfile_mutant2)):
     wig_reads.append(x)
 
 wig_reads = np.array(wig_reads)

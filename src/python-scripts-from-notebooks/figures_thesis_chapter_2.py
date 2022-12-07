@@ -21,6 +21,7 @@ import seaborn as sns
 import os,sys
 from collections import defaultdict
 from ast import literal_eval
+from scipy.stats import norm
 
 from from_excel_to_list import from_excel_to_list
 
@@ -44,12 +45,59 @@ list_data=[]
 for i in pergene_files:
     list_data.append(pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0"))
 
+keys=[]
+for i in np.arange(0,len(pergene_files)):
+    keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
 
+list_data_pd=pd.concat(list_data,axis=0,keys=keys)
 
 # -
 
-keys= ['wt_merged','bem1-aid_a','bem1-aid_b','dbem1dbem3_a','dbem1dbem3_b',
-'dnrp1_merged','dbem3_merged']
+keys= ['wt_merged','wt_a','wt_b','dnrp1_1','dnrp1_2']
+
+data=list_data_pd.loc[keys] # Take only data from targeted genotypes
+
+
+data.columns
+
+# +
+figure,ax=plt.subplots(2,2,figsize=(10,5))
+plt.subplots_adjust(wspace=0.2,hspace=0.5)
+
+magnitudes=["Reads","Insertions"]
+strains=["wt_a","wt_b"]
+
+for i in np.arange(0,len(magnitudes)):
+    tmp_0=data.loc[strains[0],magnitudes[i]]/data.loc[strains[0],magnitudes[i]].sum()
+    tmp_1=data.loc[strains[1],magnitudes[i]]/data.loc[strains[1],magnitudes[i]].sum()
+    ax[i,0].scatter(tmp_0,tmp_1,s=10)
+    ax[i,0].set_title("Normalized "+magnitudes[i])
+    ax[i,0].set_xlabel("tech replicate 1")
+    ax[i,0].set_ylabel("tech replicate 2")
+    ax[i,0].set_xlim(0,0.001)
+    ax[i,0].set_ylim(0,0.001)
+
+    ax[i,1].set_title( magnitudes[i] + " difference")
+    ax[i,1].hist(tmp_1-tmp_0,bins=100)
+    data2fit = tmp_1-tmp_0
+    mu, std = norm.fit(data2fit)
+    
+    xmin, xmax = ax[i,1].get_xlim()
+    x = np.linspace(xmin, xmax, 100)
+    p = norm.pdf(x, mu, std)
+
+    ax[i,1].plot(x, p, 'k', linewidth=2)
+
+    ax[i,1].text(-0.0004, 1000, '$\mu=%.1f$,\n$\sigma=%.5f$' % (np.abs(mu), std),fontsize=12)
+
+    ax[i,1].set_xlabel("tech replicate 2 - tech replicate 1")
+
+    ax[i,1].set_xticks([-0.0005,0,0.0005])
+
+
+figure.savefig("../figures/fig_differences_WT_technical_replicates.png",dpi=300)
+
+
 
 # +
 data_post=[]

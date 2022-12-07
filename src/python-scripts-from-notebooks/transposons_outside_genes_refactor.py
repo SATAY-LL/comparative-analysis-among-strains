@@ -136,39 +136,42 @@ keys= ['bem1-aid_a','dbem1dbem3_b','wt_merged','dbem1dbem3_a',
 'dnrp1_merged','bem1-aid_b','dbem3_merged']
 
 # +
+#keys=["wt_a","wt_b"]
+
+# +
 ### Run for a night #######DONT RUN THIS AGAIN IT TAKES 5 HOURS!!
-# k=1 # Amplified factor for the threshold
-# windows_size=3000 #bp
-# genes_out_by_neighborhood=defaultdict(dict)
+k=1 # Amplified factor for the threshold
+windows_size=10000 #bp
+genes_out_by_neighborhood=defaultdict(dict)
 
-# for background in keys:
-#     tmp_a=[]
-#     tmp_b=[]
-#     tmp_c=[]
-#     tmp_d=[]
+for background in keys:
+    tmp_a=[]
+    tmp_b=[]
+    tmp_c=[]
+    tmp_d=[]
 
-#     threshold,density=defining_threshold_given_tr_density(data_all_modified,windows_size=windows_size,background=background)
-#     targets,genes_not_discarded_by_location=get_amenable_genes_coverage_neighborhood(positions_float_pd,genes_names=genes_names,discarded_genes_by_duplication=discarded_genes_by_duplication,windows_size=windows_size)
+    threshold,density=defining_threshold_given_tr_density(data_all_modified,windows_size=windows_size,background=background)
+    targets,genes_not_discarded_by_location=get_amenable_genes_coverage_neighborhood(positions_float_pd,genes_names=genes_names,discarded_genes_by_duplication=discarded_genes_by_duplication,windows_size=windows_size)
 
-#     for amenable_genes in targets:
+    for amenable_genes in targets:
        
-#         a,b,c,d=local_discrimination_genes_by_neighbors_coverage(positions_float_pd,background=background,gene_of_interest=amenable_genes,windows_size=windows_size,threshold=k*threshold)
-#         if a!=[]:
-#             tmp_a.append(a)
+        a,b,c,d=local_discrimination_genes_by_neighbors_coverage(positions_float_pd,background=background,gene_of_interest=amenable_genes,windows_size=windows_size,threshold=k*threshold)
+        if a!=[]:
+            tmp_a.append(a)
 
             
-#         if b!=[]:
-#             tmp_b.append(b)
+        if b!=[]:
+            tmp_b.append(b)
 
-#         if any((a!=[],b!=[])):
+        if any((a!=[],b!=[])):
 
-#             tmp_c.append(c)
-#             tmp_d.append(d)
+            tmp_c.append(c)
+            tmp_d.append(d)
 
-#     genes_out_by_neighborhood["discarded_genes_neighborhood"][background]=np.unique([tmp_a,tmp_b])
-#     genes_out_by_neighborhood["sum upstream insertions"][background]=tmp_c
-#     genes_out_by_neighborhood["sum downstream insertions"][background]=tmp_d
-#     genes_out_by_neighborhood["threshold coverage"][background]=k*threshold
+    genes_out_by_neighborhood["discarded_genes_neighborhood"][background]=np.unique([tmp_a,tmp_b])
+    genes_out_by_neighborhood["sum upstream insertions"][background]=tmp_c
+    genes_out_by_neighborhood["sum downstream insertions"][background]=tmp_d
+    genes_out_by_neighborhood["threshold coverage"][background]=k*threshold
 
 
 # +
