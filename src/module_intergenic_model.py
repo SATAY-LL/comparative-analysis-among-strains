@@ -110,6 +110,7 @@ def adding_features2dataframe(data):
     data["reads-central"]=np.nan
     data["tr-central"]=np.nan
     data["reads-per-tr-central"]=np.nan
+    
     #data["tranposons"]=np.nan
     for j in data.index:
         coi=from_excel_to_list(data.loc[j]["Reads per insertion location"])
@@ -124,6 +125,8 @@ def adding_features2dataframe(data):
             data["tr-central"][j]=coi
 
         data["reads-central"][j]=np.sum(data_center)
+        
+        
         
         
         #data["N_reads"][j]=np.sum(data["Reads per insertion location"][j])
