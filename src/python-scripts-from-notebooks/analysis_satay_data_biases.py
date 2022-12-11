@@ -38,6 +38,20 @@ wigfile_mutant="../data/dbem3_merged/merged_ylic137_trimmed.sorted.bam_clean.wig
 wigfile_mutant2="../data/dnrp1_merged/dnrp1_merged_dnrp1-1_dnrp1-2_trimmed.sorted.bam_clean.wig"
 
 # +
+import wiggelen as wg
+
+## Import wig files 
+wig_reads=[]
+
+for x in wg.walk(open(wigfile)):
+    wig_reads.append(x)
+
+wig_reads = np.array(wig_reads)
+# -
+
+wig_reads
+
+# +
 from functions_satay_biases import transposon_bias2centromeres
 
 fig, distance2cent_all = transposon_bias2centromeres(wigfile_mutant,centromeres_file,save=False)

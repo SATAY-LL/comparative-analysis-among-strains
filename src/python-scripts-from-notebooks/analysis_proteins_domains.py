@@ -208,9 +208,9 @@ for key in keys:
   
         a,b,c=get_reads_per_domain(A,gene)
 
-        reads_per_domain_dict[key,gene]=a
-        domain_genomics_dict[key,gene]=b
-        insertions_per_domain_dict[key,gene]=c
+        reads_per_domain_dict[key][gene]=a
+        domain_genomics_dict[key][gene]=b
+        insertions_per_domain_dict[key][gene]=c
 
 
 
@@ -239,7 +239,23 @@ insertions_per_domain_df=pd.DataFrame.from_dict(insertions_per_domain_dict,orien
 # domain_genomics_df.to_excel("../postprocessed-data/genetic-coordinates-domains-pfam.xlsx")
 
 #insertions_per_domain_df.to_excel("../postprocessed-data/insertions-per-domain-all-backgrounds.xlsx")
+
+# +
+# drop one index level from the dataframe
+
+domains_wt=domain_genomics_df.loc["wt_merged",:].T
+
+reads_per_domain_new=reads_per_domain_df.T
+
+insertions_per_domain_df_new=insertions_per_domain_df.T
+
+domains_wt.to_excel("../postprocessed-data/genomic-domains-wt.xlsx")
+reads_per_domain_new.to_excel("../postprocessed-data/reads-per-domain-all-backgrounds-new.xlsx")
+insertions_per_domain_df_new.to_excel("../postprocessed-data/insertions-per-domain-all-backgrounds-new.xlsx")
+
 # -
+
+insertions_per_domain_df_new.loc["BEM1"]
 
 keys
 
@@ -249,7 +265,7 @@ key="wt_merged"
 data=list_data_pd_merged_pd.loc[key]
 plot_reads_per_gene_with_domains(data=data,gene=gene,domain_genomics_coordinates=domain_genomics_df,key=key)
 plt.tight_layout()
-plt.savefig("../figures/fig_reads_per_gene_with_domains_" + gene + "_"+key+ ".png",dpi=300)
+#plt.savefig("../figures/fig_reads_per_gene_with_domains_" + gene + "_"+key+ ".png",dpi=300)
 
 # +
 from from_excel_to_list import from_excel_to_list
