@@ -32,7 +32,7 @@ variable):
     sc = ax.scatter(x=volcano_df['fold_change'], y=volcano_df['p_value'], alpha=0.4,
      s=100,marker='.', c=volcano_df['significance'].apply(lambda x:colors[x]),label= variable)
     ax.grid(True, which='major', axis='both', alpha=0.4)
-    ax.set_xlabel('Log2 FC',fontsize=16)
+    ax.set_xlabel('Interaction score',fontsize=16)
     ax.set_ylabel('-1*Log10 p-value',fontsize=16)
     ax.set_title(figure_title,fontsize=20)
     ax.tick_params(labelsize=14)
