@@ -367,7 +367,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         else:
             if np.sum(reads_per_insertion_array[i,1:9])!=0:
                 fitness_models[gene]["fitness_gene"]=np.log2(np.sum(reads_per_insertion_array[i,1:9]))/ref # getting the 80% central part of the reads per insertions
-                fitness_models[gene]["fitness_gene_std"]=np.log2(np.std(reads_per_insertion_array[i,1:9]))/ref
+                fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
                 if np.array(data_domains_extended.loc[gene,"domains coordinates"]).size>1:
                     nume=np.array(data_domains_extended.loc[gene,"reads_domain"])
                     deno=np.array(data_domains_extended.loc[gene,"insertions_domain"])
