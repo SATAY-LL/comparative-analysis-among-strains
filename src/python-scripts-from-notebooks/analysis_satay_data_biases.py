@@ -138,7 +138,7 @@ chrom_conversion={"chrI":"I","chrII":"II","chrIII":"III",
 "chrIX":"IX","chrX":"X","chrXI":"XI","chrXII":"XII","chrXIII":"XIII",
 "chrXIV":"XIV","chrXV":"XV","chrXVI":"XVI"}
 
-# Computing number of transposons in non coding regions
+# Computing number of transposons in non coding regions as the number of locations in the wig file that do nt have an associate coding region
 non_cod=[]
 tr_non_coding_chrom={}
 for i in chrom_conversion.items():
