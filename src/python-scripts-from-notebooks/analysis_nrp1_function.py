@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: Python 3.8.10 ('satay-dev')
+#     display_name: Python 3.9.7 ('transposonmapper')
 #     language: python
 #     name: python3
 # ---
@@ -24,6 +24,8 @@ from ast import literal_eval
 
 from from_excel_to_list import from_excel_to_list
 from transposonmapper.statistics import volcano
+
+from scipy import stats
 
 # +
 
@@ -50,191 +52,234 @@ for i in np.arange(0,len(pergene_files)):
 
 list_data_pd=pd.concat(list_data,axis=0,keys=keys)
 
+# -
+
+keys,len(keys)
 
 # +
-## import essential genes used in transposonmapper
+import pickle
+with open("../postprocessed-data/fitness_models_all_backgrounds", "rb") as fp:   # Unpickling
+    b = pickle.load(fp)
 
-essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0,sep="\t")
+fitness_all_pd=pd.concat(b,axis=0,keys=keys)
 
-essentials_satay.columns=["gene name"]
+# -
 
-# import conversion file from systematic names to standard names 
-conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
-header=0,sep=",")
-
-conversion.columns=["systematic name","standard name"]
-
-# save the standard names of the essential genes in a systematic format
-standard_essentials=[]
-for names in essentials_satay.loc[:,"gene name"]:
-    
-    if names in conversion["systematic name"].values:
-        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard name"].values[0])
-
+standard_essentials=np.loadtxt("../postprocessed-data/standard_essentials.txt",dtype=str)
 
 # +
-# import excel file with the normalized data
-
-data_norm_pd=pd.read_excel("../postprocessed-data/data_norm_linear_transformation_per_background.xlsx",
-engine='openpyxl',index_col="background")
-data_norm_pd.drop(columns=["Unnamed: 0","Unnamed: 1"],inplace=True)
 
 polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt",index_col="Gene")
 polarity_genes.fillna(0,inplace=True)
 
 # +
-# Importing fitness data from the intergenic model 
+data=[]
+for backg in keys:
+    f=fitness_all_pd.loc[backg]
+    f=f[f.loc[:,"fitness_gene"]!="Not enough flanking regions"]
+    data.append(f)
 
-fitness_data=pd.read_excel("../postprocessed-data/fitness_coarse_grained_all_pd.xlsx",index_col="Unnamed: 0")
-
-# +
-satay_wt=fitness_data[fitness_data.loc[:,"background"]=="wt_merged"]
-satay_wt.index=satay_wt.loc[:,"Gene name"]
-
-#satay_wt_ho=satay_wt[satay_wt.loc[:,"Gene name"]=="HO"]
-satay_wt_ho=satay_wt.loc["HO"]
-satay_wt["fitness2HO"]=satay_wt["fitness"]/satay_wt_ho["fitness"]
+data_fitness=pd.concat(data,axis=0,keys=keys)
 
 # -
 
-satay_nrp1=fitness_data[fitness_data.loc[:,"background"]=="dnrp1_merged"]
-satay_nrp1.index=satay_nrp1.loc[:,"Gene name"]
-satay_nrp1_ho=satay_nrp1.loc["HO"]#HO locus seems to not interact with Nrp1 according SGD so I could normalize the fitness values of the double mutants to this value as well 
-## the normalization of fitnesses value sin the dnrp1 background should be to what is considered the "WT" which is the HO locus in the wt background
-satay_nrp1["fitness2HO"]=satay_nrp1["fitness"]/satay_wt_ho["fitness"]
-#satay_nrp1["fitness2wt"]=satay_nrp1["fitness"]/satay_wt["fitness"]# fitness of the double mutants in nrp1 background
-
-fitness_wt_nrp1=satay_wt.loc["NRP1","fitness2HO"]
-
-satay_nrp1.loc["POL31"],satay_wt.loc["POL31"]
+data_fitness.loc["wt_merged","NRP1"]
 
 # +
-## Genetic interactions on nrp1 
-## mutants such that the fitness of nrp1 double mutants-f(nrp1)f(mutant) is different than zero 
-gi_score=defaultdict(dict)
+## Computing the interactors of NRP1 using the whole fitness of the gene 
+gene="NRP1"
+nrp1_f_a=data_fitness.loc["wt_merged",gene]["fitness_gene"] # in wt_A , nrp1 is not found
+nrp1_f_b=data_fitness.loc["wt_b",gene]["fitness_gene"]
+data_b=data_fitness.loc["wt_b"]
+data_a=data_fitness.loc["wt_a"]
 
-for i in satay_wt.index:
-    if satay_nrp1.loc[i,"fitness2HO"]!=np.inf or satay_nrp1.loc[i,"fitness2wt"]!=-np.inf:
-        
-        tmp=satay_nrp1.loc[i,"fitness2HO"]-fitness_wt_nrp1*satay_wt.loc[i,"fitness2HO"]
-        gi_score[i]["score"]=tmp
-    else:
-        tmp=0 # No interaction by default because they cant be measured 
+intersection_genes=list((set(data_b.index)&set(data_a.index)))
+
+significance_threshold = 0.05 #set significance threshold
+gi=defaultdict(dict)
+ttest_tval_list = [np.nan]*2 #initialize list for storing t statistics
+ttest_pval_list = [np.nan]*2 #initialize list for storing p-values
+signif_thres_list = False #initialize boolean list for indicating datapoints with p-value above threshold
+fc_list = [np.nan]*2
+for gene in intersection_genes :
+    geneX=gene
     
-gi_score_pd=pd.DataFrame.from_dict(gi_score,orient="index")      
+    geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_gene"]
+    if geneX in data_fitness.loc["wt_b"].index:
+        geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_gene"]
+        if geneX in data_fitness.loc["dnrp1_1"].index and geneX in data_fitness.loc["dnrp1_2"].index:
+            geneXnrp1_f_a=data_fitness.loc["dnrp1_1",geneX]["fitness_gene"]
+            geneXnrp1_f_b=data_fitness.loc["dnrp1_2",geneX]["fitness_gene"]
+            
+            variable_a_array=[geneXnrp1_f_a,geneXnrp1_f_b]
+            variable_b_array=[geneX_f_a*nrp1_f_a,geneX_f_b*nrp1_f_b]
+            
+            ttest_val = stats.ttest_ind(variable_a_array, variable_b_array) #T-test
+            gi[gene]["p_statistic"]=ttest_val[1]
+            ttest_tval_list = ttest_val[0]
+            gi[gene]["t_statistic"]=ttest_tval_list
+            if not ttest_val[1] == 0: #prevent p=0 to be inputted in log
+                ttest_pval_list = -1*np.log10(ttest_val[1])
+                
+            else:
+                ttest_pval_list = 0
+            gi[gene]["p_value"]=ttest_pval_list
+            if ttest_pval_list >= -1*np.log10(significance_threshold):
+                gi[gene]["significance"]=True
+            else:
+                gi[gene]["significance"]=False
+            #DETERMINE FOLD CHANGE PER GENE
+            if np.mean(variable_b_array) == 0 or np.mean(variable_a_array) == 0:
+                fc_list = 0
+            else:
+                #fc_list = np.log2(np.mean(variable_a_array) / np.mean(variable_b_array))
+                fc_list=np.mean(variable_a_array)-np.mean(variable_b_array)
+            gi[gene]["fold_change"]=fc_list
+
+        
+
 
 # +
-## Removing inf from the score 
+gi_pd_fitness_gene=pd.DataFrame.from_dict(gi,orient="index")
 
-gi_score_pd[gi_score_pd.loc[:,"score"]==np.inf]=0
-gi_score_pd[gi_score_pd.loc[:,"score"]==-np.inf]=0
-gi_score_pd[gi_score_pd.loc[:,"score"]==np.nan]=0
-#gi_score_pd.loc[gi_score_pd.loc[:,"score"]==np.inf,"score"]=0
+gi_pd_fitness_gene["gene_names"]=gi_pd_fitness_gene.index
+
+gi_pd_fitness_gene
 # -
 
-# Probable interval for GI
-min_bound=float(np.min(gi_score_pd)/4)
-max_bound=float(np.max(gi_score_pd)/2)
-print("The minimum value of the interaction score is",float(np.min(gi_score_pd)),
-"and the maximum is",float(np.max(gi_score_pd)))
-print("A nice interval to search for nrp1 interactors are genes whose score is below",min_bound,
-"and above",max_bound)
+gi_pd_fitness_gene[gi_pd_fitness_gene.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=False)
+
+# +
+## Now use the fitness correction by domains to find GI 
+gene="NRP1"
+nrp1_f_a=data_fitness.loc["wt_merged",gene]["fitness_domains_average"] # in wt_A , nrp1 is not found
+nrp1_f_b=data_fitness.loc["wt_b",gene]["fitness_domains_average"]
+data_b=data_fitness.loc["wt_b"]
+data_a=data_fitness.loc["wt_a"]
+
+intersection_genes=list((set(data_b.index)&set(data_a.index)))
+
+
+
+significance_threshold = 0.05 #set significance threshold
+gi=defaultdict(dict)
+ttest_tval_list = [np.nan]*2 #initialize list for storing t statistics
+ttest_pval_list = [np.nan]*2 #initialize list for storing p-values
+signif_thres_list = False #initialize boolean list for indicating datapoints with p-value above threshold
+fc_list = [np.nan]*2
+for gene in intersection_genes :
+    geneX=gene
+    
+    geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_domains_corrected"]
+    if type(geneX_f_a)!=np.float64:
+        geneX_f_a=geneX_f_a[0]
+        if geneX_f_a==0:
+            geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_domains_average"]
+            if geneX_f_a==0:
+                geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_gene"]
+    else:
+        geneX_f_a=geneX_f_a
+        if geneX_f_a==0:
+            geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_domains_average"]
+            if geneX_f_a==0:
+                geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_gene"]
+    
+    if geneX in data_fitness.loc["wt_b"].index:
+        geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_domains_corrected"]
+        if type(geneX_f_b)!=np.float64:
+            geneX_f_b=geneX_f_b[0]
+            if geneX_f_b==0:
+                geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_domains_average"]
+                if geneX_f_b==0:
+                    geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_gene"]
+        else:
+            geneX_f_b=geneX_f_b
+            if geneX_f_b==0:
+                geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_domains_average"]
+                if geneX_f_b==0:
+                    geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_gene"]
+
+        if geneX in data_fitness.loc["dnrp1_1"].index and geneX in data_fitness.loc["dnrp1_2"].index:
+            geneXnrp1_f_a=data_fitness.loc["dnrp1_1",geneX]["fitness_domains_corrected"]
+            geneXnrp1_f_b=data_fitness.loc["dnrp1_2",geneX]["fitness_domains_corrected"]
+            if type(geneXnrp1_f_a)!=np.float64:
+                geneXnrp1_f_a=geneXnrp1_f_a[0]
+            if type(geneXnrp1_f_b)!=np.float64:
+                geneXnrp1_f_b=geneXnrp1_f_b[0]
+            
+            
+            variable_a_array=[geneXnrp1_f_a,geneXnrp1_f_b]
+            variable_b_array=[geneX_f_a*nrp1_f_a,geneX_f_b*nrp1_f_b]
+            
+            ttest_val = stats.ttest_ind(variable_a_array, variable_b_array) #T-test
+            gi[gene]["p_statistic"]=ttest_val[1]
+            ttest_tval_list = ttest_val[0]
+            gi[gene]["t_statistic"]=ttest_tval_list
+            if not ttest_val[1] == 0: #prevent p=0 to be inputted in log
+                ttest_pval_list = -1*np.log10(ttest_val[1])
+                
+            else:
+                ttest_pval_list = 0
+            gi[gene]["p_value"]=ttest_pval_list
+            if ttest_pval_list >= -1*np.log10(significance_threshold):
+                gi[gene]["significance"]=True
+            else:
+                gi[gene]["significance"]=False
+            #DETERMINE FOLD CHANGE PER GENE
+            if np.mean(variable_b_array) == 0 and np.mean(variable_a_array) == 0:
+                fc_list = 0
+            else:
+                # fc_list = np.log2(np.mean(variable_a_array) / np.mean(variable_b_array))
+                fc_list=np.mean(variable_a_array)-np.mean(variable_b_array)
+            gi[gene]["fold_change"]=fc_list
+
+        
+
 
 
 # +
-## selecting same number of interactors 
+gi_pd=pd.DataFrame.from_dict(gi,orient="index")
 
-N_gi=100
-gi_score_pd_sorted_pos=gi_score_pd.sort_values(by="score",ascending=False)
-gi_score_pd_sorted_pos.fillna(0,inplace=True)
+gi_pd["gene_names"]=gi_pd.index
 
-
-
-gi_score_pd_sorted_neg=gi_score_pd.sort_values(by="score",ascending=True)
-gi_score_pd_sorted_neg.fillna(0,inplace=True)
-
-pos_interactors=gi_score_pd_sorted_pos[0:N_gi]
-neg_interactors=gi_score_pd_sorted_neg[0:N_gi]
-
-
-
+gi_pd[gi_pd.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=False)
 # -
 
-gi_score_pd.loc["MEC1","score"]
+gi_pd.loc["BEM1"]
 
 # +
-## selecting interactors based on their values with respect the interaction scores 
+## Distribution of fitness effects
 
-neg_interactors=gi_score_pd[gi_score_pd.loc[:,"score"]<min_bound] # presumably negative interactions
-pos_interactors=gi_score_pd[gi_score_pd.loc[:,"score"]>max_bound] # presumably positive interactions
-
-# -
-
-gi_score_pd_sorted_pos[0:50]["score"].iloc[-1]
-
-# +
-## exploring the scores and interactors 
-
-fig,ax=plt.subplots(1,1,figsize=(5,5))
-
-N,bins,patches=ax.hist(gi_score_pd.loc[:,"score"],bins=50,color="red",alpha=0.4);
-
-ax.set_xlabel("GI score")
-ax.set_ylabel("Frequency")
-ax.set_xlim(-1,1)
-ax.set_title("Distribution of GI scores for Nrp1")
-
-# ax.vlines(x=min_bound,ymin=0,ymax=1000,color="black",linestyle="--")
-# ax.vlines(x=max_bound,ymin=0,ymax=1000,color="black",linestyle="--")
-ax.text(x=-0.9,y=np.max(N)-30,s="Negative\ninteractors",rotation=0,fontsize=12)
-ax.text(x=0.5,y=np.max(N)-30,s="Positive\ninteractors",rotation=0,fontsize=12)
-
-ax.text(x=-0.9,y=np.max(N)-100,s=str(len(neg_interactors))+" genes",rotation=0,fontsize=12)
-ax.text(x=0.5,y=np.max(N)-100,s=str(len(pos_interactors))+" genes",rotation=0,fontsize=12)
-
-## if the interactors are selected based on their scores
-# ni_patches=len(bins)-np.where(bins[bins>min_bound])[0]-1 # patches in the neutral part
-# pi_patches=len(bins)-np.where(bins[bins>max_bound])[0]-1 # patches in the positive part
-
-## if the interactors are sleected based on their number 
-ni_patches=len(bins)-np.where(bins[bins>gi_score_pd_sorted_neg[0:N_gi]["score"].iloc[-1]])[0]-1 # patches in the neutral part
-pi_patches=len(bins)-np.where(bins[bins>gi_score_pd_sorted_pos[0:N_gi]["score"].iloc[-1]])[0]-1 # patches in the positive part
-
-for i in ni_patches:
-    patches[i-1].set_facecolor('gray')
-for i in pi_patches:
-    patches[i-1].set_facecolor('green')
-
-genes=["BEM1","BEM3","MEC1"]
-i=0
-j=0
-colors=["black","black","black","purple","black"]
-for gene in genes:
-    ax.vlines(x=gi_score_pd.loc[gene,"score"],ymin=0,ymax=np.max(N)-200,color=colors[j],linestyle="--",alpha=0.5)
-    ax.text(x=gi_score_pd.loc[gene,"score"],y=100+i,s=gene,rotation=0,fontsize=12,color=colors[j])
-    i=i+50
-    j=j+1
-
-
+data_fitness_wt=data_fitness.loc[["dnrp1_1","dnrp1_2"]]
+data_fitness_wt.loc[:,"fitness_domains_corrected"].astype(float).hist(bins=100)
+plt.title("Distribution of fitness effects in $\Delta$nrp1")
+plt.xlabel("Fitness effect")
+plt.ylabel("Number of genes")
 plt.tight_layout()
-
-fig.savefig("../figures/fig_distribution_of_GI_scores_for_Nrp1_genes_annotated_same_number_interactors.png",dpi=300)
+#plt.savefig("../figures/fig_fitness_effects_dnrp1.png",dpi=300,transparent=True)
 
 # +
-## Plot the gene enrichment pie plot of the negative and positive interactors 
+from annotate_volcano import annotate_volcano   #import annotate_volcano function
+volcano_df=gi_pd
+fig=annotate_volcano(volcano_df,[0.7,-0.25],[1.5,0.5],figure_title="Interactors of nrp1 in WT",variable="fitness corrected")
 
-neg_interactors_name=neg_interactors.index
-pos_interactors_name=pos_interactors.index
-
-## Investigate how them correlate with our current knowledge about it 
+#plt.savefig("../figures/fig_volcano_interactors_nrp1.png",dpi=300,transparent=True)
 
 
+# +
+gi_pd_significant=gi_pd[gi_pd.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=False)
+
+neg_satay_signif=gi_pd_significant[gi_pd_significant.loc[:,"fold_change"]<0].loc[:,"gene_names"].index
+neg_satay=gi_pd[gi_pd.loc[:,"fold_change"]<0].loc[:,"gene_names"].index
+
+pos_satay_signif=gi_pd_significant[gi_pd_significant.loc[:,"fold_change"]>0].loc[:,"gene_names"].index
+pos_satay=gi_pd[gi_pd.loc[:,"fold_change"]>0].loc[:,"gene_names"].index
 
 # +
 import gseapy as gp
 from gseapy import barplot, dotplot
-type_gi="Neg_GI_from_fitness_same_number_interactors"
-goi=neg_interactors_name.tolist()
+type_gi="Pos_GI_satay"
+goi=pos_satay_signif.tolist()
 yeast = gp.get_library_name(organism='Yeast')
 
 sets=[yeast[2],yeast[5],yeast[8],yeast[11],yeast[16] ] 
@@ -259,7 +304,78 @@ for i in np.arange(0,len(sets)):
     
 # -
 
-sets
+neg_nrp1=pd.read_excel("../postprocessed-data/NRP1_genetic_interactions_filtered_by_negat.xlsx",skiprows=8)
+pos_nrp1=pd.read_excel("../postprocessed-data/NRP1_genetic_interactions_filtered_by_pos.xlsx",skiprows=8)
+
+neg_nrp1_genes=neg_nrp1.loc[:,"Interactor.1"]
+pos_nrp1_genes=pos_nrp1.loc[:,"Interactor.1"]
+
+# +
+common_neg_signif=[]
+for gene in neg_satay_signif:
+    if gene in neg_nrp1_genes.unique():
+        common_neg_signif.append(gene)
+
+common_neg=[]
+for gene in neg_satay:
+    if gene in neg_nrp1_genes.unique():
+        common_neg.append(gene)
+
+common_pos_signif=[]
+for gene in pos_satay_signif:
+    if gene in pos_nrp1_genes.unique() :
+        common_pos_signif.append(gene)
+
+common_pos=[]
+for gene in pos_satay:
+    if gene in pos_nrp1_genes.unique() :
+        common_pos.append(gene)
+
+# +
+consistent_neg_interactors_nrp1=list(set(neg_satay_signif) & set(neg_nrp1_genes) )
+
+consistent_pos_interactors_nrp1=list(set(pos_satay_signif) & set(pos_nrp1_genes))
+
+consistent_pos_interactors_nrp1,consistent_neg_interactors_nrp1
+
+# +
+from matplotlib_venn import venn2, venn2_circles
+
+plt.figure(figsize=(10,5))
+venn2(subsets = (len(pos_satay_signif), len(pos_nrp1_genes), len(consistent_pos_interactors_nrp1)), 
+set_labels = ('SATAy', 'existing'), set_colors=('purple', 'g'), alpha = 0.5);
+venn2_circles(subsets = (len(pos_satay_signif), len(pos_nrp1_genes), len(consistent_pos_interactors_nrp1)));
+plt.title("Consistency in positive interactions")
+#
+plt.savefig("../figures/venn_pos_nrp1.png",dpi=300)
+# -
+
+plt.figure(figsize=(10,5))
+venn2(subsets = (len(neg_satay_signif), len(neg_nrp1_genes), len(consistent_neg_interactors_nrp1)), 
+set_labels = ('SATAy', 'existing'), set_colors=('purple', 'g'), alpha = 0.5);
+venn2_circles(subsets = (len(neg_satay_signif), len(neg_nrp1_genes), len(consistent_neg_interactors_nrp1)));
+plt.title("Consistency in negative interactions")
+plt.savefig("../figures/venn_neg_nrp1.png",dpi=300)
+
+# +
+pos_satay_neg_costanzo=list(set(pos_satay_signif) & set(neg_nrp1_genes) )
+plt.figure(figsize=(10,5))
+venn2(subsets = (len(pos_satay_signif), len(neg_nrp1_genes), len(pos_satay_neg_costanzo)), 
+set_labels = ('PI SATAy', 'NI existing'), set_colors=('purple', 'g'), alpha = 0.5);
+venn2_circles(subsets = (len(pos_satay_signif), len(neg_nrp1_genes), len(pos_satay_neg_costanzo)));
+plt.title("Misclasification I")
+
+#plt.savefig("../figures/venn_misclass1.png",dpi=300)
+
+# +
+neg_satay_pos_costanzo=list(set(neg_satay_signif) & set(pos_nrp1_genes) )
+plt.figure(figsize=(10,5))
+venn2(subsets = (len(neg_satay_signif), len(pos_nrp1_genes), len(neg_satay_pos_costanzo)), 
+set_labels = ('NI SATAy', 'PI existing'), set_colors=('purple', 'g'), alpha = 0.5);
+venn2_circles(subsets = (len(neg_satay_signif), len(pos_nrp1_genes), len(neg_satay_pos_costanzo)));
+plt.title("Misclasification II")
+
+#plt.savefig("../figures/venn_misclass2.png",dpi=300)
 
 # +
 # simple plotting function
