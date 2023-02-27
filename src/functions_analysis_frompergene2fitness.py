@@ -348,8 +348,15 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         _description_
     """    
 
-    ref=np.log2(np.median(np.sum(reads_per_insertion_array,axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
-
+    ref=np.log2(np.median(np.sum(reads_per_insertion_array[1:9],axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
+    
+    reads_domains=[]
+    for i in data_domains_extended.index:
+        tmp=data_domains_extended.loc[i,"reads_domain"] # total reads of all domains in the gene 
+        if type(tmp)==list: # the list indicates that that protein has annotated domains
+            reads_domains.append(tmp[0])
+    ref_domains=np.log2(np.median(reads_domains)) # reference fitness for the domains, assumption: most domains are neutral in the wild type
+    
     fitness_models=defaultdict(dict)
 
     data=data_pergene.loc[background]
@@ -383,7 +390,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
                         tmp[np.isnan(tmp)] = 0
                     else:
                         tmp=0
-                    fitness_models[gene]["fitness_domains_vector"]=tmp/ref
+                    fitness_models[gene]["fitness_domains_vector"]=tmp/ref_domains
                 
                     fitness_models[gene]["fitness_domains_average"]=np.mean(fitness_models[gene]["fitness_domains_vector"])
                     fitness_models[gene]["fitness_domains_std"]=np.std(fitness_models[gene]["fitness_domains_vector"])
