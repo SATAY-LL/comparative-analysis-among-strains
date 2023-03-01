@@ -372,7 +372,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
             fitness_models[gene]["domains"]="Not enough flanking regions"
         
         else:
-            if np.sum(reads_per_insertion_array[i,1:9])!=0:
+            if np.sum(reads_per_insertion_array[i,1:9])>2: # at least 2 reads per insertion to compute the fitness
                 fitness_models[gene]["fitness_gene"]=np.log2(np.sum(reads_per_insertion_array[i,1:9]))/ref # getting the 80% central part of the reads per insertions
                 fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
                 if np.array(data_domains_extended.loc[gene,"domains coordinates"]).size>1:
@@ -409,6 +409,13 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
                     fitness_models[gene]["fitness_domains_average"]=fitness_models[gene]["fitness_gene"]
                     fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_gene"]
                     fitness_models[gene]["domains"]="non annotated domains"
+            else:
+                fitness_models[gene]["fitness_gene"]="Not enough reads"
+                fitness_models[gene]["fitness_gene_std"]="Not enough reads"
+                fitness_models[gene]["fitness_domains_vector"]="Not enough reads"
+                fitness_models[gene]["fitness_domains_average"]="Not enough reads"
+                fitness_models[gene]["fitness_domains_corrected"]="Not enough reads"
+                fitness_models[gene]["domains"]="Not enough reads"
 
 
     fitness_models_pd=pd.DataFrame.from_dict(fitness_models,orient="index")
