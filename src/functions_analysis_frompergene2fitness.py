@@ -62,7 +62,7 @@ def reads_per_insertion_along_gene_length(data_pergene,background,number_of_part
                     readsperinsert.append(reads_locations[i][rngs[k][j]])
                     
                 if len(readsperinsert)>1:
-                    r[i,k]=np.sum(readsperinsert)/(len(readsperinsert)-1)#discarding the insertion with the highest read count
+                    r[i,k]=np.sum(readsperinsert)/(len(reads_locations[i])-1)#discarding the insertion with the highest read count
                 else:
                     r[i,k]=0
 
