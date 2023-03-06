@@ -349,7 +349,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         _description_
     """    
 
-    ref=np.log2(np.median(np.sum(r[1:9],axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
+    ref=np.log2(np.median(np.sum(reads_per_insertion_array[1:9],axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
     
     data=data_pergene.loc[background]
     fitness_models=defaultdict(dict)
@@ -368,8 +368,8 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         
         else:
             if np.sum(r[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
-                fitness_models[gene]["fitness_gene"]=np.log2(np.sum(r[i,1:9]))/ref # getting the 80% central part of the reads per insertions
-                fitness_models[gene]["fitness_gene_std"]=(np.std(r[i,1:9]))
+                fitness_models[gene]["fitness_gene"]=np.log2(np.sum(reads_per_insertion_array[i,1:9]))/ref # getting the 80% central part of the reads per insertions
+                fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
                 if type(data_domains_extended.loc[gene,"reads_domain"])==list:
                     nume=np.array(data_domains_extended.loc[gene,"reads_domain"])
                     deno=np.array(data_domains_extended.loc[gene,"insertions_domain"])
