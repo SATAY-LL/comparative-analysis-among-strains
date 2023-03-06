@@ -350,12 +350,15 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
 
     ref=np.log2(np.median(np.sum(reads_per_insertion_array[1:9],axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
     
-    reads_domains=[]
+    reads_per_insert_domains=[]
     for i in data_domains_extended.index:
         tmp=data_domains_extended.loc[i,"reads_domain"] # total reads of all domains in the gene 
-        if type(tmp)==list: # the list indicates that that protein has annotated domains
-            reads_domains.append(tmp[0])
-    ref_domains=np.log2(np.median(reads_domains)) # reference fitness for the domains, assumption: most domains are neutral in the wild type
+        tmp_1=data_domains_extended.loc[i,"insertions_domain"] # total insertions of all domains in the gene
+        if type(tmp)==list and np.sum(tmp_1)!=0: # the list indicates that that protein has annotated domains
+            reads_per_insert_domains.append(tmp[0]/np.sum(tmp_1))
+        elif type(tmp)==list and np.sum(tmp_1)==0: # the list indicates that that protein has annotated domains
+            reads_per_insert_domains.append(0) # no insertions are found in the gene
+    ref_domains=np.log2(np.median((reads_per_insert_domains))) # reference fitness for the domains, assumption: most domains are neutral in the wild type
     
     fitness_models=defaultdict(dict)
 
@@ -372,7 +375,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
             fitness_models[gene]["domains"]="Not enough flanking regions"
         
         else:
-            if np.sum(reads_per_insertion_array[i,1:9])>2: # at least 2 reads per insertion to compute the fitness
+            if np.sum(reads_per_insertion_array[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
                 fitness_models[gene]["fitness_gene"]=np.log2(np.sum(reads_per_insertion_array[i,1:9]))/ref # getting the 80% central part of the reads per insertions
                 fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
                 if np.array(data_domains_extended.loc[gene,"domains coordinates"]).size>1:
