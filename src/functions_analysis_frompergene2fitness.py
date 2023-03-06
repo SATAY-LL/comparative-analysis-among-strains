@@ -323,6 +323,7 @@ def reads_and_insertions_per_domain(data_pergene,background,data_domains,reads_l
         data_domains.loc[i,"reads_domain"]=totalreads
         data_domains.loc[i,"insertions_domain"]=totalinsertions
 
+
     return data_domains
 
 
@@ -348,21 +349,12 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         _description_
     """    
 
-    ref=np.log2(np.median(np.sum(reads_per_insertion_array[1:9],axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
+    ref=np.log2(np.median(np.sum(r[1:9],axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
     
-    reads_per_insert_domains=[]
-    for i in data_domains_extended.index:
-        tmp=data_domains_extended.loc[i,"reads_domain"] # total reads of all domains in the gene 
-        tmp_1=data_domains_extended.loc[i,"insertions_domain"] # total insertions of all domains in the gene
-        if type(tmp)==list and np.sum(tmp_1)!=0: # the list indicates that that protein has annotated domains
-            reads_per_insert_domains.append(tmp[0]/np.sum(tmp_1))
-        elif type(tmp)==list and np.sum(tmp_1)==0: # the list indicates that that protein has annotated domains
-            reads_per_insert_domains.append(0) # no insertions are found in the gene
-    ref_domains=np.log2(np.median((reads_per_insert_domains))) # reference fitness for the domains, assumption: most domains are neutral in the wild type
-    
+    data=data_pergene.loc[background]
     fitness_models=defaultdict(dict)
 
-    data=data_pergene.loc[background]
+
 
     for i in np.arange(0,len(data)):
         gene=data.loc[i,"Gene name"]
@@ -375,37 +367,77 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
             fitness_models[gene]["domains"]="Not enough flanking regions"
         
         else:
-            if np.sum(reads_per_insertion_array[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
-                fitness_models[gene]["fitness_gene"]=np.log2(np.sum(reads_per_insertion_array[i,1:9]))/ref # getting the 80% central part of the reads per insertions
-                fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
-                if np.array(data_domains_extended.loc[gene,"domains coordinates"]).size>1:
+            if np.sum(r[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
+                fitness_models[gene]["fitness_gene"]=np.log2(np.sum(r[i,1:9]))/ref # getting the 80% central part of the reads per insertions
+                fitness_models[gene]["fitness_gene_std"]=(np.std(r[i,1:9]))
+                if type(data_domains_extended.loc[gene,"reads_domain"])==list:
                     nume=np.array(data_domains_extended.loc[gene,"reads_domain"])
                     deno=np.array(data_domains_extended.loc[gene,"insertions_domain"])
-                    if np.sum(deno)==0 or np.sum(nume)==0:
-                        deno=1
-                        nume=1
-                    elif deno=='':
-                        deno=1
+                    H=data_domains_extended.loc[gene,"exclude domains"]
+                    
+                    if len(H)==1:
+                        if H[0]==True:
+                            fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
+                        elif H[0]==False and nume[0]==0:
+                            fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
+                        elif H[0]==False and deno[0]==0:
+                            fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
+                        elif H[0]==False and deno[0]!=0:
+                            fitness_models[gene]["fitness_domains_vector"]=np.log2(nume/deno)/ref
                     else:
-                        tmp=np.log2(nume/deno)
-                    # replace nan values with zeros
-                    if type(tmp)!=np.float64:
-                        tmp[np.isnan(tmp)] = 0
+                        f=[]
+                        for j in np.arange(0,len(H)):
+                            
+                            if H[j]==False and deno[j]!=0:
+                                y=np.log2(nume[j]/deno[j])/ref
+                                
+                            elif H[j]==True : # the domain do not have enough insertions to compute fitness 
+                                y="Not enough insertions"
+                            elif H[j]==False and deno[j]==0:
+                                y=0
+                            
+                            f.append(y)
+                            fitness_models[gene]["fitness_domains_vector"]=f
+                    if "Not enough insertions"==fitness_models[gene]["fitness_domains_vector"]:
+                        fitness_models[gene]["fitness_domains_average"]="Not enough insertions"
+                        fitness_models[gene]["fitness_domains_std"]="Not enough insertions"
+                        fitness_models[gene]["domains"]="Not enough insertions"
+                        fitness_models[gene]["fitness_domains_corrected"]="Not enough insertions"
+                    elif "Not enough insertions"  in fitness_models[gene]["fitness_domains_vector"]: 
+                        J=np.where(np.array(fitness_models[gene]["fitness_domains_vector"])=="Not enough insertions")[0]
+                        # exclude J from the fitness vector
+                        f_0=np.delete(fitness_models[gene]["fitness_domains_vector"],J)
+                        
+                        f_0=np.array(f_0,dtype=float)
+                        if len(f_0)>0:
+                            for i in J:
+                                f[i]=0 # assign zero fitness if the domain that does not have enough insertions is inside other that have enough insertions
+                            fitness_models[gene]["fitness_domains_average"]=np.mean(f)
+                            fitness_models[gene]["fitness_domains_std"]=np.std(f)
+                            fitness_models[gene]["domains"]="annotated"
+                            ## computing the corrected fitness as the fitness domain that has the maximum difference with the average fitnes
+                            tmp=np.absolute(f-fitness_models[gene]["fitness_gene"])
+                            index_max=np.where(tmp==np.max(tmp))[0]
+                            if len(index_max)==1:
+                                fitness_models[gene]["fitness_domains_corrected"]=f[int(index_max)]
+                            else: # just take the first domain as the one with the maximum difference
+                                fitness_models[gene]["fitness_domains_corrected"]=f[int(index_max[0])]
+                        else:
+                            fitness_models[gene]["fitness_domains_average"]="Not enough insertions"
+                            fitness_models[gene]["fitness_domains_std"]="Not enough insertions"
+                            fitness_models[gene]["domains"]="Not enough insertions"
+                            fitness_models[gene]["fitness_domains_corrected"]="Not enough insertions"
                     else:
-                        tmp=0
-                    fitness_models[gene]["fitness_domains_vector"]=tmp/ref_domains
-                
-                    fitness_models[gene]["fitness_domains_average"]=np.mean(fitness_models[gene]["fitness_domains_vector"])
-                    fitness_models[gene]["fitness_domains_std"]=np.std(fitness_models[gene]["fitness_domains_vector"])
-                    fitness_models[gene]["domains"]="annotated"
-                    ## computing the corrected fitness as the fitness domain that has the maximum difference with the average fitnes
-                    tmp=np.absolute(fitness_models[gene]["fitness_domains_vector"]-fitness_models[gene]["fitness_gene"])
-                    index_max=np.where(tmp==np.max(tmp))[0]
-                    if index_max.size>1:
-                        index_max=index_max[0]
-                        fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_domains_vector"][index_max]
-                    else:
-                        fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_domains_vector"][index_max]
+                        fitness_models[gene]["fitness_domains_average"]=np.mean(fitness_models[gene]["fitness_domains_vector"])
+                        fitness_models[gene]["fitness_domains_std"]=np.std(fitness_models[gene]["fitness_domains_vector"])
+                        fitness_models[gene]["domains"]="annotated"
+                        ## computing the corrected fitness as the fitness domain that has the maximum difference with the average fitnes
+                        tmp=np.absolute(fitness_models[gene]["fitness_domains_vector"]-fitness_models[gene]["fitness_gene"])
+                        index_max=np.where(tmp==np.max(tmp))[0]
+                        if len(index_max)==1:
+                            fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_domains_vector"][int(index_max)]
+                        else: # just take the first domain as the one with the maximum difference
+                            fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_domains_vector"][int(index_max[0])]
                 else:
                     fitness_models[gene]["fitness_domains_vector"]=fitness_models[gene]["fitness_gene"]
                     fitness_models[gene]["fitness_domains_std"]=fitness_models[gene]["fitness_gene_std"]
@@ -422,12 +454,13 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
 
 
     fitness_models_pd=pd.DataFrame.from_dict(fitness_models,orient="index")
-    fitness_models_pd["fitness_domains_average"].replace(-np.inf,0,inplace=True)
-    fitness_models_pd["fitness_domains_corrected"].replace(-np.inf,0,inplace=True)
-    fitness_models_pd["fitness_domains_average"].replace(np.inf,1.5,inplace=True)
-    fitness_models_pd["fitness_domains_corrected"].replace(np.inf,1.5,inplace=True)
-    fitness_models_pd["fitness_gene"].replace(-np.inf,0,inplace=True)
-    fitness_models_pd["fitness_gene"].replace(np.inf,1.5,inplace=True)
+    # fitness_models_pd["fitness_domains_average"].replace(-np.inf,0,inplace=True)
+    # fitness_models_pd["fitness_domains_corrected"].replace(-np.inf,0,inplace=True)
+    # fitness_models_pd["fitness_domains_average"].replace(np.inf,1.5,inplace=True)
+    # fitness_models_pd["fitness_domains_corrected"].replace(np.inf,1.5,inplace=True)
+    # fitness_models_pd["fitness_gene"].replace(-np.inf,0,inplace=True)
+    # fitness_models_pd["fitness_gene"].replace(np.inf,1.5,inplace=True)
+
 
 
     return fitness_models_pd
