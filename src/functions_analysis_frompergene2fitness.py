@@ -377,7 +377,11 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
                     
                     if len(H)==1:
                         if H[0]==True:
-                            fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
+                            if data_domains_extended.loc[gene,"transposon density"]>data_domains_extended.loc[gene,"average density library"]:
+                                fitness_models[gene]["fitness_domains_vector"]=0 # that domain is important 
+                            else:
+
+                                fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
                         elif H[0]==False and nume[0]==0:
                             fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
                         elif H[0]==False and deno[0]==0:
