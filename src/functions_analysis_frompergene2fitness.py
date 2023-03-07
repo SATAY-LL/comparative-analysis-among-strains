@@ -483,7 +483,7 @@ def excluding_domains(data_pergene,background,data_domains_extended):
             x1=x[1::2]
             x2=x[::2]
 
-            x3=x1-x2
+            x3=x1-x2 ## getting the length of every domain
             exclude_dom_all=[]
             for i in np.arange(0,len(x3)):
                 
@@ -493,15 +493,25 @@ def excluding_domains(data_pergene,background,data_domains_extended):
                     exclude_dom=False
                 exclude_dom_all.append(exclude_dom)
             data_domains_corrected[gene]["exclude domains"]=exclude_dom_all
+            data_domains_corrected[gene]["domain length"] = x3
     
         k=k+1
+    ## compute average density
+    density=[]
+    for i in np.arange(0,len(data)):
+        length=data.loc[i,"End location"]-data.loc[i,"Start location"]
+        density.append(data.loc[i,"Insertions"]/length)
 
+    average_density=np.median(density)
+
+    
     data_domains_corrected_pd=pd.DataFrame.from_dict(data_domains_corrected,orient="index")
 
     ## adding that dataframe to the data_domains_extended dataframe
 
     data_domains_extended["exclude domains"]=data_domains_corrected_pd["exclude domains"]
     data_domains_extended["transposon density"]=data_domains_corrected_pd["transposon density"]
-
+    data_domains_extended["domain length"]=data_domains_corrected_pd["domain length"]
+    data_domains_extended["average density library"]=average_density
 
     return data_domains_extended
