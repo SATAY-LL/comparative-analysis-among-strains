@@ -367,7 +367,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
             fitness_models[gene]["domains"]="Not enough flanking regions"
         
         else:
-            if np.sum(r[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
+            if np.sum(reads_per_insertion_array[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
                 fitness_models[gene]["fitness_gene"]=np.log2(np.sum(reads_per_insertion_array[i,1:9]))/ref # getting the 80% central part of the reads per insertions
                 fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
                 if type(data_domains_extended.loc[gene,"reads_domain"])==list:
@@ -445,12 +445,12 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
                     fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_gene"]
                     fitness_models[gene]["domains"]="non annotated domains"
             else:
-                fitness_models[gene]["fitness_gene"]="Not enough reads"
-                fitness_models[gene]["fitness_gene_std"]="Not enough reads"
-                fitness_models[gene]["fitness_domains_vector"]="Not enough reads"
-                fitness_models[gene]["fitness_domains_average"]="Not enough reads"
-                fitness_models[gene]["fitness_domains_corrected"]="Not enough reads"
-                fitness_models[gene]["domains"]="Not enough reads"
+                fitness_models[gene]["fitness_gene"]=0
+                fitness_models[gene]["fitness_gene_std"]=0
+                fitness_models[gene]["fitness_domains_vector"]=0
+                fitness_models[gene]["fitness_domains_average"]=0
+                fitness_models[gene]["fitness_domains_corrected"]=0
+                fitness_models[gene]["domains"]="zero reads"
 
 
     fitness_models_pd=pd.DataFrame.from_dict(fitness_models,orient="index")
@@ -464,3 +464,44 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
 
 
     return fitness_models_pd
+
+
+def excluding_domains(data_pergene,background,data_domains_extended):
+    
+    data=data_pergene.loc[background]
+    data_domains_corrected=defaultdict(dict)
+    k=0
+    for gene in data_domains_extended.index:
+        data_domains_corrected[gene]["transposon density"]=data.loc[k,"Insertions"]/(data.loc[k,"End location"]-data.loc[k,"Start location"])
+
+        x=data_domains_extended.loc[gene,"domains coordinates"]
+        if type(x)!=float:
+            
+            # substract the  even elements by the odd elements
+            x=np.array(x)
+
+            x1=x[1::2]
+            x2=x[::2]
+
+            x3=x1-x2
+            exclude_dom_all=[]
+            for i in np.arange(0,len(x3)):
+                
+                if data_domains_corrected[gene]["transposon density"]*x3[i]<5:
+                    exclude_dom=True
+                else:
+                    exclude_dom=False
+                exclude_dom_all.append(exclude_dom)
+            data_domains_corrected[gene]["exclude domains"]=exclude_dom_all
+    
+        k=k+1
+
+    data_domains_corrected_pd=pd.DataFrame.from_dict(data_domains_corrected,orient="index")
+
+    ## adding that dataframe to the data_domains_extended dataframe
+
+    data_domains_extended["exclude domains"]=data_domains_corrected_pd["exclude domains"]
+    data_domains_extended["transposon density"]=data_domains_corrected_pd["transposon density"]
+
+
+    return data_domains_extended
