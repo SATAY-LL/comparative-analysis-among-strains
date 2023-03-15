@@ -1,0 +1,47 @@
+!
+!Date: 03/14/2023
+!From: Saccharomyces Genome Database (SGD) 
+!URL: http://www.yeastgenome.org/ 
+!Contact Email: sgd-helpdesk@lists.stanford.edu 
+!Funding: NHGRI at US NIH, grant number 5-U41-HG001315 
+!
+
+Gene	Gene Systematic Name	Property	Value
+WHI3	YNL197C	Length	661
+WHI3	YNL197C	Molecular Weight (Da)	71257.3
+WHI3	YNL197C	Isoelectric Point (pI)	8.59
+WHI3	YNL197C	Aliphatic Index	65.43
+WHI3	YNL197C	Instability Index	54.37
+WHI3	YNL197C	Formula	C3039H4816N909O1037S18
+WHI3	YNL197C	Codon Bias	0.11
+WHI3	YNL197C	Codon Adaptation Index	0.14
+WHI3	YNL197C	Frequency of Optimal Codons	0.48
+WHI3	YNL197C	Hydropathicity of Protein	-0.64
+WHI3	YNL197C	Aromaticity Score	0.05
+WHI3	YNL197C	Extinction Coefficients at 280nm ALL Cys residues appear as half cystines	27640.0
+WHI3	YNL197C	Extinction Coefficients at 280nm NO Cys residues appear as half cystines	27390.0
+WHI3	YNL197C	A	37
+WHI3	YNL197C	R	24
+WHI3	YNL197C	N	70
+WHI3	YNL197C	D	22
+WHI3	YNL197C	C	4
+WHI3	YNL197C	Q	49
+WHI3	YNL197C	E	20
+WHI3	YNL197C	G	36
+WHI3	YNL197C	H	17
+WHI3	YNL197C	I	35
+WHI3	YNL197C	L	51
+WHI3	YNL197C	K	21
+WHI3	YNL197C	M	14
+WHI3	YNL197C	F	23
+WHI3	YNL197C	P	43
+WHI3	YNL197C	S	119
+WHI3	YNL197C	T	42
+WHI3	YNL197C	W	2
+WHI3	YNL197C	Y	11
+WHI3	YNL197C	V	21
+WHI3	YNL197C	Carbon	3039
+WHI3	YNL197C	Hydrogen	4816
+WHI3	YNL197C	Nitrogen	909
+WHI3	YNL197C	Oxygen	1037
+WHI3	YNL197C	Sulfur	18
