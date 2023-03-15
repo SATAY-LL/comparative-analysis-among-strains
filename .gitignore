@@ -3,6 +3,7 @@
 *.wig 
 *.bed
 *.xlsx
+figures/
 data/WT_1_Benoit
 data/WT_2_Benoit
 figures/figures_thesis_chapter_2
