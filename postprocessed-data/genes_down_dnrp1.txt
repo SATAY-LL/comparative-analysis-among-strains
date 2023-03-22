@@ -1,0 +1,1 @@
+['GFA1', 'ACS2', 'MKT1', 'KES1', 'YKT6', 'SFH5', 'LEU1', 'RPN2', 'RIB4', 'LYS1', 'TPA1', 'TAL1', 'OAC1', 'GGC1', 'ERG6', 'BFR1', 'TSA1', 'ARI1']
