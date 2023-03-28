@@ -349,7 +349,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         _description_
     """    
 
-    ref=np.abs(np.log2(np.median(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
+    ref=(np.log2(np.median(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
     
     data=data_pergene.loc[background]
     fitness_models=defaultdict(dict)
@@ -368,7 +368,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         
         else:
             if np.sum(reads_per_insertion_array[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
-                fitness_models[gene]["fitness_gene"]=np.abs(np.log2(np.sum(reads_per_insertion_array[i,1:9])))/ref # getting the 80% central part of the reads per insertions
+                fitness_models[gene]["fitness_gene"]=(np.log2(np.sum(reads_per_insertion_array[i,1:9])))/ref # getting the 80% central part of the reads per insertions
                 fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
                 if type(data_domains_extended.loc[gene,"reads_domain"])==list:
                     nume=np.array(data_domains_extended.loc[gene,"reads_domain"])
@@ -387,13 +387,13 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
                         elif H[0]==False and deno[0]==0:
                             fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
                         elif H[0]==False and deno[0]!=0:
-                            fitness_models[gene]["fitness_domains_vector"]=np.abs(np.log2(nume/deno))/ref
+                            fitness_models[gene]["fitness_domains_vector"]=(np.log2(nume/deno))/ref
                     else:
                         f=[]
                         for j in np.arange(0,len(H)):
                             
                             if H[j]==False and deno[j]!=0:
-                                y=np.abs(np.log2(nume[j]/deno[j]))/ref
+                                y=(np.log2(nume[j]/deno[j]))/ref
                                 
                             elif H[j]==True : # the domain do not have enough insertions to compute fitness 
                                 y="Not enough insertions"
