@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.10.3
 #   kernelspec:
-#     display_name: 'Python 3.8.10 64-bit (''satay-dev'': conda)'
+#     display_name: Python 3.9.7 ('transposonmapper')
 #     language: python
 #     name: python3
 # ---
@@ -62,25 +62,14 @@ list_data_pd=pd.concat(list_data,axis=0,keys=keys)
 # +
 # import essential genes used in transposonmapper
 
-essentials_satay=pd.read_csv("../postprocessed-data/Cerevisiae_AllEssentialGenes_List.txt",header=0
-,sep="\t")
+standard_essentials=np.loadtxt("../postprocessed-data/standard_essentials.txt",dtype=str)
 
-essentials_satay.columns=["gene name"]
+#######  Import fitness from SATAY #########
+import pickle
+with open("../postprocessed-data/fitness_models_all_backgrounds", "rb") as fp:   # Unpickling
+    b = pickle.load(fp)
 
-# import conversion file from systematic names to standard names 
-conversion=pd.read_csv("../postprocessed-data/from_systematic_genenames2standard_genenames.csv",
-header=0,sep=",")
-
-conversion.columns=["systematic name","standard  name"]
-
-# save the standard names of the essential genes in a systematic format
-standard_essentials=[]
-for names in essentials_satay.loc[:,"gene name"]:
-    
-    if names in conversion["systematic name"].values:
-        standard_essentials.append(conversion.loc[conversion["systematic name"]==names]["standard  name"].values[0])
-
-
+satay_fitness=pd.concat(b,axis=0,keys=keys)
 # -
 
 polarity_genes=pd.read_csv("../postprocessed-data/polarity_genes_venn_Werner.txt",index_col="Gene")
@@ -234,9 +223,36 @@ for background in backgrounds:
 fi_all_pd=pd.concat(fi_all_per_background,keys=backgrounds)
 fi_all_pd.head(4)
 fi_wt=fi_all_pd.loc["wt_merged"]
-fi_wt.index
+fi_wt
 
 standard_essentials= [x for x in standard_essentials if pd.isnull(x) == False]
+
+# +
+fi_essentials=[]
+fi_non_essentials=[]
+for i in standard_essentials: 
+    if i in fi_wt.index:
+        tmp=fi_wt.loc[i][0]
+        fi_essentials.append(tmp)
+  
+ref=np.median(fi_essentials) #reference for essentials , FI close to 1 is essential 
+
+# +
+
+fi_non_essentials=fi_wt.loc[~fi_wt.index.isin(standard_essentials)]
+
+
+# +
+
+plt.hist(fi_non_essentials,bins=100,alpha=0.5,color="black",label="non essential genes");
+plt.hist(fi_essentials,bins=100,alpha=0.5,color="white",label="essential genes");
+# -
+
+plt.errorbar(0,np.median(fi_essentials),yerr=np.std(fi_essentials),fmt="o",color="red",label="median of essentials",
+capsize=10)
+plt.errorbar(0.5,np.median(fi_non_essentials),yerr=np.std(fi_non_essentials),fmt="o",color="black",label="median of non essentials",
+capsize=10)
+plt.legend(loc="best")
 
 # +
 fi_wt=fi_all_pd.loc["wt_merged"]

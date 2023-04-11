@@ -12,6 +12,7 @@
 #     name: python3
 # ---
 
+# +
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,6 +22,12 @@ from collections import defaultdict
 from ast import literal_eval
 from scipy.stats import norm
 from scipy import stats
+import statistics as stat
+
+plt.rc('font', family='serif',size=14)
+plt.rc('xtick',labelsize=14)
+plt.rc('ytick',labelsize=14)
+# -
 
 keys=['dbem3_b',
  'WT_1-Benoit',
@@ -73,31 +80,48 @@ fitness_backg=fitness_all_pd.loc[backgrounds]
 
 # +
 data=[]
-for keys in backgrounds:
-    f=fitness_backg.loc[keys]
+for backg in keys:
+    f=fitness_all_pd.loc[backg]
     f=f[f.loc[:,"fitness_gene"]!="Not enough flanking regions"]
+    # for i in f.index:
+    #     # if f.loc[i,"fitness_gene"]=="Not enough reads":
+    #     #     f.loc[i,"fitness_gene"]=0
+    #     # elif f.loc[i,"fitness_gene"]=="Not enough insertions":
+    #     #     f.loc[i,"fitness_gene"]=0
+    #     if f.loc[i,"fitness_domains_corrected"]=="Not enough insertions":
+    #         f.loc[i,"fitness_domains_corrected"]=0
+
+    # f[f.loc[:,"fitness_gene"]=="Not enough reads"]=0
+    # f[f.loc[:,"fitness_gene"]=="Not enough insertions"]=0
+    # f[f.loc[:,"fitness_domains_corrected"]=="Not enough insertions"]=0
+    
+    f=f[f.loc[:,"fitness_gene"]!="Not enough reads"]
+    f=f[f.loc[:,"fitness_gene"]!="Not enough insertions"]
+    f=f[f.loc[:,"fitness_domains_corrected"]!="Not enough insertions"]
     data.append(f)
 
-data_fitness=pd.concat(data,axis=0,keys=backgrounds)
+data_fitness=pd.concat(data,axis=0,keys=keys)
 
+# -
+
+data_fitness_wt=data_fitness.loc[["wt_a","wt_b"]]
 
 # +
 ## Distribution of fitness effects
 plt.figure(figsize=(8,5))
-data_fitness_wt=data_fitness.loc[["wt_a","wt_b"]]
-data_fitness_wt.loc[:,"fitness_gene"].hist(bins=100,color="gray",alpha=0.7)
-#data_fitness_wt.loc[:,"fitness_domains_corrected"].astype(float).hist(bins=100)
+
+#data_fitness_wt.loc[:,"fitness_gene"].hist(bins=100,color="gray",alpha=0.7)
+data_fitness_wt.loc[:,"fitness_domains_corrected"].astype(float).hist(bins=100,color="gray",alpha=0.7)
 #plt.title("Distribution of fitness effects in WT",fontsize=20)
+plt.title("Distribution of fitness effects using the domain correction \n,in WT",fontsize=20)
 
+plt.xlabel("Fitness effect")
+plt.ylabel("Number of genes")
 
-plt.xlabel("Fitness effect",fontsize=14)
-plt.ylabel("Number of genes",fontsize=14)
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14);
-plt.title("Distribution of fitness effects in wild type",fontsize=14)
+#plt.title("Distribution of fitness effects using the domain correction \n,in wild type")
 plt.grid(linewidth=0.3)
 plt.tight_layout()
-plt.savefig("../figures/fig_fitness_effects_wt.png",dpi=300,transparent=True)
+#plt.savefig("../figures/fig_fitness_corrected_effects_wt.png",dpi=300,transparent=True)
 
 # +
 ## Distribution of fitness effects
@@ -132,10 +156,6 @@ plt.ylabel("Number of genes")
 plt.tight_layout()
 # -
 
-## some fitness values 
-data_fitness.loc["wt_a","CDC24"],data_fitness.loc["wt_a","NRP1"]
-#data_fitness_wt.loc["BEM1","fitness_gene"]
-
 standard_essentials
 
 
@@ -168,19 +188,81 @@ y_2=datawtessntials_b.loc[datawtessntials_b.loc[:,"Essential"]==True,"fitness_do
 # +
 x_float=[]
 for i in x:
-    if type(i)!=np.float64:
-        x_float.append(i[0])
-    else:
-        x_float.append((i))
+    
+    x_float.append(i)
 
 y_float=[]
 for i in y:
-    if type(i)!=np.float64:
-        y_float.append(i[0])
-    else:
-        y_float.append((i))
+    y_float.append(i)
 # -
 
+len(data_fitness_wt[data_fitness_wt.loc[:,"fitness_domains_corrected"]==0]),len(data_fitness_wt[data_fitness_wt.loc[:,"fitness_gene"]==0])
+
+# +
+## Distribution of fitness effects in WT and essential genes 
+
+data_fitness_wt=data_fitness.loc[["wt_a","wt_b"]]
+
+fig,ax=plt.subplots(1,2,figsize=(10,5))
+
+plt.subplots_adjust(wspace=0.5)
+plt.suptitle("Distribution of fitness effects using the domain correction",fontsize=20)
+
+plt.subplot(1,2,1)
+data_fitness_wt.loc[:,"fitness_domains_corrected"].astype(float).hist(bins=100,color="gray",alpha=0.7,label="All genes")
+plt.vlines(np.mean(data_fitness_wt.loc[:,"fitness_domains_corrected"].astype(float)),0,450,linestyles="dashed",color="black",label="mean")
+
+plt.subplot(1,2,2)
+plt.hist(x_float,bins=100,alpha=0.8,color="pink",label="Essential genes");
+plt.vlines(np.mean(x_float),0,70,linestyles="dashed",color="black",label="mean")
+## write the mean value
+plt.text(0.1, 100, "mean = {:.2f}".format(np.mean(x_float)), fontsize=12)
+
+for ax in ax:
+    ax.set_xlabel("Fitness effect")
+    ax.set_ylabel("Number of genes")
+    ax.grid(linewidth=0.3)
+    ax.legend()
+    ax.set_xlim(0,2)
+
+plt.tight_layout()
+plt.savefig("../figures/fig_fitness_corrected_effects_wt_essential.png",dpi=300,transparent=True)
+
+# +
+## Distribution of fitness effects in WT and essential genes 
+
+fig,ax=plt.subplots(1,2,figsize=(10,5))
+
+plt.subplots_adjust(wspace=0.5)
+plt.suptitle("Distribution of fitness effects using the whole gene data",fontsize=20)
+
+plt.subplot(1,2,1)
+data_fitness_wt.loc[:,"fitness_gene"].astype(float).hist(bins=100,color="gray",alpha=0.7,label="All genes")
+plt.vlines(np.mean(data_fitness_wt.loc[:,"fitness_gene"].astype(float)),0,600,linestyles="dashed",color="black",label="mean")
+
+plt.subplot(1,2,2)
+plt.hist(x_1,bins=100,alpha=0.8,color="pink",label="Essential genes");
+plt.vlines(np.mean(x_1),0,50,linestyles="dashed",color="black",label="mean")
+## write the mean value
+plt.text(0.1, 70, "mean = {:.2f}".format(np.mean(x_1)), fontsize=12)
+
+for ax in ax:
+    ax.set_xlabel("Fitness effect")
+    ax.set_ylabel("Number of genes")
+    ax.grid(linewidth=0.3)
+    ax.set_xlim(0,2)
+  
+    ax.legend()
+
+
+plt.tight_layout()
+plt.savefig("../figures/fig_fitness_effects_wt_essential.png",dpi=300,transparent=True)
+# -
+
+data_fitness_wt.loc[:,"fitness_gene"].astype(float)
+
+
+# +
 plt.figure(figsize=(8,5))
 #plt.hist(x_1,bins=100,alpha=0.5,label="fitness of the whole gene",color="pink");
 plt.hist(x_float,bins=100,alpha=0.8,label="fitness corrected by domains",color="pink");
@@ -193,16 +275,17 @@ plt.vlines(np.mean(x_float),0,200,linestyles="dashed",color="black",label="mean"
 # plt.vlines(np.mean(x_float)+np.std(x_float),0,200,linestyles="dashed",color="black",
 # linewidth=0.5)
 plt.legend()
-plt.title("Distribution of fitness effects in essential genes using the domain correction",fontsize=14)
-plt.xlabel("Fitness effect",fontsize=14)
-plt.ylabel("Number of genes",fontsize=14)
+plt.title("Distribution of fitness effects in essential genes \n using the domain correction in WT",fontsize=20)
+#plt.title("Distribution of fitness effects \n of essential genes in WT",fontsize=20)
+plt.xlabel("Fitness effect")
+plt.ylabel("Number of genes")
 plt.grid(linewidth=0.3)
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14);
+
 plt.tight_layout()
 #plt.savefig("../figures/fig_fitness_effects_wt_essential_gene.png",dpi=300,transparent=True)
-plt.savefig("../figures/fig_fitness_effects_wt_essential_domains_correction.png",dpi=300,transparent=True)
+#plt.savefig("../figures/fig_fitness_effects_wt_essential_domains_correction.png",dpi=300,transparent=True)
 #plt.savefig("../figures/fig_fitness_effects_wt_essential_gene_vs_domains.png",dpi=300,transparent=True)
+# -
 
 np.std(x_float)
 
@@ -216,31 +299,31 @@ y_4=datawtessntials_b.loc[datawtessntials_b.loc[:,"Essential"]==False,"fitness_g
 y_5=datawtessntials_b.loc[datawtessntials_b.loc[:,"Essential"]==False,"fitness_domains_average"]
 
 # +
-fig,axes=plt.subplots(1,2,figsize=(15,5))
-plt.subplot(1,2,1)
-plt.title("essentials")
-plt.errorbar(["a-gene","b-gene"],[x_1.mean(),y_1.mean()],yerr=[x_1.std(),y_1.std()],
-fmt="o",color="red",capsize=10)
-plt.errorbar(["a-domains","b-domains"],[x_2.mean(),y_2.mean()],yerr=[x_2.std(),y_2.std()],
-fmt="o",color="blue",capsize=10)
-plt.errorbar(["a-corrected","b-corrected"],[x.mean(),y.mean()],yerr=[x.std(),y.std()],
-fmt="o",color="black",capsize=10)
+# fig,axes=plt.subplots(1,2,figsize=(15,5))
+# plt.subplot(1,2,1)
+# plt.title("essentials")
+# plt.errorbar(["a-gene","b-gene"],[x_1.mean(),y_1.mean()],yerr=[x_1.std(),y_1.std()],
+# fmt="o",color="red",capsize=10)
+# plt.errorbar(["a-domains","b-domains"],[x_2.mean(),y_2.mean()],yerr=[x_2.std(),y_2.std()],
+# fmt="o",color="blue",capsize=10)
+# plt.errorbar(["a-corrected","b-corrected"],[x.mean(),y.mean()],yerr=[x.std(),y.std()],
+# fmt="o",color="black",capsize=10)
 
-plt.ylim(0,1.2)
-plt.grid("on")
-plt.subplot(1,2,2)
+# plt.ylim(0,1.2)
+# plt.grid("on")
+# plt.subplot(1,2,2)
 
-plt.title("non essentials")
+# plt.title("non essentials")
 
-plt.errorbar(["a-gene","b-gene"],[x_4.mean(),y_4.mean()],yerr=[x_4.std(),y_4.std()],
-fmt="o",color="red",capsize=10,label="Non essentials")
-plt.errorbar(["a-domains","b-domains"],[x_5.mean(),y_5.mean()],yerr=[x_5.std(),y_5.std()],
-fmt="o",color="blue",capsize=10,label="Non essentials")
-plt.errorbar(["a-corrected","b-corrected"],[x_3.mean(),y_3.mean()],yerr=[x_3.std(),y_3.std()],
-fmt="o",color="black",capsize=10,label="Non essentials")
+# plt.errorbar(["a-gene","b-gene"],[x_4.mean(),y_4.mean()],yerr=[x_4.std(),y_4.std()],
+# fmt="o",color="red",capsize=10,label="Non essentials")
+# plt.errorbar(["a-domains","b-domains"],[x_5.mean(),y_5.mean()],yerr=[x_5.std(),y_5.std()],
+# fmt="o",color="blue",capsize=10,label="Non essentials")
+# plt.errorbar(["a-corrected","b-corrected"],[x_3.mean(),y_3.mean()],yerr=[x_3.std(),y_3.std()],
+# fmt="o",color="black",capsize=10,label="Non essentials")
 
-plt.ylim(0,1.2)
-plt.grid("on")
+# plt.ylim(0,1.2)
+# plt.grid("on")
 # -
 
 a=data_fitness.loc["wt_a","fitness_gene"]
@@ -273,8 +356,37 @@ ax.plot([0,1.7],[0,1.7],color="black",linestyle="--")
 ax.text(1.3, 1.55, '$R^2=%.3f$' % (r_squared),fontsize=12)
 
 # +
+### Transformation to the data to compute GI 
+
+data=[]
+for backg in keys:
+    f=fitness_all_pd.loc[backg]
+    f=f[f.loc[:,"fitness_gene"]!="Not enough flanking regions"]
+    for i in f.index:
+    #     # if f.loc[i,"fitness_gene"]=="Not enough reads":
+    #     #     f.loc[i,"fitness_gene"]=0
+    #     # elif f.loc[i,"fitness_gene"]=="Not enough insertions":
+    #     #     f.loc[i,"fitness_gene"]=0
+        if f.loc[i,"fitness_domains_corrected"]=="Not enough insertions":
+            f.loc[i,"fitness_domains_corrected"]=0
+
+    # f[f.loc[:,"fitness_gene"]=="Not enough reads"]=0
+    # f[f.loc[:,"fitness_gene"]=="Not enough insertions"]=0
+    # f[f.loc[:,"fitness_domains_corrected"]=="Not enough insertions"]=0
+    
+    f=f[f.loc[:,"fitness_gene"]!="Not enough reads"]
+    f=f[f.loc[:,"fitness_gene"]!="Not enough insertions"]
+    # f=f[f.loc[:,"fitness_domains_corrected"]!="Not enough insertions"]
+    data.append(f)
+
+data_fitness=pd.concat(data,axis=0,keys=keys)
+
+
+# +
 bem1_f_a=data_fitness.loc["wt_a","BEM1"]["fitness_gene"]
 bem1_f_b=data_fitness.loc["wt_b","BEM1"]["fitness_gene"]
+# bem1_f_a=0.7
+# bem1_f_b=0.9
 data=data_fitness.loc["wt_a"]
 
 significance_threshold = 0.05 #set significance threshold
@@ -311,11 +423,13 @@ for gene in data.index :
             else:
                 gi[gene]["significance"]=False
             #DETERMINE FOLD CHANGE PER GENE
-            if np.mean(variable_b_array) == 0 or np.mean(variable_a_array) == 0:
-                fc_list = 0
-            else:
-                #fc_list = np.log2(np.mean(variable_a_array) / np.mean(variable_b_array))
-                fc_list=np.mean(variable_a_array)-np.mean(variable_b_array)
+            # if np.mean(variable_b_array) == 0 or np.mean(variable_a_array) == 0:
+            #     #fc_list = 0
+            #     pass
+            # else:
+            #     #fc_list = np.log2(np.mean(variable_a_array) / np.mean(variable_b_array))
+            #     fc_list=np.mean(variable_a_array)-np.mean(variable_b_array)
+            fc_list=np.mean(variable_a_array)-np.mean(variable_b_array)
             gi[gene]["fold_change"]=fc_list
 
         
@@ -331,19 +445,21 @@ gi_pd_fitness_gene["gene_names"]=gi_pd_fitness_gene.index
 #gi_pd[gi_pd.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=False)
 # -
 
-gi_pd_fitness_gene.loc["BEM3"]
+gi_pd_fitness_gene.loc["NRP1"]
 
 # +
 from annotate_volcano import annotate_volcano   #import annotate_volcano function
 volcano_df=gi_pd_fitness_gene
-fig=annotate_volcano(volcano_df,[2.2,-0.5],[1.5,1.3],figure_title="test",variable="fitness_per_gene")
+fig=annotate_volcano(volcano_df,[19,-10],[0.5,0.5],figure_title="test",variable="fitness_per_gene")
 
 
 # -
 
 gi_pd_significant=gi_pd_fitness_gene[gi_pd_fitness_gene.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=False)
+gi_pd_significant[0:10]
 
-gi_pd_significant
+gi_pd_fold_change_pos=gi_pd_fitness_gene.sort_values(by="fold_change",ascending=False)[0:10]
+gi_pd_fold_change_pos
 
 # +
 ## comparison with existing data
@@ -408,8 +524,10 @@ pos_bem1_costanzo_score=pos_bem1[pos_bem1.loc[:,"Note"]=="Costanzo M"]["P-value"
 
 # +
 ## Now use the fitness correction by domains to find GI 
-bem1_f_a=data_fitness.loc["wt_a","BEM1"]["fitness_domains_average"] # to accomodate for zero value of the corrected one
-bem1_f_b=data_fitness.loc["wt_b","BEM1"]["fitness_domains_average"]# to accomodate for zero value
+bem1_f_a=np.mean([data_fitness.loc["wt_a","BEM1"]["fitness_gene"],
+data_fitness.loc["wt_a","BEM1"]["fitness_domains_corrected"]] )# to accomodate for zero value of the corrected one
+bem1_f_b=np.mean([data_fitness.loc["wt_b","BEM1"]["fitness_gene"],
+data_fitness.loc["wt_b","BEM1"]["fitness_domains_corrected"]] )# to accomodate for zero value
 data=data_fitness.loc["wt_a"]
 
 significance_threshold = 0.05 #set significance threshold
@@ -422,41 +540,14 @@ for gene in data.index :
     geneX=gene
     
     geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_domains_corrected"]
-    if type(geneX_f_a)!=np.float64:
-        geneX_f_a=geneX_f_a[0]
-        if geneX_f_a==0:
-            geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_domains_average"]
-            if geneX_f_a==0:
-                geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_gene"]
-    else:
-        geneX_f_a=geneX_f_a
-        if geneX_f_a==0:
-            geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_domains_average"]
-            if geneX_f_a==0:
-                geneX_f_a=data_fitness.loc["wt_a",geneX]["fitness_gene"]
     
     if geneX in data_fitness.loc["wt_b"].index:
         geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_domains_corrected"]
-        if type(geneX_f_b)!=np.float64:
-            geneX_f_b=geneX_f_b[0]
-            if geneX_f_b==0:
-                geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_domains_average"]
-                if geneX_f_b==0:
-                    geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_gene"]
-        else:
-            geneX_f_b=geneX_f_b
-            if geneX_f_b==0:
-                geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_domains_average"]
-                if geneX_f_b==0:
-                    geneX_f_b=data_fitness.loc["wt_b",geneX]["fitness_gene"]
-
+        
         if geneX in data_fitness.loc["bem1-aid_a"].index and geneX in data_fitness.loc["bem1-aid_b"].index:
             geneXbem1_f_a=data_fitness.loc["bem1-aid_a",geneX]["fitness_domains_corrected"]
             geneXbem1_f_b=data_fitness.loc["bem1-aid_b",geneX]["fitness_domains_corrected"]
-            if type(geneXbem1_f_a)!=np.float64:
-                geneXbem1_f_a=geneXbem1_f_a[0]
-            if type(geneXbem1_f_b)!=np.float64:
-                geneXbem1_f_b=geneXbem1_f_b[0]
+            
             
             
             variable_a_array=[geneXbem1_f_a,geneXbem1_f_b]
@@ -477,11 +568,11 @@ for gene in data.index :
             else:
                 gi[gene]["significance"]=False
             #DETERMINE FOLD CHANGE PER GENE
-            if np.mean(variable_b_array) == 0 and np.mean(variable_a_array) == 0:
-                fc_list = 0
-            else:
-                # fc_list = np.log2(np.mean(variable_a_array) / np.mean(variable_b_array))
-                fc_list=np.mean(variable_a_array)-np.mean(variable_b_array)
+            # if np.mean(variable_b_array) == 0 and np.mean(variable_a_array) == 0:
+            #     fc_list = 0
+            # else:
+            #     # fc_list = np.log2(np.mean(variable_a_array) / np.mean(variable_b_array))
+            fc_list=np.mean(variable_a_array)-np.mean(variable_b_array)
             gi[gene]["fold_change"]=fc_list
 
         
@@ -584,8 +675,10 @@ plt.title("Misclasification II")
 from annotate_volcano import annotate_volcano
 volcano_df=gi_pd
 fig=annotate_volcano(volcano_df,[4,-2.3],[2,1.5],figure_title="Interactors of BEM1 in WT",variable="fitness_corrected")
-plt.savefig("../figures/volcano_bem1_wt.png",dpi=300,transparent=True)
+#plt.savefig("../figures/volcano_bem1_wt.png",dpi=300,transparent=True)
 
+
+gi_pd.loc["NRP1"]
 
 # +
 # import gseapy as gp
@@ -618,13 +711,20 @@ plt.savefig("../figures/volcano_bem1_wt.png",dpi=300,transparent=True)
 
 gi_pd[gi_pd.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=True)
 
+# +
 geneX="BEM3"
-fbem1bem3=data_fitness.loc["bem1-aid_a",geneX]["fitness_domains_corrected"]
-fbem1bem3b=data_fitness.loc["bem1-aid_b",geneX]["fitness_domains_corrected"]
+fbem1bem3=np.mean([data_fitness.loc["bem1-aid_a",geneX]["fitness_gene"],
+                   data_fitness.loc["bem1-aid_b",geneX]["fitness_domains_corrected"]])
+fbem1bem3b=np.mean([data_fitness.loc["bem1-aid_b",geneX]["fitness_domains_corrected"],
+                   data_fitness.loc["bem1-aid_b",geneX]["fitness_gene"]])
+
+fbem1bem3,fbem1bem3b
 
 # +
-bem1_f_a=data_fitness.loc["wt_a","BEM1"]["fitness_domains_average"] # to accomodate for zero value of the corrected one
-bem1_f_b=data_fitness.loc["wt_b","BEM1"]["fitness_domains_average"]
+bem1_f_a=np.mean([data_fitness.loc["wt_a","BEM1"]["fitness_domains_corrected"],
+                data_fitness.loc["wt_a","BEM1"]["fitness_gene"]]) # to accomodate for zero value of the corrected one
+bem1_f_b=np.mean([data_fitness.loc["wt_b","BEM1"]["fitness_domains_corrected"],
+                data_fitness.loc["wt_b","BEM1"]["fitness_gene"]])
 
 bem1_f_a,bem1_f_b
 

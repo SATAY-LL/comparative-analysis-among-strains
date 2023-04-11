@@ -32,6 +32,11 @@ from scipy.stats import norm
 
 from from_excel_to_list import from_excel_to_list
 
+## standard for plots
+plt.rc('font', family='serif',size=14)
+plt.rc('xtick',labelsize=14)
+plt.rc('ytick',labelsize=14)
+
 # +
 ## Plot transposons along the whole genome
 
@@ -50,7 +55,12 @@ for root, dirs, files in os.walk(data_dir):
 
 list_data=[]
 for i in pergene_files:
-    list_data.append(pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0"))
+    tmp=pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0")
+    ## remove ADE2 genes
+    tmp=tmp[tmp.loc[:,"Gene name"]!="ADE2"]
+    tmp.index=np.arange(0,len(tmp))
+    list_data.append(tmp)
+
 
 keys=[]
 for i in np.arange(0,len(pergene_files)):
@@ -64,6 +74,20 @@ standard_essentials=np.loadtxt("../postprocessed-data/standard_essentials.txt",d
 
 keys= ['wt_merged','wt_a','wt_b','dnrp1_1','dnrp1_2']
 data=list_data_pd.loc[keys] # Take only data from targeted genotypes
+
+
+# +
+data_wta=data.loc["wt_a"]
+data_wtb=data.loc["wt_b"]
+
+data_wta.index=data_wta["Gene name"]
+data_wtb.index=data_wtb["Gene name"]
+
+# are the index of data_wta and data_wtb the same?
+print(data_wta.index.equals(data_wtb.index))
+
+
+
 
 # +
 from sklearn.linear_model import LinearRegression
@@ -84,7 +108,7 @@ strains=["wt_a","wt_b","dnrp1_1","dnrp1_2"]
 for i in np.arange(0,len(magnitudes)):
     tmp_0=data.loc[strains[0],magnitudes[i]]/data.loc[strains[0],magnitudes[i]].sum()
     tmp_1=data.loc[strains[1],magnitudes[i]]/data.loc[strains[1],magnitudes[i]].sum()
-
+    
     X, y = tmp_0.values.reshape(-1,1), tmp_1.values.reshape(-1,1)
 
     #fit regression model
@@ -94,15 +118,18 @@ for i in np.arange(0,len(magnitudes)):
     r_squared = model.score(X, y)
 
 
-    ax[i].scatter(tmp_0,tmp_1,s=20,alpha=0.5)
+    ax[i].scatter(tmp_0,tmp_1,s=1,alpha=0.5,color="black")
     ax[i].set_title("Normalized "+magnitudes[i])
     ax[i].set_xlabel("tech replicate 1")
     ax[i].set_ylabel("tech replicate 2")
-    ax[i].set_xlim(0,0.001)
-    ax[i].set_ylim(0,0.001)
-    ax[i].plot([0,0.001],[0,0.001],color="black",linestyle="--")
-    ax[i].text(0, 0.0005, '$R^2=%.3f$' % (r_squared),fontsize=12)
+    ax[i].set_xlim(1e-7,1e-1)
+    ax[i].set_ylim(1e-7,1e-1)
+    ax[i].plot([1e-7,1e-1],[1e-7,1e-1],color="black",linestyle="--")
+    ax[i].text(1e-4, 5e-3, '$R^2=%.3f$' % (r_squared),fontsize=12)
 
+    ax[i].set_aspect('equal', 'box')
+    ax[i].set_yscale('log')
+    ax[i].set_xscale('log')
     # ax[i,1].set_title( magnitudes[i] + " difference")
     # ax[i,1].hist(tmp_1-tmp_0,bins=100)
     # data2fit = tmp_1-tmp_0
@@ -115,7 +142,7 @@ for i in np.arange(0,len(magnitudes)):
     # ax[i,1].plot(x, p, 'k', linewidth=2)
 
 plt.tight_layout()
-figure.savefig("../figures/fig_differences_technical_replicates.png",dpi=300)
+#figure.savefig("../figures/fig_differences_technical_replicates.png",dpi=300)
    
 figure,ax=plt.subplots(1,2,figsize=(10,5))
 plt.subplots_adjust(wspace=0.4,hspace=0.5)
@@ -123,6 +150,8 @@ plt.subplots_adjust(wspace=0.4,hspace=0.5)
 for i in np.arange(0,len(magnitudes)):
     tmp_0=data.loc[strains[2],magnitudes[i]]/data.loc[strains[2],magnitudes[i]].sum()
     tmp_1=data.loc[strains[3],magnitudes[i]]/data.loc[strains[3],magnitudes[i]].sum()
+
+
 
     X, y = tmp_0.values.reshape(-1,1), tmp_1.values.reshape(-1,1)
 
@@ -133,17 +162,88 @@ for i in np.arange(0,len(magnitudes)):
     r_squared = model.score(X, y)
 
 
-    ax[i].scatter(tmp_0,tmp_1,s=20,alpha=0.5)
+    ax[i].scatter(tmp_0,tmp_1,s=1,alpha=0.5,color="black")
     ax[i].set_title("Normalized "+magnitudes[i])
     ax[i].set_xlabel("biolog replicate 1")
     ax[i].set_ylabel("biolog replicate 2")
-    ax[i].set_xlim(0,0.001)
-    ax[i].set_ylim(0,0.001)
-    ax[i].plot([0,0.001],[0,0.001],color="black",linestyle="--")
-    ax[i].text(0, 0.0005, '$R^2=%.3f$' % (r_squared),fontsize=12)
+    ax[i].set_xlim(1e-7,1e-1)
+    ax[i].set_ylim(1e-7,1e-1)
+    
+    ax[i].plot([1e-7,1e-1],[1e-7,1e-1],color="black",linestyle="--")
+    ax[i].text(1e-4, 5e-3, '$R^2=%.3f$' % (r_squared),fontsize=12)
+    ax[i].set_aspect('equal', 'box')
+    ax[i].set_yscale('log')
+    ax[i].set_xscale('log')
+
 
 plt.tight_layout()
 figure.savefig("../figures/fig_differences_biological_replicates.png",dpi=300)
+
+
+
+# +
+from sklearn.linear_model import LinearRegression
+
+#initiate linear regression model
+model = LinearRegression()
+
+#define predictor and response variables
+
+
+
+figure,ax=plt.subplots(1,1,figsize=(10,5))
+plt.subplots_adjust(wspace=0.4,hspace=0.5)
+
+magnitudes=["Reads","Insertions"]
+strains=["wt_a","wt_b","dnrp1_1","dnrp1_2"]
+
+# compute the normalized reads per insertions per gene for each strain
+
+tmp_0=(data.loc[strains[0],magnitudes[0]]*data.loc[strains[0],magnitudes[1]].sum())/(data.loc[strains[0],magnitudes[1]]*data.loc[strains[0],magnitudes[0]].sum())
+tmp_1=(data.loc[strains[1],magnitudes[0]]*data.loc[strains[1],magnitudes[1]].sum())/(data.loc[strains[1],magnitudes[1]]*data.loc[strains[1],magnitudes[0]].sum())
+
+## Remove Nan and infinite
+tmp_0=tmp_0[np.isfinite(tmp_0)]
+tmp_1=tmp_1[np.isfinite(tmp_1)]
+
+## Make both variables same length
+tmp_0=tmp_0[tmp_0.index.isin(tmp_1.index)]
+tmp_1=tmp_1[tmp_1.index.isin(tmp_0.index)]
+
+X, y = tmp_0.values.reshape(-1,1), tmp_1.values.reshape(-1,1)
+
+#fit regression model
+model.fit(X, y)
+
+#calculate R-squared of regression model
+r_squared = model.score(X, y)
+
+
+ax.scatter(tmp_0,tmp_1,s=1,alpha=0.5,color="black")
+ax.set_title("Normalized "+"Reads per insertions per gene")
+ax.set_xlabel("tech replicate 1")
+ax.set_ylabel("tech replicate 2")
+ax.set_xlim(0,4)
+ax.set_ylim(0,4)
+ax.plot([0,4],[0,4],color="black",linestyle="--")
+ax.text(0, 2, '$R^2=%.3f$' % (r_squared),fontsize=12)
+
+ax.set_aspect('equal', 'box')
+    
+    # ax[i,1].set_title( magnitudes[i] + " difference")
+    # ax[i,1].hist(tmp_1-tmp_0,bins=100)
+    # data2fit = tmp_1-tmp_0
+    # mu, std = norm.fit(data2fit)
+    
+    # xmin, xmax = ax[i,1].get_xlim()
+    # x = np.linspace(xmin, xmax, 100)
+    # p = norm.pdf(x, mu, std)
+
+    # ax[i,1].plot(x, p, 'k', linewidth=2)
+
+plt.tight_layout()
+#figure.savefig("../figures/fig_differences_technical_replicates.png",dpi=300)
+
 
 
 # -
@@ -221,7 +321,8 @@ list_data_pd.loc["wt_merged"].sort_values(by="Reads",ascending=False).head(10)
 # ## Computing the number of reads per insertion along the gene length for all genes 
 
 # +
-data=list_data_pd.loc["wt_merged"]
+# data=list_data_pd.loc["wt_merged"]
+data=list_data_pd.loc["wt_a"]
 ## remove ade2 data from the dataset
 # data.drop(labels=5805,axis=0,inplace=True)
 # ## remove the ura3 data from the dataset
@@ -294,14 +395,14 @@ r[np.isnan(r)]=0
 
 ## remove data from ADe2 and URA3 genes
 
-r_new=np.delete(r,5805,axis=0)
-r_new=np.delete(r_new,1927,axis=0)
+# r_new=np.delete(r,5805,axis=0)
+# r_new=np.delete(r_new,1927,axis=0)
 
 # r[5805,:]=1
 # r[1927,:]=1
 # Take the median of  all values of r along the rows
 
-r_sum=np.mean(r_new,axis=0)
+r_sum=np.mean(r,axis=0)
 
 # Plot r values along gene parts
 
@@ -683,14 +784,25 @@ protein_domains_data_pd
 #  - Plot the distributions of every fitness calculation referenced to the median fitness value of the population.
 #  - Plot the average fitness vs the corrected fitness 
 
+reads_domains=[]
+for i in protein_domains_data_pd.index:
+    tmp=protein_domains_data_pd.loc[i,"reads_domain"] # total reads of all domains in the gene 
+    if type(tmp)==list: # the list indicates that that protein has annotated domains
+        reads_domains.append(tmp[0])
+    
+
+# +
 # r=np.delete(r,5805,axis=0) # deleting the ade2 gene
 # r=np.delete(r,1927,axis=0) # deleting the ura3 gene
 # r[5805,:]=np.zeros_like(r[5805,:])
 # r[1927,:]=np.zeros_like(r[1927,:])
 ref=np.log2(np.median(np.sum(r,axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
-# r are the reads per insertions of every gene divided in chunks 
+# r are the reads per insertions of every gene divided in chunks . Here I am summing all the reads per gene and taking its median 
 
-ref
+ref_domains=np.log2(np.median(reads_domains)) # reference fitness, assumption: most genes are neutral in the wild type
+# -
+
+ref,ref_domains,len(reads_domains),len(protein_domains_data_pd)
 
 # +
 fitness_models=defaultdict(dict)
@@ -726,7 +838,7 @@ for i in np.arange(0,len(data)):
                     tmp[np.isnan(tmp)] = 0
                 else:
                     tmp=0
-                fitness_models[gene]["fitness_domains_vector"]=tmp/ref
+                fitness_models[gene]["fitness_domains_vector"]=tmp/ref_domains
             
                 fitness_models[gene]["fitness_domains_average"]=np.mean(fitness_models[gene]["fitness_domains_vector"])
                 fitness_models[gene]["fitness_domains_std"]=np.std(fitness_models[gene]["fitness_domains_vector"])

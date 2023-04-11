@@ -43,15 +43,15 @@ path_a = r"../data/"
 filelist_a = ["wt_a/WT_merged-DpnII-NlaIII-a_trimmed.sorted.bam_pergene.txt",
 "wt_b/WT_merged-DpnII-NlaIII-b_trimmed.sorted.bam_pergene.txt"]
 path_b = r"../data/"
-filelist_b = ["dnrp1_a/dnrp1-1_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt",
-"dnrp1_b/dnrp1-2_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt"]
+filelist_b = ["dnrp1_1/dnrp1-1_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt",
+"dnrp1_2/dnrp1-2_merged-techrep-a_techrep-b_trimmed.sorted.bam_pergene.txt"]
 
 
-variable = 'read_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
+variable = 'tn_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
 significance_threshold = 0.05 #set threshold above which p-values are regarded significant
 normalize=True
 
-trackgene_list = ['MEC1','Nrp1'] # ["cdc42"]
+trackgene_list = ['MEC1','Nrp1',"WHI3","CLA4","BEM1"] # ["cdc42"]
 
 
 figure_title = "WT vs $\Delta$ nrp1"
@@ -62,7 +62,10 @@ volcano_df_nrp1_wt = volcano(path_a=path_a, filelist_a=filelist_a,
             significance_threshold=significance_threshold,
             normalize=normalize,
             trackgene_list=trackgene_list,
-            figure_title=figure_title)
+            figure_title=figure_title,fold_change_interval=[2,-2],p_value_interval=[0.05,0.05])
+# -
+
+volcano_df_nrp1_wt[volcano_df_nrp1_wt['gene_names']=="BEM1"]
 
 # +
 from annotate_volcano import annotate_volcano   #import annotate_volcano function
@@ -159,8 +162,8 @@ filelist_a = ["wt_a/WT_merged-DpnII-NlaIII-a_trimmed.sorted.bam_pergene.txt",
 
 path_b = r"../data/"
 
-filelist_b = ["bem1-aid_a/bem1-aid_a_tab_pergene.txt",
-"bem1-aid_b/bem1-aid_b_tab_pergene.txt"]
+filelist_b = ["bem1-aid_a/yWT03a_16_trimmed_out_restriction_sites_yWT03a_16_merged_cleaned_forward_reads_trimmed.sorted.bam_pergene.txt",
+"bem1-aid_b/yWT0321_a_trimmed_out_restriction_sites_yWT0321_a_merged_cleaned_forward_reads_trimmed.sorted.bam_pergene.txt"]
 
 variable = 'tn_per_gene' #'read_per_gene' 'tn_per_gene', 'Nreadsperinsrt'
 significance_threshold = 0.01 #set threshold above which p-values are regarded significant
@@ -177,8 +180,10 @@ volcano_df = volcano(path_a=path_a, filelist_a=filelist_a,
             significance_threshold=significance_threshold,
             normalize=normalize,
             trackgene_list=trackgene_list,
-            figure_title=figure_title)
+            figure_title=figure_title,fold_change_interval=[],p_value_interval=[])
 # -
+
+volcano_df[volcano_df['gene_names']=='NRP1']
 
 from annotate_volcano import annotate_volcano   #import annotate_volcano function
 volcano_df=volcano_df_nrp1_wt
