@@ -36,19 +36,19 @@ trackgene_list=None):
     if variable!=None:
 
         
-        sc = ax.scatter(x=volcano_df['fold_change_norm'], y=volcano_df['p_value'],
+        sc = ax.scatter(x=volcano_df['fold_change'], y=volcano_df['p_value'],
         s=100,marker='.', c=volcano_df['significance4FC'].apply(lambda x:colors[x]),label= variable)
         
         ax.legend()
 
     else:
-        sc = ax.scatter(x=volcano_df['fold_change_norm'], y=volcano_df['p_value'],
+        sc = ax.scatter(x=volcano_df['fold_change'], y=volcano_df['p_value'],
         s=100,marker='.', c=volcano_df['significance4FC'].apply(lambda x:colors[x]))
 
 
     if fold_change_interval!=None and p_value_interval!=None:
-        target=volcano_df[(volcano_df["fold_change_norm"]>fold_change_interval[0]) & (volcano_df["p_value"]>p_value_interval[0])]["gene_names"]
-        target_left=volcano_df[(volcano_df["fold_change_norm"]<fold_change_interval[1]) & (volcano_df["p_value"]>p_value_interval[1])]["gene_names"]
+        target=volcano_df[(volcano_df["fold_change"]>fold_change_interval[0]) & (volcano_df["p_value"]>p_value_interval[0])]["gene_names"]
+        target_left=volcano_df[(volcano_df["fold_change"]<fold_change_interval[1]) & (volcano_df["p_value"]>p_value_interval[1])]["gene_names"]
 
         if len(target)!=0:
             for i in np.arange(0,len(target)):
@@ -57,7 +57,7 @@ trackgene_list=None):
 
             
 
-                trackgene_annot = ax.annotate(volcano_df.iloc[index,:]['gene_names'], (volcano_df.iloc[index,:]['fold_change_norm'],
+                trackgene_annot = ax.annotate(volcano_df.iloc[index,:]['gene_names'], (volcano_df.iloc[index,:]['fold_change'],
                                             volcano_df.iloc[index,:]['p_value']),
                                             size=12, c='green', bbox=dict(boxstyle="round", fc="w"))
                 # trackgene_annot.get_bbox_patch().set_alpha(0.6)
@@ -69,7 +69,7 @@ trackgene_list=None):
 
             
 
-                trackgene_annot = ax.annotate(volcano_df.iloc[index,:]['gene_names'], (volcano_df.iloc[index,:]['fold_change_norm'],
+                trackgene_annot = ax.annotate(volcano_df.iloc[index,:]['gene_names'], (volcano_df.iloc[index,:]['fold_change'],
                                             volcano_df.iloc[index,:]['p_value']),
                                             size=12, c='green', bbox=dict(boxstyle="round", fc="w"))
                 # trackgene_annot.get_bbox_patch().set_alpha(0.6)
