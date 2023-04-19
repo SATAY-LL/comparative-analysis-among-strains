@@ -349,7 +349,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         _description_
     """    
 
-    ref=(np.log2(np.median(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
+    ref=np.abs(np.log2(np.median(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
     
     data=data_pergene.loc[background]
     fitness_models=defaultdict(dict)
