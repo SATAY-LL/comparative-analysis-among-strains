@@ -81,7 +81,7 @@ trackgene_list=None):
             trackgene = trackgene.upper()
             if trackgene in volcano_df.index:
                 
-                trackgene_annot = ax.annotate(volcano_df.loc[trackgene,'gene_names'], (volcano_df.loc[trackgene,'fold_change_norm'], 
+                trackgene_annot = ax.annotate(volcano_df.loc[trackgene,'gene_names'], (volcano_df.loc[trackgene,'fold_change'], 
                 volcano_df.loc[trackgene,'p_value']),size=12, c='green', bbox=dict(boxstyle="round", fc="w"))
                 # trackgene_annot.get_bbox_patch().set_alpha(0.6)
             else:
