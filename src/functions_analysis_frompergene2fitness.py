@@ -351,10 +351,16 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
 
     ref=np.abs(np.log2(np.median(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
     
+    
     data=data_pergene.loc[background]
+    if background=="bem1-aid_a" or background=="bem1-aid_b" or background=="bem1-aid_merged":
+        data=data[data.loc[:,"Gene name"]!="BEM1"]
+        data.index=np.arange(0,len(data))
+    else :
+        pass
+
+    
     fitness_models=defaultdict(dict)
-
-
 
     for i in np.arange(0,len(data)):
         gene=data.loc[i,"Gene name"]
@@ -397,7 +403,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
                                 
                             elif H[j]==True : # the domain do not have enough insertions to compute fitness 
                                 y="Not enough insertions"
-                            elif H[j]==False and deno[j]==0:
+                            elif H[j]==False and deno[j]==0: # if there are no insertions in that domain
                                 y=0
                             
                             f.append(y)
@@ -471,8 +477,34 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
 
 
 def excluding_domains(data_pergene,background,data_domains_extended):
+    """_summary_
+
+    Parameters
+    ----------
+    data_pergene : _type_
+        _description_
+    background : _type_
+        _description_
+    data_domains_extended : _type_
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
     
+"""
+
     data=data_pergene.loc[background]
+    
+    if background=="bem1-aid_a" or background=="bem1-aid_b" or background=="bem1-aid_merged":
+        data=data[data.loc[:,"Gene name"]!="BEM1"]
+        data.index=np.arange(0,len(data))
+        data_domains_extended.drop(index="BEM1",inplace=True)
+    else :
+        pass
+    
+    
     data_domains_corrected=defaultdict(dict)
     k=0
     for gene in data_domains_extended.index:
