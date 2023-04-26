@@ -133,14 +133,12 @@ YBL105C	pkc1-2	YBL062W	ybl062w	0.263
 YBL105C	pkc1-2	YPL066W	rgl1	0.234
 YBL105C	pkc1-2	YLR371W	rom2-supp1	0.329
 YBL105C	pkc1-2	YHR030C	slt2	0.485
-YBL105C	pkc1-2	YLR425W	tus1	0.210
 YBL105C	pkc1-2	YDL203C	ack1	0.345
 YBL105C	pkc1-2	YJL095W	bck1	0.512
 YBL105C	pkc1-2	YBR078W	ecm33	0.221
 YBL105C	pkc1-2	YBL061C	skt5	0.232
 YBL105C	pkc1-2	YDR245W	mnn10-supp1	0.211
 YBL105C	pkc1-2	YHR188C	gpi16-5001	0.224
-YBL105C	pkc1-2	YLR371W	rom2-supp2	0.253
 YER019W	isc1-supp1	YPL112C	pex25	0.221
 YER019W	isc1-supp1	YFR006W	yfr006w	0.234
 YER019W	isc1-supp1	YDR119W	vba4	0.202
@@ -169,15 +167,6 @@ YPL011C	taf3-5001	YPL011C	taf3-5002	0.551
 YPL011C	taf3-5001	YDR145W	taf12-l464a	0.275
 YPL011C	taf3-5001	YPL153C	rad53-5001	0.211
 YPL011C	taf3-5001	YGL112C	taf6-ts	0.314
-YBL034C	stu1-5	YLR045C	stu2-13	0.339
-YBL034C	stu1-5	YER016W	bim1	0.408
-YBL034C	stu1-5	YBL034C	stu1-12	0.485
-YBL034C	stu1-5	YPR141C	kar3	0.319
-YBL034C	stu1-5	YLR045C	stu2-12	0.352
-YBL034C	stu1-5	YBL034C	stu1-6	0.457
-YBL034C	stu1-5	YOR058C	ase1	0.272
-YBL034C	stu1-5	YEL061C	cin8	0.416
-YBL034C	stu1-5	YLR045C	stu2-11	0.297
 YGL048C	rpt6-1	YHR200W	rpn10	0.207
 YGL048C	rpt6-1	YKL145W	rpt1-1	0.408
 YGL048C	rpt6-1	YGR135W	pre9	0.499
@@ -623,13 +612,6 @@ YGL022W	stt3-2	YDR389W	sac7	0.204
 YGL022W	stt3-2	YHR188C	gpi16-5001	0.326
 YGL022W	stt3-2	YCR044C	per1-supp1	0.238
 YGL022W	stt3-2	YDR331W	gpi8-5001	0.227
-YMR182W-A	min3	YHR200W	rpn10	0.267
-YMR182W-A	min3	YJL136W-A	yjl136w-a	0.215
-YMR182W-A	min3	YBR048W	rps11b	0.319
-YMR182W-A	min3	YNL211C	mrx7	0.230
-YMR182W-A	min3	YBR089C-A	nhp6b	0.322
-YMR182W-A	min3	YOR058C	ase1	0.287
-YMR182W-A	min3	YLR154C-H	ylr154c-h	0.260
 YDR145W	taf12-ts23	YGL016W	kap122	0.267
 YDR145W	taf12-ts23	YDR167W	taf10-5004	0.403
 YDR145W	taf12-ts23	YDR167W	taf10-5002	0.631
@@ -655,9 +637,6 @@ YHR107C	cdc12-td	YJR076C	cdc11-5	0.237
 YHR107C	cdc12-td	YJR076C	cdc11-1	0.241
 YHR107C	cdc12-td	YNL298W	cla4	0.209
 YHR107C	cdc12-td	YJR076C	cdc11-4	0.235
-YDR146C	swi5	YPL158C	aim44	0.511
-YDR146C	swi5	YPL066W	rgl1	0.204
-YDR146C	swi5	YLR425W	tus1	0.267
 YBR038W	chs2-5006	YEL002C	wbp1-2	0.290
 YBR038W	chs2-5006	YCR002C	cdc10-4	0.260
 YBR038W	chs2-5006	YHR107C	cdc12-1	0.256
@@ -798,11 +777,9 @@ YCR094W	cdc50	YGL005C	cog7	0.207
 YCR094W	cdc50	YEL042W	gda1	0.212
 YDR078C	shu2	YGL016W	kap122	0.361
 YDR078C	shu2	YER093C-A	aim11	0.422
-YDR078C	shu2	YNL211C	mrx7	0.208
 YDR078C	shu2	YPL038W-A	ypl038w-a	0.208
 YDR078C	shu2	YPL123C	rny1	0.361
 YDR078C	shu2	YBR181C	rps6b	0.316
-YDR078C	shu2	YLR425W	tus1	0.296
 YDR078C	shu2	YDR471W	rpl27b	0.297
 YDR078C	shu2	YDL225W	shs1	0.273
 YDR078C	shu2	YMR122W-A	ncw1	0.365
@@ -813,20 +790,17 @@ YNL021W	hda1	YDL002C	nhp10	0.202
 YNL021W	hda1	YGR122W	ygr122w	0.239
 YNL021W	hda1	YPR179C	hda3	0.496
 YHR200W	rpn10	YGR135W	pre9	0.249
-YHR200W	rpn10	YJL136W-A	yjl136w-a	0.336
 YHR200W	rpn10	YGL048C	rpt6-20	0.207
 YHR200W	rpn10	YFR052W	rpn12-1	0.262
 YHR200W	rpn10	YDL097C	rpn6-1	0.250
 YHR200W	rpn10	YDR363W-A	sem1	0.219
 YHR200W	rpn10	YOR259C	rpt4-145	0.212
 YHR200W	rpn10	YDL147W	rpn5-1	0.281
-YHR200W	rpn10	YBR089C-A	nhp6b	0.288
 YHR200W	rpn10	YGL048C	rpt6-25	0.282
 YHR200W	rpn10	YOR261C	rpn8-5008	0.243
 YHR200W	rpn10	YFR004W	rpn11-8	0.311
 YHR200W	rpn10	YPR103W	pre2-1-supp1	0.202
 YHR200W	rpn10	YFR004W	rpn11-14	0.323
-YHR200W	rpn10	YLR154C-H	ylr154c-h	0.442
 YHR200W	rpn10	YGL048C	rpt6-1-supp1	0.262
 YHR200W	rpn10	YOR261C	rpn8-5007	0.247
 YBR258C	shg1	YNL082W	pms1	0.200
@@ -1000,7 +974,6 @@ YDR484W	vps52	YHR012W	vps29	0.307
 YDR484W	vps52	YDR484W	vps52-supp1	0.486
 YER093C-A	aim11	YHR198C	aim18	0.276
 YER093C-A	aim11	YPL123C	rny1	0.221
-YER093C-A	aim11	YLR425W	tus1	0.319
 YER093C-A	aim11	YDR471W	rpl27b	0.205
 YER093C-A	aim11	YDL225W	shs1	0.265
 YER093C-A	aim11	YPR050C	ypr050c	0.220
@@ -1015,16 +988,6 @@ YIL107C	pfk26	YNL130C-A	dgr1	0.230
 YIL107C	pfk26	YNL190W	ynl190w	0.321
 YIL107C	pfk26	YNR054C	esf2-5005	0.242
 YIL107C	pfk26	YLR067C	pet309	0.205
-YNL181W	pbr1-5012	YLR342W	fks1	0.391
-YNL181W	pbr1-5012	YLR110C	ccw12	0.215
-YNL181W	pbr1-5012	YEL002C	wbp1-1	0.207
-YNL181W	pbr1-5012	YNL181W	pbr1-5002	0.558
-YNL181W	pbr1-5012	YPL158C	aim44	0.242
-YNL181W	pbr1-5012	YGR229C	smi1	0.357
-YNL181W	pbr1-5012	YOR326W	myo2-14	0.213
-YNL181W	pbr1-5012	YNL181W	pbr1-5005	0.694
-YNL181W	pbr1-5012	YNL181W	pbr1-5007	0.631
-YNL181W	pbr1-5012	YNL181W	pbr1-5006	0.506
 YPL112C	pex25	YKL209C	ste6	0.245
 YPL112C	pex25	YPL280W	hsp32	0.216
 YPL112C	pex25	YOL086W-A	mhf1	0.211
@@ -1114,14 +1077,6 @@ YGR135W	pre9	YPR108W	rpn7-3	0.399
 YGR135W	pre9	YPR103W	pre2-2	0.490
 YGR135W	pre9	YOR261C	rpn8-5007	0.445
 YGR135W	pre9	YOR157C	pup1-1	0.505
-YJL136W-A	yjl136w-a	YBR048W	rps11b	0.231
-YJL136W-A	yjl136w-a	YNR075C-A	ynr075c-a	0.352
-YJL136W-A	yjl136w-a	YBR089C-A	nhp6b	0.298
-YJL136W-A	yjl136w-a	YOR058C	ase1	0.207
-YJL136W-A	yjl136w-a	YDR471W	rpl27b	0.212
-YJL136W-A	yjl136w-a	YBR198C	taf5-3	0.201
-YJL136W-A	yjl136w-a	YDL225W	shs1	0.210
-YJL136W-A	yjl136w-a	YLR154C-H	ylr154c-h	0.502
 YLR034C	smf3	YNL085W	mkt1	0.201
 YER107C	gle2	YLR335W	nup2	0.249
 YER107C	gle2	YER120W	scs2	0.234
@@ -1135,7 +1090,6 @@ YER107C	gle2	YFR004W	rpn11-8	0.240
 YER107C	gle2	YNL298W	cla4	0.229
 YER107C	gle2	YFR004W	rpn11-14	0.223
 YER107C	gle2	YPR119W	clb2	0.206
-YER107C	gle2	YLR045C	stu2-11	0.201
 YER107C	gle2	YOR261C	rpn8-5007	0.254
 YPL024W	rmi1-supp1	YOR368W	rad17	0.223
 YPL024W	rmi1-supp1	YBR099C	ybr099c	0.322
@@ -1185,8 +1139,6 @@ YDR167W	taf10-5004	YGR274C	taf1-1	0.341
 YDR167W	taf10-5004	YPL011C	taf3-5002	0.406
 YDR167W	taf10-5004	YDR145W	taf12-l464a	0.391
 YDR167W	taf10-5004	YGL112C	taf6-ts	0.254
-YMR241W	yhm2	YBR291C	ctp1	0.238
-YMR241W	yhm2	YMR247W-A	ymr247w-a	0.276
 YGL137W	sec27-1	YOR109W	inp53	0.210
 YGL137W	sec27-1	YBR254C	trs20-5001	0.334
 YGL137W	sec27-1	YFR051C	ret2-1	0.483
@@ -1866,14 +1818,10 @@ YIL062C	arc15-10	YFL039C	act1-159	0.338
 YIL062C	arc15-10	YLR370C	arc18	0.391
 YIL062C	arc15-10	YNR035C	arc35-6	0.470
 YIL062C	arc15-10	YBR078W	ecm33	0.282
-YER120W	scs2	YLR045C	stu2-13	0.227
 YER120W	scs2	YPL231W	fas2-5011	0.209
 YER120W	scs2	YER016W	bim1	0.200
-YER120W	scs2	YBL034C	stu1-12	0.210
-YER120W	scs2	YLR045C	stu2-12	0.262
 YER120W	scs2	YIL090W	ice2	0.258
 YER120W	scs2	YLR272C	ycs4-1	0.249
-YER120W	scs2	YLR045C	stu2-11	0.233
 YLR448W	rpl6b	YDL130W	rpp1b	0.218
 YLR448W	rpl6b	YHL001W	rpl14b	0.347
 YLR448W	rpl6b	YPL079W	rpl21b	0.249
@@ -1896,18 +1844,15 @@ YLR448W	rpl6b	YOL121C	rps19a	0.213
 YLR448W	rpl6b	YNL227C	jjj1	0.284
 YLR448W	rpl6b	YER102W	rps8b	0.225
 YLR448W	rpl6b	YGL123W	rps2-5004	0.207
-YBR048W	rps11b	YNL211C	mrx7	0.287
 YBR048W	rps11b	YPL239W	yar1	0.269
 YBR048W	rps11b	YKR057W	rps21a	0.242
 YBR048W	rps11b	YNL302C	rps19b	0.294
-YBR048W	rps11b	YBR089C-A	nhp6b	0.353
 YBR048W	rps11b	YBR181C	rps6b	0.392
 YBR048W	rps11b	YOR182C	rps30b	0.238
 YBR048W	rps11b	YBR084C-A	rpl19a	0.220
 YBR048W	rps11b	YBL071C-B	ybl071c-b	0.303
 YBR048W	rps11b	YIL069C	rps24b	0.228
 YBR048W	rps11b	YDR450W	rps18a	0.231
-YBR048W	rps11b	YLR154C-H	ylr154c-h	0.297
 YBR048W	rps11b	YOR295W	uaf30	0.211
 YBR048W	rps11b	YPL090C	rps6a	0.225
 YBR048W	rps11b	YOL121C	rps19a	0.266
@@ -1945,14 +1890,6 @@ YIL004C	bet1-1	YDL058W	uso1-1	0.300
 YIL004C	bet1-1	YHL031C	gos1-supp1	0.229
 YIL004C	bet1-1	YLR269C	ylr269c	0.271
 YIL004C	bet1-1	YKR006C	mrpl13	0.258
-YLR342W	fks1	YNL181W	pbr1-5002	0.353
-YLR342W	fks1	YML115C	van1	0.226
-YLR342W	fks1	YPL158C	aim44	0.264
-YLR342W	fks1	YNL298W	cla4	0.273
-YLR342W	fks1	YGR229C	smi1	0.353
-YLR342W	fks1	YNL181W	pbr1-5005	0.451
-YLR342W	fks1	YNL181W	pbr1-5007	0.401
-YLR342W	fks1	YNL181W	pbr1-5006	0.428
 YCL005W-A	vma9	YDR320C	swa2	0.237
 YCL005W-A	vma9	YPL051W	arl3	0.215
 YCL005W-A	vma9	YKR020W	vps51	0.233
@@ -2039,7 +1976,6 @@ YER094C	pup3-5001	YPR108W	rpn7-3	0.402
 YER094C	pup3-5001	YPR103W	pre2-2	0.290
 YER094C	pup3-5001	YOR261C	rpn8-5007	0.403
 YER094C	pup3-5001	YOR157C	pup1-1	0.455
-YML062C	mft1	YNL211C	mrx7	0.213
 YML062C	mft1	YDR363W-A	sem1	0.262
 YML062C	mft1	YHR167W	thp2	0.506
 YML062C	mft1	YBR111W-A	sus1	0.236
@@ -2106,14 +2042,6 @@ YDR320C	swa2-supp1	YDR189W	sly1-ts	0.270
 YDR320C	swa2-supp1	YDL058W	uso1-1	0.365
 YDR320C	swa2-supp1	YHL031C	gos1-supp1	0.296
 YDR320C	swa2-supp1	YOR370C	mrs6-2	0.348
-YLR045C	stu2-13	YER016W	bim1	0.386
-YLR045C	stu2-13	YBL034C	stu1-12	0.455
-YLR045C	stu2-13	YPR141C	kar3	0.289
-YLR045C	stu2-13	YLR045C	stu2-12	0.584
-YLR045C	stu2-13	YBL034C	stu1-6	0.413
-YLR045C	stu2-13	YOR058C	ase1	0.214
-YLR045C	stu2-13	YEL061C	cin8	0.420
-YLR045C	stu2-13	YLR045C	stu2-11	0.522
 YCR086W	csm1	YBL097W	brn1-9	0.469
 YCR086W	csm1	YAR007C	rfa1-m2	0.213
 YCR086W	csm1	YBL097W	brn1-16	0.297
@@ -2269,12 +2197,6 @@ YPL231W	fas2-5011	YOL038W	pre6-5001	0.227
 YPL231W	fas2-5011	YGL011C	scl1-5001	0.202
 YPL231W	fas2-5011	YBR171W	sec66	0.235
 YPL231W	fas2-5011	YBR058C-A	tsc3	0.300
-YNL211C	mrx7	YNR075C-A	ynr075c-a	0.202
-YNL211C	mrx7	YIL140W	axl2	0.352
-YNL211C	mrx7	YBR089C-A	nhp6b	0.433
-YNL211C	mrx7	YPL123C	rny1	0.282
-YNL211C	mrx7	YOR058C	ase1	0.283
-YNL211C	mrx7	YOR011W-A	yor011w-a	0.338
 YHR154W	rtt107	YLR320W	mms22	0.229
 YHR154W	rtt107	YJL047C	rtt101	0.202
 YHR154W	rtt107	YJL115W	asf1	0.232
@@ -2298,7 +2220,6 @@ YFL005W	sec4-8	YJL031C	bet4-5007	0.212
 YFL005W	sec4-8	YOR370C	mrs6-2	0.214
 YJR053W	bfa1	YER016W	bim1	0.211
 YJR053W	bfa1	YDR094W	ydr094w	0.246
-YJR053W	bfa1	YEL061C	cin8	0.224
 YJR053W	bfa1	YPR050C	ypr050c	0.212
 YJR053W	bfa1	YNL082W	pms1	0.232
 YMR089C	yta12	YMR097C	mtg1-supp1	0.278
@@ -2812,14 +2733,8 @@ YDR320C	swa2	YDR484W	vps52-supp1	0.387
 YDR320C	swa2	YOR370C	mrs6-2	0.305
 YML030W	rcf1	YDR316W	oms1	0.248
 YML030W	rcf1	YNL169C	psd1	0.208
-YER016W	bim1	YBL034C	stu1-12	0.549
 YER016W	bim1	YPR141C	kar3	0.626
-YER016W	bim1	YLR045C	stu2-12	0.534
-YER016W	bim1	YBL034C	stu1-6	0.620
 YER016W	bim1	YDR378C	lsm6	0.204
-YER016W	bim1	YOR058C	ase1	0.222
-YER016W	bim1	YEL061C	cin8	0.592
-YER016W	bim1	YLR045C	stu2-11	0.367
 YER016W	bim1	YOL012C	htz1	0.210
 YDL105W	nse4-5001	YHR031C	rrm3	0.232
 YDL105W	nse4-5001	YDR288W	nse3-ts3	0.374
@@ -2907,11 +2822,6 @@ YDL017W	cdc7-4	YCL061C	mrc1	0.272
 YDL017W	cdc7-4	YOR144C	elg1	0.235
 YDL017W	cdc7-4	YJL092W	srs2	0.277
 YDL017W	cdc7-4	YOL123W	hrp1-4	0.328
-YNR075C-A	ynr075c-a	YIL140W	axl2	0.218
-YNR075C-A	ynr075c-a	YPL038W-A	ypl038w-a	0.373
-YNR075C-A	ynr075c-a	YOR058C	ase1	0.202
-YNR075C-A	ynr075c-a	YLR154C-H	ylr154c-h	0.352
-YNR075C-A	ynr075c-a	YGR046W	tam41-5001	0.249
 YPL239W	yar1	YNL302C	rps19b	0.281
 YPL239W	yar1	YBR267W	rei1	0.202
 YPL239W	yar1	YML073C	rpl6a	0.215
@@ -3048,8 +2958,6 @@ YDR065W	rrg1	YBR268W	mrpl37	0.366
 YDR065W	rrg1	YJR144W	mgm101	0.259
 YDR065W	rrg1	YPL040C	ism1-supp1	0.307
 YDR065W	rrg1	YDR405W	mrp20	0.388
-YMR247W-A	ymr247w-a	YNL130C-A	dgr1	0.252
-YMR300C	ade4	YNL141W	aah1	0.208
 YFR006W	yfr006w	YKL209C	ste6	0.242
 YCR002C	cdc10-4	YHR107C	cdc12-1	0.457
 YCR002C	cdc10-4	YGR009C	sec9-4	0.263
@@ -3178,13 +3086,10 @@ YLR110C	ccw12	YBR109C	cmd1-8	0.219
 YLR110C	ccw12	YJR075W	hoc1	0.338
 YLR110C	ccw12	YLR370C	arc18	0.211
 YLR110C	ccw12	YNR035C	arc35-6	0.272
-YLR110C	ccw12	YGR229C	smi1	0.238
 YLR110C	ccw12	YBR078W	ecm33	0.210
 YLR110C	ccw12	YDR245W	mnn10-supp1	0.200
 YLR110C	ccw12	YDR389W	sac7	0.205
-YLR110C	ccw12	YNL181W	pbr1-5005	0.302
 YLR110C	ccw12	YBR015C	mnn2	0.353
-YLR110C	ccw12	YNL181W	pbr1-5007	0.230
 YKL188C	pxa2	YLL058W	yll058w	0.221
 YKL188C	pxa2	YDR438W	thi74	0.220
 YKL188C	pxa2	YNL253W	tex1	0.404
@@ -3197,13 +3102,11 @@ YMR307W	gas1	YFL025C	bst1	0.228
 YMR307W	gas1	YDR162C	nbp2	0.204
 YMR307W	gas1	YML019W	ost6	0.235
 YMR307W	gas1	YEL036C	anp1	0.248
-YMR307W	gas1	YGR229C	smi1	0.255
 YMR307W	gas1	YDR525W	api2	0.315
 YMR307W	gas1	YBR078W	ecm33	0.240
 YMR307W	gas1	YDR245W	mnn10-supp1	0.260
 YMR307W	gas1	YDR389W	sac7	0.205
 YMR307W	gas1	YHR188C	gpi16-5001	0.325
-YMR307W	gas1	YNL181W	pbr1-5005	0.221
 YGL064C	mrh4	YKL170W	mrpl38	0.230
 YGL064C	mrh4	YJR113C	rsm7	0.247
 YGL064C	mrh4	YGR076C	mrpl25	0.212
@@ -3544,12 +3447,6 @@ YDR496C	puf6	YNL061W	nop2-6	0.247
 YDR496C	puf6	YBR058C-A	tsc3	0.317
 YDL035C	gpr1	YOL108C	ino4	0.244
 YDL035C	gpr1	YGR097W	ask10	0.217
-YBL034C	stu1-12	YPR141C	kar3	0.412
-YBL034C	stu1-12	YLR045C	stu2-12	0.548
-YBL034C	stu1-12	YBL034C	stu1-6	0.609
-YBL034C	stu1-12	YOR058C	ase1	0.249
-YBL034C	stu1-12	YEL061C	cin8	0.554
-YBL034C	stu1-12	YLR045C	stu2-11	0.443
 YKR020W	vps51	YNL280C	erg24-supp1	0.225
 YKR020W	vps51	YJL004C	sys1	0.410
 YKR020W	vps51	YKR019C	irs4	0.231
@@ -3959,7 +3856,6 @@ YNL272C	sec2-41	YJL031C	bet4-5007	0.283
 YNL272C	sec2-41	YDR164C	sec1-1	0.232
 YNL272C	sec2-41	YOL018C	tlg2	0.219
 YNL272C	sec2-41	YOR370C	mrs6-2	0.221
-YIL140W	axl2	YBR089C-A	nhp6b	0.352
 YIL140W	axl2	YPL038W-A	ypl038w-a	0.218
 YIL140W	axl2	YIL141W	yil141w	0.390
 YIL140W	axl2	YOR011W-A	yor011w-a	0.444
@@ -3979,16 +3875,9 @@ YAR002C-A	erp1	YBL050W	sec17-1	0.214
 YAR002C-A	erp1	YMR197C	vti1-11-supp1	0.204
 YAR002C-A	erp1	YDR189W	sly1-ts	0.260
 YAR002C-A	erp1	YDL058W	uso1-1	0.311
-YPR141C	kar3	YLR045C	stu2-12	0.355
-YPR141C	kar3	YBL034C	stu1-6	0.479
 YPR141C	kar3	YAR007C	rfa1-m2	0.221
 YPR141C	kar3	YLR272C	ycs4-1	0.214
-YPR141C	kar3	YEL061C	cin8	0.464
 YPR141C	kar3	YDR439W	lrs4	0.249
-YPR141C	kar3	YLR045C	stu2-11	0.311
-YOR394C-A	yor394c-a	YBR260C	rgd1	0.227
-YOR394C-A	yor394c-a	YPL158C	aim44	0.202
-YOR394C-A	yor394c-a	YNL181W	pbr1-5007	0.297
 YJL175W	yjl175w	YGL112C	taf6-ts	0.206
 YHR031C	rrm3	YCL061C	mrc1	0.224
 YHR031C	rrm3	YDR288W	nse3-ts4	0.202
@@ -4152,10 +4041,6 @@ YKL196C	ykt6-5001	YPR105C	cog4-5004	0.256
 YKL196C	ykt6-5001	YLR269C	ylr269c	0.255
 YKL196C	ykt6-5001	YKR006C	mrpl13	0.303
 YKL196C	ykt6-5001	YGL020C	get1	0.362
-YLR045C	stu2-12	YBL034C	stu1-6	0.511
-YLR045C	stu2-12	YOR058C	ase1	0.240
-YLR045C	stu2-12	YEL061C	cin8	0.493
-YLR045C	stu2-12	YLR045C	stu2-11	0.593
 YKL170W	mrpl38	YJR113C	rsm7	0.365
 YKL170W	mrpl38	YGR076C	mrpl25	0.444
 YKL170W	mrpl38	YHR011W	dia4	0.283
@@ -4289,12 +4174,6 @@ YMR004W	mvp1	YDR137W	rgp1	0.207
 YMR004W	mvp1	YHR012W	vps29	0.365
 YMR004W	mvp1	YPR105C	cog4-5004	0.213
 YJR059W	ptk2	YDR364C	cdc40	0.215
-YNL181W	pbr1-5002	YPL158C	aim44	0.240
-YNL181W	pbr1-5002	YOR327C	snc2	0.230
-YNL181W	pbr1-5002	YGR229C	smi1	0.303
-YNL181W	pbr1-5002	YNL181W	pbr1-5005	0.637
-YNL181W	pbr1-5002	YNL181W	pbr1-5007	0.540
-YNL181W	pbr1-5002	YNL181W	pbr1-5006	0.660
 YDR469W	sdc1	YAR003W	swd1	0.502
 YDR469W	sdc1	YGL244W	rtf1	0.373
 YDR469W	sdc1	YBR175W	swd3	0.454
@@ -4330,20 +4209,12 @@ YML115C	van1	YPL066W	rgl1	0.215
 YML115C	van1	YHR030C	slt2	0.234
 YML115C	van1	YEL036C	anp1	0.509
 YML115C	van1	YNR035C	arc35-6	0.203
-YML115C	van1	YGR229C	smi1	0.249
 YML115C	van1	YJL095W	bck1	0.229
 YML115C	van1	YOL018C	tlg2	0.236
 YML115C	van1	YDR389W	sac7	0.206
 YML115C	van1	YHR188C	gpi16-5001	0.280
-YML115C	van1	YNL181W	pbr1-5005	0.235
 YML115C	van1	YBR015C	mnn2	0.238
 YML115C	van1	YDR245W	mnn10	0.358
-YBR089C-A	nhp6b	YPL123C	rny1	0.223
-YBR089C-A	nhp6b	YOR058C	ase1	0.288
-YBR089C-A	nhp6b	YDR471W	rpl27b	0.217
-YBR089C-A	nhp6b	YBR198C	taf5-3	0.224
-YBR089C-A	nhp6b	YLR154C-H	ylr154c-h	0.255
-YBR089C-A	nhp6b	YOR011W-A	yor011w-a	0.274
 YDR438W	thi74	YNL253W	tex1	0.383
 YDR500C	rpl37b	YIL133C	rpl16a	0.237
 YDR500C	rpl37b	YGR085C	rpl11b	0.234
@@ -4411,9 +4282,6 @@ YDR108W	trs85	YKR006C	mrpl13	0.260
 YDR108W	trs85	YGL020C	get1	0.236
 YDR025W	rps11a	YER117W	rpl23b	0.337
 YDR025W	rps11a	YER102W	rps8b	0.291
-YBL034C	stu1-6	YOR058C	ase1	0.220
-YBL034C	stu1-6	YEL061C	cin8	0.527
-YBL034C	stu1-6	YLR045C	stu2-11	0.471
 YPR055W	sec8-6	YDR166C	sec5-24	0.440
 YPR055W	sec8-6	YJL085W	exo70-29/37	0.333
 YPR055W	sec8-6	YLR166C	sec10-2	0.581
@@ -4476,7 +4344,6 @@ YBR109C	cmd1-8	YBR078W	ecm33	0.261
 YBR109C	cmd1-8	YBL061C	skt5	0.308
 YBR109C	cmd1-8	YLR319C	bud6	0.302
 YBR109C	cmd1-8	YOR326W	myo2-14	0.401
-YBR109C	cmd1-8	YNL181W	pbr1-5005	0.229
 YBR267W	rei1	YLR185W	rpl37a	0.268
 YBR267W	rei1	YPL090C	rps6a	0.224
 YBR267W	rei1	YNL227C	jjj1	0.276
@@ -4759,7 +4626,6 @@ YLR078C	bos1-1	YHL031C	gos1-supp1	0.286
 YLR078C	bos1-1	YKR006C	mrpl13	0.211
 YLR078C	bos1-1	YGL020C	get1	0.274
 YPL123C	rny1	YBR181C	rps6b	0.228
-YPL123C	rny1	YLR425W	tus1	0.234
 YPL123C	rny1	YDR471W	rpl27b	0.232
 YPL123C	rny1	YDL225W	shs1	0.352
 YPL123C	rny1	YMR122W-A	ncw1	0.365
@@ -4911,7 +4777,6 @@ YDR162C	nbp2	YHR030C	slt2	0.273
 YDR162C	nbp2	YML071C	cog8	0.203
 YDR162C	nbp2	YGL020C	get1-supp1	0.239
 YDR162C	nbp2	YEL042W	gda1	0.201
-YDR162C	nbp2	YGR229C	smi1	0.212
 YDR162C	nbp2	YJL095W	bck1	0.253
 YDR162C	nbp2	YBR164C	arl1	0.215
 YDR162C	nbp2	YBL061C	skt5	0.216
@@ -5046,9 +4911,6 @@ YDR378C	lsm6	YLR438C-A	lsm3-5002	0.515
 YER028C	mig3	YNL195C	ynl195c	0.490
 YER028C	mig3	YHR086W-A	yhr086w-a	0.381
 YER028C	mig3	YCL026C-B	hbn1	0.509
-YOR058C	ase1	YEL061C	cin8	0.279
-YOR058C	ase1	YLR154C-H	ylr154c-h	0.216
-YOR058C	ase1	YLR045C	stu2-11	0.203
 YGL054C	erv14	YIL076W	sec28	0.406
 YGL054C	erv14	YDR238C	sec26-f856aw860a	0.440
 YGL054C	erv14	YLR268W	sec22-1	0.294
@@ -5150,13 +5012,6 @@ YDR334W	swr1	YDR392W	spt3	0.210
 YDR334W	swr1	YNL238W	kex2	0.206
 YLR272C	ycs4-1	YDR439W	lrs4	0.475
 YLR272C	ycs4-1	YNL088W	top2-5002	0.313
-YPL158C	aim44	YPL066W	rgl1	0.229
-YPL158C	aim44	YLR425W	tus1	0.342
-YPL158C	aim44	YGR229C	smi1	0.215
-YPL158C	aim44	YLR371W	rom2-supp2	0.203
-YPL158C	aim44	YNL181W	pbr1-5005	0.219
-YPL158C	aim44	YNL181W	pbr1-5007	0.220
-YPL158C	aim44	YNL181W	pbr1-5006	0.220
 YDL105W	nse4-ts4	YEL019C	mms21-1	0.327
 YDL105W	nse4-ts4	YML023C	nse5-ts4	0.473
 YDL105W	nse4-ts4	YER038C	kre29-ts2	0.362
@@ -5337,9 +5192,7 @@ YBR084C-A	rpl19a	YOR294W	rrs1-124	0.262
 YPL066W	rgl1	YHR030C	slt2	0.235
 YPL066W	rgl1	YNL152W	inn1-5007	0.268
 YPL066W	rgl1	YNL298W	cla4	0.276
-YPL066W	rgl1	YLR425W	tus1	0.362
 YPL066W	rgl1	YNL271C	bni1	0.254
-YPL066W	rgl1	YGR229C	smi1	0.219
 YPL066W	rgl1	YJL095W	bck1	0.237
 YPL066W	rgl1	YBL061C	skt5	0.204
 YLR268W	sec22-1	YNL041C	cog6	0.357
@@ -5545,7 +5398,6 @@ YHR030C	slt2	YBL061C	skt5	0.381
 YHR030C	slt2	YDR245W	mnn10-supp1	0.204
 YHR030C	slt2	YDR389W	sac7	0.211
 YHR030C	slt2	YHR188C	gpi16-5001	0.292
-YHR030C	slt2	YLR371W	rom2-supp2	0.227
 YHR030C	slt2	YBR015C	mnn2	0.234
 YOL038W	pre6-5001	YPR103W	pre2-127	0.444
 YOL038W	pre6-5001	YFR004W	rpn11-14	0.359
@@ -5755,8 +5607,6 @@ YNR010W	cse2	YJR021C	rec107	0.209
 YNR010W	cse2	YGR046W	tam41-5001	0.231
 YNR010W	cse2	YGL127C	soh1	0.244
 YNR010W	cse2	YOL012C	htz1	0.213
-YLR425W	tus1	YMR122W-A	ncw1	0.422
-YLR425W	tus1	YLR371W	rom2-supp2	0.309
 YDR347W	mrp1	YER077C	mrx1	0.268
 YDR347W	mrp1	YLR069C	mef1	0.406
 YDR347W	mrp1	YBL080C	pet112	0.272
@@ -5859,7 +5709,6 @@ YML019W	ost6	YDR525W	api2	0.399
 YML019W	ost6	YDR245W	mnn10-supp1	0.231
 YML019W	ost6	YHR188C	gpi16-5001	0.287
 YML019W	ost6	YDR331W	gpi8-5001	0.273
-YEL061C	cin8	YLR045C	stu2-11	0.371
 YDR471W	rpl27b	YLL045C	rpl8b	0.218
 YDR471W	rpl27b	YEL054C	rpl12a	0.219
 YLR075W	rpl10-5001	YLR185W	rpl37a	0.250
@@ -5868,7 +5717,6 @@ YLR075W	rpl10-5001	YOR294W	rrs1-124	0.221
 YLR075W	rpl10-5001	YNL227C	jjj1	0.222
 YLR075W	rpl10-5001	YGL123W	rps2-5004	0.251
 YBR198C	taf5-3	YML098W	taf13-1	0.252
-YBR198C	taf5-3	YLR154C-H	ylr154c-h	0.283
 YBR198C	taf5-3	YGL112C	taf6-ts	0.347
 YDL203C	ack1	YJL095W	bck1	0.307
 YDL203C	ack1	YDR245W	mnn10-supp1	0.208
@@ -5924,7 +5772,6 @@ YLR370C	arc18	YEL036C	anp1	0.215
 YLR370C	arc18	YNR035C	arc35-6	0.439
 YLR370C	arc18	YLR319C	bud6	0.220
 YML098W	taf13-1	YGL112C	taf6-ts	0.361
-YDL225W	shs1	YLR154C-H	ylr154c-h	0.223
 YDL225W	shs1	YMR122W-A	ncw1	0.352
 YJL031C	bet4-5007	YGR172C	yip1-4	0.215
 YJL031C	bet4-5007	YDL058W	uso1-1	0.255
@@ -6016,9 +5863,6 @@ YLR069C	mef1	YNL252C	mrpl17	0.527
 YLR069C	mef1	YBR268W	mrpl37	0.672
 YLR069C	mef1	YPL040C	ism1-supp1	0.739
 YLR069C	mef1	YDR405W	mrp20	0.297
-YGR229C	smi1	YNL181W	pbr1-5005	0.401
-YGR229C	smi1	YNL181W	pbr1-5007	0.321
-YGR229C	smi1	YNL181W	pbr1-5006	0.312
 YPR189W	ski3	YMR122W-A	ncw1	0.285
 YJL029C	vps53-supp1	YBL050W	sec17-1	0.212
 YJL029C	vps53-supp1	YBR164C	arl1	0.364
@@ -6064,7 +5908,6 @@ YJL095W	bck1	YBL061C	skt5	0.393
 YJL095W	bck1	YDR245W	mnn10-supp1	0.213
 YJL095W	bck1	YDR389W	sac7	0.216
 YJL095W	bck1	YHR188C	gpi16-5001	0.277
-YJL095W	bck1	YLR371W	rom2-supp2	0.242
 YJL095W	bck1	YBR015C	mnn2	0.220
 YBR171W	sec66	YDR245W	mnn10-supp1	0.217
 YBR171W	sec66	YHR188C	gpi16-5001	0.231
@@ -6279,7 +6122,6 @@ YNL213C	rrg9-supp1	YJR144W	mgm101	0.243
 YNL213C	rrg9-supp1	YLR067C	pet309	0.322
 YNL213C	rrg9-supp1	YPL040C	ism1-supp1	0.315
 YNL213C	rrg9-supp1	YDR405W	mrp20	0.328
-YLR045C	stu2-11	YOR261C	rpn8-5007	0.201
 YFL022C	frs2-5001	YLR007W	nse1-5001	0.396
 YFL022C	frs2-5001	YMR242W-A	ymr242w-a	0.221
 YOL123W	hrp1-4	YPL153C	rad53-5001	0.260
@@ -6385,8 +6227,6 @@ YDL058W	uso1-1	YOR370C	mrs6-2	0.292
 YDL058W	uso1-1	YLR269C	ylr269c	0.472
 YDL058W	uso1-1	YKR006C	mrpl13	0.449
 YDL058W	uso1-1	YGL020C	get1	0.301
-YNL181W	pbr1-5005	YNL181W	pbr1-5007	0.650
-YNL181W	pbr1-5005	YNL181W	pbr1-5006	0.638
 YHL031C	gos1-supp1	YOR370C	mrs6-2	0.205
 YHL031C	gos1-supp1	YDR331W	gpi8-5001	0.218
 YHL031C	gos1-supp1	YGL020C	get1	0.311
@@ -6415,6 +6255,461 @@ YLR235C	ylr235c-supp1	YDR510W	smt3-331	0.473
 YPL040C	ism1-supp1	YDR405W	mrp20	0.293
 YLR269C	ylr269c	YDR331W	gpi8-5001	0.222
 YLR269C	ylr269c	YGL020C	get1	0.227
-YNL181W	pbr1-5007	YNL181W	pbr1-5006	0.469
 YDL105W	nse4-ts1	YDR510W	smt3-331	0.223
 YDR331W	gpi8-5001	YGL020C	get1	0.249
+ack1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+act1-124	Cell polarity & morphogenesis
+act1-159	Cell polarity & morphogenesis
+afg3	Respiration, oxidative phosphorylation, mitochondrial targeting
+anp1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+aos1-5019	DNA replication & repair
+api2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+arc15-10	Cell polarity & morphogenesis
+arc18	Cell polarity & morphogenesis
+arc1	Ribosome biogenesis
+arc35-6	Cell polarity & morphogenesis
+arl1	Vesicle traffic
+arl3	Glycosylation, protein folding/targeting, cell wall biosynthesis
+arp6	Transcription
+asf1	DNA replication & repair
+atp18	Respiration, oxidative phosphorylation, mitochondrial targeting
+atp3	Respiration, oxidative phosphorylation, mitochondrial targeting
+bck1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+bem2	Cell polarity & morphogenesis
+bet3-5001	Vesicle traffic
+bet4-5001	Vesicle traffic
+bet5-5001	Vesicle traffic
+bim1	Mitosis & chromosome segregation
+bni1	Cell polarity & morphogenesis
+bos1-1	Vesicle traffic
+bre1	Transcription
+bre2	Transcription
+brn1-9	Mitosis & chromosome segregation
+brp1	Transcription
+bst1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+bts1	Vesicle traffic
+bud6	Cell polarity & morphogenesis
+cbf1	Vesicle traffic
+cch1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+ccw12	Glycosylation, protein folding/targeting, cell wall biosynthesis
+cdc10-1	Cytokinesis
+cdc10-2	Cytokinesis
+cdc10-4	Cytokinesis
+cdc11-1	Cytokinesis
+cdc11-2	Cytokinesis
+cdc11-3	Cytokinesis
+cdc11-4	Cytokinesis
+cdc11-5	Cytokinesis
+cdc12-1	Cytokinesis
+cdc12-td	Cytokinesis
+cdc24-11	Cell polarity & morphogenesis
+cdc28-13	Mitosis & chromosome segregation
+cdc28-4	Mitosis & chromosome segregation
+cdc3-1	Cytokinesis
+cdc3-3	Cytokinesis
+cdc37-1	Mitosis & chromosome segregation
+cdc37-ts	Mitosis & chromosome segregation
+cdc40	Transcription
+cdc7-4	DNA replication & repair
+cdc73	Transcription
+cds1-5001	Glycosylation, protein folding/targeting, cell wall biosynthesis
+chs2-5006	Cell polarity & morphogenesis
+chs3	Cell polarity & morphogenesis
+chs6	Cell polarity & morphogenesis
+chs7	Cell polarity & morphogenesis
+cks1-38	Mitosis & chromosome segregation
+clb2	DNA replication & repair
+cmd1-8	Cell polarity & morphogenesis
+cnb1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+cog2-1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+cog3-1	Vesicle traffic
+cog3-2	Vesicle traffic
+cog4-5004	Vesicle traffic
+cog4-5005	Vesicle traffic
+cog5	Vesicle traffic
+cog6	Vesicle traffic
+cog7	Vesicle traffic
+cog8	Vesicle traffic
+cop1-1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+cpr7	Vesicle traffic
+cse2	Transcription
+csm1	DNA replication & repair
+cwc24-5004	mRNA & tRNA processing
+ddc1	DNA replication & repair
+dst1	Transcription
+ecm33	Cell polarity & morphogenesis
+elg1	DNA replication & repair
+emi1	Respiration, oxidative phosphorylation, mitochondrial targeting
+ent4	Vesicle traffic
+ent5	Vesicle traffic
+erd1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+erg24-supp1	Vesicle traffic
+erg27-5001	Glycosylation, protein folding/targeting, cell wall biosynthesis
+erp1	Vesicle traffic
+erv14	Vesicle traffic
+erv25	Glycosylation, protein folding/targeting, cell wall biosynthesis
+esc2	DNA replication & repair
+exo5	Respiration, oxidative phosphorylation, mitochondrial targeting
+exo70-29/37	Cell polarity & morphogenesis
+fzo1	Respiration, oxidative phosphorylation, mitochondrial targeting
+gab1-1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+gas1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+gda1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+gdi1-1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+get1-supp1	Vesicle traffic
+get1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+get2	Vesicle traffic
+get3	Vesicle traffic
+gin4	Cytokinesis
+gle2	Nuclear-cytoplasmic transport
+glo3-supp1	Vesicle traffic
+glo3	Vesicle traffic
+gos1-supp1	Vesicle traffic
+got1	Vesicle traffic
+gpi16-5001	Glycosylation, protein folding/targeting, cell wall biosynthesis
+gpi8-5001	Glycosylation, protein folding/targeting, cell wall biosynthesis
+gyp1	Vesicle traffic
+hoc1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+hst3	DNA replication & repair
+htz1	Transcription
+imh1	Vesicle traffic
+inn1-5007	Cell polarity & morphogenesis
+inp53	Vesicle traffic
+irc25	Protein degradation/turnover
+irs4	Vesicle traffic
+ism1-supp1	Respiration, oxidative phosphorylation, mitochondrial targeting
+kap122	Transcription
+kar3	DNA replication & repair
+kex2	Transcription
+kre29-ts2	DNA replication & repair
+krr1-17	rRNA & ncRNA processing
+kti11	tRNA wobble modification
+lge1	Transcription
+lrs4	DNA replication & repair
+lsm2-5001	mRNA & tRNA processing
+lsm3-5002	mRNA & tRNA processing
+lsm6	mRNA & tRNA processing
+lsm7	mRNA & tRNA processing
+mak10	Vesicle traffic
+mak3	Vesicle traffic
+mec1-4ts	DNA replication & repair
+med1	Transcription
+med6-5001	Transcription
+mef1	Respiration, oxidative phosphorylation, mitochondrial targeting
+mgm101	Respiration, oxidative phosphorylation, mitochondrial targeting
+mgs1	DNA replication & repair
+mhr1	Respiration, oxidative phosphorylation, mitochondrial targeting
+mms1	DNA replication & repair
+mms21-1	DNA replication & repair
+mms22	DNA replication & repair
+mms4	DNA replication & repair
+mnn10-supp1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+mnn10	Glycosylation, protein folding/targeting, cell wall biosynthesis
+mnn11	Glycosylation, protein folding/targeting, cell wall biosynthesis
+mnn2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+mrc1	DNA replication & repair
+mre11	DNA replication & repair
+mrm1	Respiration, oxidative phosphorylation, mitochondrial targeting
+mrp20	Respiration, oxidative phosphorylation, mitochondrial targeting
+mrpl13	Vesicle traffic
+mrpl17	Respiration, oxidative phosphorylation, mitochondrial targeting
+mrpl25	Respiration, oxidative phosphorylation, mitochondrial targeting
+mrpl28	Respiration, oxidative phosphorylation, mitochondrial targeting
+mrpl37	Respiration, oxidative phosphorylation, mitochondrial targeting
+mrpl38	Respiration, oxidative phosphorylation, mitochondrial targeting
+mrs6-2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+mrx1	Respiration, oxidative phosphorylation, mitochondrial targeting
+msf1	Respiration, oxidative phosphorylation, mitochondrial targeting
+mss1	Respiration, oxidative phosphorylation, mitochondrial targeting
+mtc1	Vesicle traffic
+mtg1-supp1	Respiration, oxidative phosphorylation, mitochondrial targeting
+mus81	DNA replication & repair
+mvp1	Vesicle traffic
+myo2-14	Cell polarity & morphogenesis
+nbp2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+nnf2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+nop2-10	rRNA & ncRNA processing
+nop2-6	rRNA & ncRNA processing
+nse1-16	DNA replication & repair
+nse3-ts3	DNA replication & repair
+nse3-ts4	DNA replication & repair
+nse4-5001	DNA replication & repair
+nse4-ts1	DNA replication & repair
+nse4-ts2	DNA replication & repair
+nse4-ts3	DNA replication & repair
+nse4-ts4	DNA replication & repair
+nse5-ts4	DNA replication & repair
+nup159-1	Nuclear-cytoplasmic transport
+nup188	Nuclear-cytoplasmic transport
+nup2	Nuclear-cytoplasmic transport
+nut1	Transcription
+nut2-ts	Transcription
+oms1	Respiration, oxidative phosphorylation, mitochondrial targeting
+opi3	Glycosylation, protein folding/targeting, cell wall biosynthesis
+orm2-supp1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+ost6	Glycosylation, protein folding/targeting, cell wall biosynthesis
+pan1-4	Glycosylation, protein folding/targeting, cell wall biosynthesis
+per1-supp1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+pet112	Respiration, oxidative phosphorylation, mitochondrial targeting
+pet8	Respiration, oxidative phosphorylation, mitochondrial targeting
+pex25	Peroxisome
+pkc1-2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+pkr1	Vesicle traffic
+poc4	Protein degradation/turnover
+pol5-3	Ribosome biogenesis
+pre1-1	Protein degradation/turnover
+pre10-5001	Protein degradation/turnover
+pre2-1-supp1	Protein degradation/turnover
+pre2-127	Protein degradation/turnover
+pre2-1	Protein degradation/turnover
+pre2-2	Protein degradation/turnover
+pre2-75	Protein degradation/turnover
+pre2-v214a	Protein degradation/turnover
+pre4-5001	Protein degradation/turnover
+pre6-5001	Protein degradation/turnover
+pre7-5001	Protein degradation/turnover
+pre9	Protein degradation/turnover
+psd1	Respiration, oxidative phosphorylation, mitochondrial targeting
+ptc1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+ptk2	Transcription
+puf6	rRNA & ncRNA processing
+pup1-1	Protein degradation/turnover
+pup2-5001	Protein degradation/turnover
+pup3-5001	Protein degradation/turnover
+pwp1-5001	rRNA & ncRNA processing
+rad17	DNA replication & repair
+rad24	DNA replication & repair
+rad50	DNA replication & repair
+rad53-5001	DNA replication & repair
+rad53-5002-supp1	DNA replication & repair
+rad6	Transcription
+rav1	Vesicle traffic
+rav2	Vesicle traffic
+rce1	Vesicle traffic
+rei1	Ribosome biogenesis
+ret2-1	Vesicle traffic
+ret3-1	Vesicle traffic
+rfa1-m2	DNA replication & repair
+rfc1-5002	DNA replication & repair
+rfc5-1	DNA replication & repair
+rgd1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+rgl1	Cell polarity & morphogenesis
+rgp1	Vesicle traffic
+ria1-ts	Ribosome biogenesis
+ric1	Vesicle traffic
+rim20	MVB sorting and pH depending signaling
+rmi1-supp1	DNA replication & repair
+rmi1	DNA replication & repair
+rom2-supp1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+rpl10-5001	Ribosome biogenesis
+rpl11b	Ribosome biogenesis
+rpl12a	Ribosome biogenesis
+rpl13a	Ribosome biogenesis
+rpl14b	Ribosome biogenesis
+rpl15a-5002	rRNA & ncRNA processing
+rpl15a-5004	rRNA & ncRNA processing
+rpl16a	Ribosome biogenesis
+rpl19a	Ribosome biogenesis
+rpl20b	Ribosome biogenesis
+rpl21b	Ribosome biogenesis
+rpl23a	Ribosome biogenesis
+rpl24a	Ribosome biogenesis
+rpl27b	Ribosome biogenesis
+rpl37a	Ribosome biogenesis
+rpl37b	Ribosome biogenesis
+rpl43b	Ribosome biogenesis
+rpl6a	Ribosome biogenesis
+rpl6b	Ribosome biogenesis
+rpl8a	Ribosome biogenesis
+rpl9b	Ribosome biogenesis
+rpn1-821	Protein degradation/turnover
+rpn10	Protein degradation/turnover
+rpn11-14	Protein degradation/turnover
+rpn11-8	Protein degradation/turnover
+rpn12-1	Protein degradation/turnover
+rpn5-1	Protein degradation/turnover
+rpn5-5001	Protein degradation/turnover
+rpn6-1	Protein degradation/turnover
+rpn6-5001	Protein degradation/turnover
+rpn7-3	Protein degradation/turnover
+rpn8-5007	Protein degradation/turnover
+rpn8-5008	Protein degradation/turnover
+rpp1b	Ribosome biogenesis
+rps11b	Ribosome biogenesis
+rps17a	Ribosome biogenesis
+rps18a	mRNA & tRNA processing
+rps19a	Ribosome biogenesis
+rps19b	Ribosome biogenesis
+rps2-5004	Ribosome biogenesis
+rps21a	Ribosome biogenesis
+rps24b	Ribosome biogenesis
+rps30a	Ribosome biogenesis
+rps30b	Ribosome biogenesis
+rps6a	Ribosome biogenesis
+rps6b	Ribosome biogenesis
+rps8b	Ribosome biogenesis
+rpt1-1	Protein degradation/turnover
+rpt2-rf	Protein degradation/turnover
+rpt3-1	Protein degradation/turnover
+rpt4-145	Protein degradation/turnover
+rpt4-150	Protein degradation/turnover
+rpt5-5002	Protein degradation/turnover
+rpt6-1-supp1	Protein degradation/turnover
+rpt6-1	Protein degradation/turnover
+rpt6-20	Protein degradation/turnover
+rpt6-25	Protein degradation/turnover
+rrg1	Respiration, oxidative phosphorylation, mitochondrial targeting
+rrg9-supp1	Respiration, oxidative phosphorylation, mitochondrial targeting
+rrm3	DNA replication & repair
+rrs1-124	Ribosome biogenesis
+rsm7	Respiration, oxidative phosphorylation, mitochondrial targeting
+rtf1	Transcription
+rtt101	DNA replication & repair
+rtt109	DNA replication & repair
+rud3	Vesicle traffic
+sac7	Glycosylation, protein folding/targeting, cell wall biosynthesis
+sam37-supp1	Protein degradation/turnover
+sam37	Protein degradation/turnover
+scl1-5001	Protein degradation/turnover
+scs2	Mitosis & chromosome segregation
+sdc1	Transcription
+sec1-1	Cell polarity & morphogenesis
+sec10-2	Cell polarity & morphogenesis
+sec17-1	Vesicle traffic
+sec18-1	Vesicle traffic
+sec2-41	Cell polarity & morphogenesis
+sec22-1	Vesicle traffic
+sec22-3	Vesicle traffic
+sec22-supp1	Vesicle traffic
+sec22	Vesicle traffic
+sec26-11d26	Vesicle traffic
+sec26-f856aw860a	Vesicle traffic
+sec27-1	Vesicle traffic
+sec28	Vesicle traffic
+sec3-2	Cell polarity & morphogenesis
+sec4-8	Cell polarity & morphogenesis
+sec5-24	Cell polarity & morphogenesis
+sec63-1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+sec66	Glycosylation, protein folding/targeting, cell wall biosynthesis
+sec8-6	Cell polarity & morphogenesis
+sec9-4	Cell polarity & morphogenesis
+sed5-1	Vesicle traffic
+sem1	Protein degradation/turnover
+sen1-1	Vesicle traffic
+set1	Chromatin organization/modification
+sft2	Vesicle traffic
+sgs1	DNA replication & repair
+she4	Cell polarity & morphogenesis
+skt5	Cell polarity & morphogenesis
+slt2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+sly1-ts	Vesicle traffic
+smc5-6	DNA replication & repair
+smc6-9	DNA replication & repair
+smt3-331	DNA replication & repair
+smt3aiir	DNA replication & repair
+snc2	Cell polarity & morphogenesis
+soh1	Transcription
+spa2	Cell polarity & morphogenesis
+spf1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+spp1	Chromatin organization/modification
+spt3	Transcription
+spt8	Transcription
+srs2	DNA replication & repair
+sso1	Cell polarity & morphogenesis
+sts1-5001	DNA replication & repair
+stt3-2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+sus1	Nuclear-cytoplasmic transport
+swa2-supp1	Vesicle traffic
+swa2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+swc3	Transcription
+swc4-4	Transcription
+swd1	Transcription
+swd3	Transcription
+swr1	Transcription
+syo1	Ribosome biogenesis
+sys1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+taf1-1	Transcription
+taf1-2	Transcription
+taf10-5002	Transcription
+taf10-5004	Transcription
+taf12-9	Transcription
+taf12-l446a	Transcription
+taf12-l464a	Transcription
+taf12-ts23	Transcription
+taf12-w486stop	Transcription
+taf13-1	Transcription
+taf13-2	Transcription
+taf3-5001	Transcription
+taf3-5002	Transcription
+taf4-18	Transcription
+taf5-15	Transcription
+taf5-3	Transcription
+taf6-ts	Transcription
+taf8-7	Transcription
+taf9-ts2	Transcription
+tfa2-45	Transcription
+thp2	Nuclear-cytoplasmic transport
+tif6-ts1	rRNA & ncRNA processing
+tlg1-5005	Vesicle traffic
+tlg2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+toa1-5001	Transcription
+top2-5002	Mitosis & chromosome segregation
+top3-supp1	DNA replication & repair
+tpm1-supp1	Cell polarity & morphogenesis
+trs20-5001	Vesicle traffic
+trs23-5001	Vesicle traffic
+trs85	Vesicle traffic
+tvp18	Peroxisome
+uaf30	Ribosome biogenesis
+ubc9-2	DNA replication & repair
+ubp3	Vesicle traffic
+ubp6	Protein degradation/turnover
+ulp1-333	DNA replication & repair
+ump1	Protein degradation/turnover
+uso1-1	Vesicle traffic
+van1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+vma11	Vesicle traffic
+vma22	Vesicle traffic
+vma3	Vesicle traffic
+vma5	Vesicle traffic
+vma8	Vesicle traffic
+vma9	Vesicle traffic
+vps29	Glycosylation, protein folding/targeting, cell wall biosynthesis
+vps45	Glycosylation, protein folding/targeting, cell wall biosynthesis
+vps51	Vesicle traffic
+vps52-supp1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+vps52	Glycosylation, protein folding/targeting, cell wall biosynthesis
+vps53-supp1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+vps53	Vesicle traffic
+vps54-supp1	Vesicle traffic
+vps63	Vesicle traffic
+vps71	Transcription
+vps72	Transcription
+vti1-11-supp1	Vesicle traffic
+vti1-11	Vesicle traffic
+vti1-2	Vesicle traffic
+wbp1-1	Glycosylation, protein folding/targeting, cell wall biosynthesis
+wbp1-2	Glycosylation, protein folding/targeting, cell wall biosynthesis
+xrs2	DNA replication & repair
+yar1	Ribosome biogenesis
+ybl062w	Cell polarity & morphogenesis
+ybl071c-b	Ribosome biogenesis
+ybr099c	DNA replication & repair
+ybr100w	DNA replication & repair
+ycg1-2	Mitosis & chromosome segregation
+ycl060c	DNA replication & repair
+ycs4-1	Mitosis & chromosome segregation
+ydr203w	Vesicle traffic
+min10	rRNA & ncRNA processing
+ygl235w	Respiration, oxidative phosphorylation, mitochondrial targeting
+ygr122w	MVB sorting and pH depending signaling
+yil141w	Cytokinesis
+yip1-4	Vesicle traffic
+ykt6-5001	Vesicle traffic
+ylr235c-supp1	DNA replication & repair
+ylr269c	Vesicle traffic
+ynl067w-b	Ribosome biogenesis
+ypt1-3	Vesicle traffic
+ypt6	Vesicle traffic
+yra1-5003	Nuclear-cytoplasmic transport
+yta7	DNA replication & repair
