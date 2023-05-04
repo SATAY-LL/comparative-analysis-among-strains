@@ -389,9 +389,9 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
 
                                 fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
                         elif H[0]==False and nume[0]==0:
-                            fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
+                            fitness_models[gene]["fitness_domains_vector"]=[0]
                         elif H[0]==False and deno[0]==0:
-                            fitness_models[gene]["fitness_domains_vector"]="Not enough insertions"
+                            fitness_models[gene]["fitness_domains_vector"]=[0]
                         elif H[0]==False and deno[0]!=0:
                             fitness_models[gene]["fitness_domains_vector"]=(np.log2(nume/deno))/ref
                     else:
@@ -419,7 +419,7 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
                         f_0=np.delete(fitness_models[gene]["fitness_domains_vector"],J)
                         
                         f_0=np.array(f_0,dtype=float)
-                        if len(f_0)>0:
+                        if len(f_0)>0: # there are domains with enough insertions
                             for i in J:
                                 f[i]=0 # assign zero fitness if the domain that does not have enough insertions is inside other that have enough insertions
                             fitness_models[gene]["fitness_domains_average"]=np.mean(f)
