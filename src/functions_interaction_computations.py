@@ -5,7 +5,8 @@ import numpy as np
 from collections import defaultdict
 from scipy import stats
 
-def filter_fitness(data_fitness,backgrounds,goi=["BEM1","BEM3","NRP1"],discard=["Not enough flanking regions"],set2zero=["Not enough reads","Not enough insertions"],cols=["fitness_gene","fitness_domains_corrected"]):
+def filter_fitness(data_fitness,backgrounds,goi=["BEM1","BEM3","NRP1"],discard=["Not enough flanking regions"],
+set2zero=["Not enough reads","Not enough insertions"],cols=["fitness_gene","fitness_domains_corrected"],essentiality=False):
     """_summary_
 
     Parameters
@@ -40,7 +41,10 @@ def filter_fitness(data_fitness,backgrounds,goi=["BEM1","BEM3","NRP1"],discard=[
         for i in f.index:
             if i!=goi[0] and i!=goi[1] and i!=goi[2]:
                 if f.loc[i,cols[1]]==set2zero[0] or f.loc[i,cols[1]]==set2zero[1]:
-                    f.drop(i,inplace=True)
+                    if essentiality==True:
+                        f.loc[i,cols[1]]=0 # set to zero the fitness of the genes that have not enough reads or insertions
+                    else:
+                        f.drop(i,inplace=True)
                 else:
                     pass
             else:
