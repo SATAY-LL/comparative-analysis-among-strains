@@ -1,1 +1,0 @@
-['GCS1', 'HSP60', 'FAS2', 'MEX67', 'IMP3', 'ARO8', 'NSP1', 'HSP82', 'PIL1', 'UBC1', 'ERG27', 'PDX3', 'HXT2', 'TUP1', 'MLC1', 'RPN1', 'ZUO1', 'NCL1', 'DHH1', 'NUP2', 'RPB2', 'MTD1', 'COX13', 'GCN1', 'ADH6', 'IDH1', 'GLY1', 'CLC1', 'RPA49', 'IDH2', 'ECM33', 'SSH1']
