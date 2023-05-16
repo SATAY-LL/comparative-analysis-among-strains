@@ -4,6 +4,7 @@
 *.bed
 *.xlsx
 figures/
+data/
 postprocessed-data/
 data/WT_1_Benoit
 data/WT_2_Benoit
