@@ -174,12 +174,35 @@ plt.ylabel("gene length",fontsize=18)
 plt.xlabel("# transposons",fontsize=18)
 plt.legend()
 #plt.savefig("../figures/figures_thesis_chapter_2/supp_fig_length_vs_number_of_transposons_linear.png",dpi=300)
+# -
+
+
 
 # +
 ## Plot the number of genes with less than 5 transposons in all mutants over the total number of transposons per library
 from scipy.optimize import curve_fit
 
-fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(15, 10))
+keys2plot=["wt_a","wt_b", 'bem1-aid_a', 'bem1-aid_b', 'dbem1dbem3_a', 'dbem1dbem3_b']
+L=[]
+R=[]
+for i in np.arange(0,len(keys2plot)):
+    tmp=(list_data_pd.loc[keys2plot[i]])
+    L.append(np.sum(tmp.loc[:,"Insertions"]))
+    R.append(np.sum(tmp.loc[:,"Reads"]))
+
+    
+L_dict=dict(zip(keys2plot,L))
+R_dict=dict(zip(keys2plot,R))
+
+Q=[]
+for i in np.arange(0,len(backgrounds)):
+    tmp=(list_data_pd.loc[backgrounds[i]])
+    #L.append(len(tmp[(tmp.loc[:,"Insertions"]<5) & (tmp.loc[:,"Reads"]<2)]))
+    Q.append(len(tmp[(tmp.loc[:,"Insertions"]<5)]))
+
+Q_dict=dict(zip(backgrounds,Q))
+
+fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(10, 10))
 l_array=[]
 q_array=[]
 for keys in L_dict.keys():
@@ -188,23 +211,23 @@ for keys in L_dict.keys():
     l_array.append(L_dict[keys])
     q_array.append(Q_dict[keys])
 
-def func(x, a,b):
-    return b+a / x
+# def func(x, a,b):
+#     return b+a / x
 
-x = np.array(l_array)
+# x = np.array(l_array)
 
-popt, pcov = curve_fit(func, x, np.array(q_array))
-axes.plot(x, func(x, *popt), 'ko', label="Fitted Curve (b+a/x)",alpha=0.6,markersize=10)
+# popt, pcov = curve_fit(func, x, np.array(q_array))
+# axes.plot(x, func(x, *popt), 'ko', label="Fitted Curve (b+a/x)",alpha=0.6,markersize=10)
 
-axes.set_xlabel("# of transposons in that library",fontsize=16)
-axes.set_title("# of genes with less than 5 transposons",fontdict={"size":16})
-axes.legend()
-axes.set_xscale("log")
+axes.set_xlabel("# of insertions in that library",fontsize=16)
+axes.set_ylabel("# of genes with less than 5 insertions",fontdict={"size":16})
+#axes.legend()
+# axes.set_xscale("log")
 axes.set_yscale("log")
 plt.grid(axis="both",which="both",ls="--",alpha=0.5)
 plt.tick_params(axis='both', which='both', labelsize=16)
 
-#fig.savefig("../figures/number_of_tr_less_than_5_vs_total_number_of_tr.png",dpi=300)
+fig.savefig("../figures/number_of_insertions_less_than_5_vs_total_number_of_reads.png",dpi=300)
 
 # +
 # from module_intergenic_model import adding_features2dataframe,getting_r
@@ -245,99 +268,6 @@ plt.tick_params(axis='both', which='both', labelsize=16)
 
 # plt.tight_layout(pad=3)
 #plt.savefig("../figures/fig_mean_and_std_number_reads_per_transposons_per_library.png",dpi=300)
-# -
-
-# ## Compute fitness from a coarse grained model, taking the total sum of reads per transposon per gene 
-
-# +
-
-# list_data_rates=[]
-# for i in np.arange(0,len(backgrounds)):
-#     tmp=(list_data_extended_pd.loc[backgrounds[i]])
-#     list_data_rates.append(getting_r(tmp))
-
-
-# -
-
-# ## Export fitness values to excel to be used in other notebooks 
-
-# +
-# fitness_all=[]from module_intergenic_model import adding_features2dataframe,getting_r
-
-# list_data_extended=[]
-# for i in np.arange(0,len(backgrounds)):
-#     tmp=(list_data_pd.loc[backgrounds[i]])
-#     list_data_extended.append(adding_features2dataframe(tmp))
-#     tmp.columns=["fitness"]
-#     tmp.index=list_data_pd.loc[backgrounds[i],"Gene name"]
-#     fitness_all.append(tmp)
-
-# fitness_all_pd=pd.concat(fitness_all,axis=0,keys=backgrounds)
-# fitness_all_pd.reset_index(inplace=True)
-
-# fitness_all_pd.rename(columns={"level_0":"background"},inplace=True)
-
-# fitness_all_pd.to_excel("../postprocessed-data/fitness_coarse_grained_all_pd.xlsx")
-
-
-# +
-# ## Normalization with respect the values of the fitness of the wild type merged genotype
-# rates_dict=dict(zip(backgrounds,list_data_rates))
-
-# rates_norm_dict=defaultdict(dict)
-
-# for i in np.arange(0,len(backgrounds)):
-#     tmp=(rates_dict[backgrounds[i]])
-#     if rates_dict["wt_merged"]!=0:
-#         rates_norm_dict[backgrounds[i]]["rates-intergenic"]=np.divide(tmp,rates_dict["wt_merged"])[0]
-#     else:
-#         rates_norm_dict[backgrounds[i]]["rates-intergenic"]=tmp[0]
-
-# +
-# rates_norm_dict_pd=pd.DataFrame.from_dict(rates_norm_dict,orient="index")
-# rates_norm_dict_pd.head(2)
-
-# +
-# ## Fitness plots  normalized to the values of wt_merged
-
-# keys_fitness=["bem1-aid_a","bem1-aid_b"]
-# #keys_fitness=backgrounds
-
-# rates_norm_dict_pd=pd.DataFrame.from_dict(rates_norm_dict,orient="index")
-
-# plt.subplots(nrows=1,ncols=2,figsize=(8, 3))
-# j=1
-# for i in np.arange(0,len(keys_fitness),2):
-#     plt.subplot(1,2,j)
-#     plt.scatter(rates_norm_dict_pd.loc[keys_fitness[i]].tolist(),
-#     rates_norm_dict_pd.loc[keys_fitness[i+1]].tolist(),s=30,alpha=0.5)
-#     plt.plot(np.arange(0,2.1,0.1),np.arange(0,2.1,0.1),color="black")
-   
-#     plt.ylabel("Fitness_" + keys_fitness[i+1],fontsize=9)
-#     plt.xlabel("Fitness_" + keys_fitness[i],fontsize=9)
-#     plt.tight_layout(pad=3)
-    
-#     j=j+1
-#plt.savefig("../figures/fig_fitness_scatter_normalized_wt_merged.png",dpi=300)
-
-# +
-# ## Distribution of fitness values from WT/normalization to the HO locus values
-
-# list_data_pd_wt=list_data_pd.loc["wt_merged"]
-# ho=np.where(list_data_pd_wt.loc[:,"Gene name"]=="HO")[0][0]
-
-# index_wt_merged=np.where(np.array(backgrounds)=="wt_merged")[0][0]
-
-# fitness_wt=list_data_rates[index_wt_merged]
-# fitness_wt_ho=fitness_wt[0][ho]
-
-# values=np.array(fitness_wt[0])/fitness_wt_ho
-
-# values[~np.isfinite(values)]=0 # make zero values if nan or inf values 
-
-# # genes=list_data_pd_wt.loc[np.where(values!=-np.inf)[0],"Gene name"]
-# # values=values[np.where(values!=-np.inf)]
-
 # -
 
 keys=['dbem3_b',

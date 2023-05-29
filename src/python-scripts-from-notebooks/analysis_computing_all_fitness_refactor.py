@@ -97,27 +97,36 @@ with open("../postprocessed-data/discarded_genes_all_backgrounds", "rb") as fp: 
     b = pickle.load(fp)
 
 
-# -
-
-len(b)
 
 # +
 i=0
 fitness_all=[]
-background="wt_merged"
+background="dnrp1_merged"
     
 r,gene_coordinates,reads_location,insertion_locations=reads_per_insertion_along_gene_length(list_data_pd,background,number_of_parts=10)
 
 data_domains=protein_domains_info(list_data_pd,background,gene_coordinates,reads_location,
-                                insertion_locations,b[5])
+                                insertion_locations,b[14])
 data_domains_extended=reads_and_insertions_per_domain(list_data_pd,background,data_domains,reads_location,insertion_locations)
 
 data_domains_extended_new=excluding_domains(list_data_pd,background,data_domains_extended)
 
-fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,r,b[5])
+fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,r,b[14])
 # -
 
-fitness_models_pd.loc["NRP1",:]
+data_domains_extended_new.loc["WHI3"],data_domains_extended_new.loc["CLN3"]
+
+# +
+f=fitness_models_pd
+
+f=f[f.loc[:,"fitness_gene"]!="Not enough reads"]
+f=f[f.loc[:,"fitness_gene"]!="Not enough insertions"]
+f=f[f.loc[:,"fitness_gene"]!="Not enough flanking regions"]
+
+plt.boxplot(f.loc[:,"fitness_gene"].astype(float));
+# -
+
+fitness_models_pd.loc["BEM3",:]
 
 # which row number is certain gene 
 datawt=list_data_pd.loc["wt_merged"]
@@ -160,6 +169,8 @@ for background in keys:
     
     i=i+1
     fitness_all.append(fitness_models_pd)
+
+len(fitness_all)
 
 # +
 import pickle

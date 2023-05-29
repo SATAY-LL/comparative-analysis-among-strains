@@ -29,6 +29,8 @@ from collections import defaultdict
 
 
 # +
+# Importing pergene files 
+
 pergene_files=[]
 #data_dir= "../satay/data_files/data_unmerged/"
 #data_dir="../transposonmapper/data_files/files4test/"
@@ -41,16 +43,21 @@ for root, dirs, files in os.walk(data_dir):
 
 list_data=[]
 for i in pergene_files:
-    list_data.append(pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0"))
+    tmp=pd.read_excel(i,engine='openpyxl',index_col="Unnamed: 0")
+    ## remove ADE2 genes
+    tmp=tmp[tmp.loc[:,"Gene name"]!="ADE2"]
+    tmp.index=np.arange(0,len(tmp))
+    list_data.append(tmp)
 
 keys=[]
 for i in np.arange(0,len(pergene_files)):
     keys.append(pergene_files[i].split("/")[-1].split("_")[0]+"_"+pergene_files[i].split("/")[-1].split("_")[1])
 
 list_data_pd=pd.concat(list_data,axis=0,keys=keys)
+
 # -
 
-list_data_pd.head(2)
+keys
 
 # +
 ## Plot reads per tranposons over the genes in essential genes  
@@ -88,9 +95,6 @@ plt.vlines(ymax=np.max(reads_vector),ymin=0,x=start_location+length_10_last,colo
 
 plt.annotate("10%",xy=(start_location+length_10_first,np.max(reads_vector)),xytext=(start_location+length_10_first,np.max(reads_vector)+10),arrowprops=dict(facecolor='black', shrink=0.05))
 plt.annotate("90%",xy=(start_location+length_10_last,np.max(reads_vector)),xytext=(start_location+length_10_last,np.max(reads_vector)+10),arrowprops=dict(facecolor='black', shrink=0.05))
-# -
-
-keys
 
 # +
 from from_excel_to_list import from_excel_to_list
@@ -105,8 +109,10 @@ def plot_reads_per_insertion_location(gene,keys):
     keys : [type]
         [description]
     """
-
-    fig,axes=plt.subplots(4,4,figsize=(25,10))
+    rows=2
+    cols=int(len(keys)/2)
+    fig,axes=plt.subplots(rows,cols,figsize=(15,rows*cols))
+    plt.subplots_adjust(wspace=0.5,hspace=0.5)
     density_vector_array=[]
 
     for i in np.arange(0,len(keys)):
@@ -123,7 +129,7 @@ def plot_reads_per_insertion_location(gene,keys):
         length=end_location-start_location
 
         if type(reads_vector)!=int:
-            density_vector_array.append(len(reads_vector)/length)
+            density_vector_array.append(np.sum(reads_vector)/len(reads_vector))
         else:
             density_vector_array.append(0)
         
@@ -131,13 +137,16 @@ def plot_reads_per_insertion_location(gene,keys):
         length_10_last=0.9*length
 
        
-        plt.subplot(4,4,i+1)
+        plt.subplot(rows,cols,i+1)
 
         plt.bar(from_excel_to_list( list_data_pd.loc[keys[i],"Insertion locations"][index_gene]),
         reads_vector)
 
         plt.xlabel("Insertion location")
         plt.ylabel("Reads")
+        plt.yscale("log")
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
         
         plt.title("back:"+keys[i] + "_" + gene )
         plt.xlim(start_location,end_location)
@@ -150,10 +159,10 @@ def plot_reads_per_insertion_location(gene,keys):
 
        
 
-    plt.subplot(4,4,16)
-    plt.bar(keys,density_vector_array,alpha=0.5);
-    plt.xticks(rotation=90)
-    plt.ylabel("Transposon density")
+    # plt.subplot(4,4,16)
+    # plt.bar(keys,density_vector_array,alpha=0.5);
+    # plt.xticks(rotation=90)
+    # plt.ylabel("Transposon density")
 
     plt.tight_layout()
 
@@ -161,11 +170,27 @@ def plot_reads_per_insertion_location(gene,keys):
 
     return fig,density_vector_array
     
+# -
+
+keys=["wt_a","wt_b","dnrp1_1","dnrp1_2"]
 
 # +
-figure,density_array=plot_reads_per_insertion_location("RDI1",keys)
+figure,density_array=plot_reads_per_insertion_location("WHI3",keys)
 
-#figure.savefig("../figures/reads_per_insertion_location_BEM3.png")
+figure.savefig("../figures/reads_per_insertion_location_WHI3_dnrp1_wt.png")
+
+# +
+figure,density_array=plot_reads_per_insertion_location("CLN3",keys)
+
+figure.savefig("../figures/reads_per_insertion_location_CLN3_dnrp1_wt.png")
+
+# +
+#keys=["wt_a","wt_b","bem1-aid_a","bem1-aid_b","dbem1dbem3_a","dbem1dbem3_b","dbem3_a","dbem3_b"]
+keys=["wt_a","wt_b","bem1-aid_a","bem1-aid_b"]
+
+figure,density_array=plot_reads_per_insertion_location("CDC39",keys)
+
+#figure.savefig("../figures/reads_per_insertion_location_CLN3_dnrp1_wt.png")
 
 # +
 ## Plot reads per tranposons over the genes in essential genes  

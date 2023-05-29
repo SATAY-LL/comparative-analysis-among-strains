@@ -333,11 +333,18 @@ qian_dataset_SC.index,sga_fitness.index,satay_wt2compare_domains.index])
 
 d=set.intersection(*map(set,all_index_arrays))
 
-satay_wt2compare_average_normalize=satay_wt2compare_average.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
-breslow_dataset_normalize=breslow_dataset.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
-qian_dataset_normalize=qian_dataset_SC.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
-sga_dataset_normalize=sga_fitness.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
-satay_wt2compare_domains_normalize=satay_wt2compare_domains.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
+# satay_wt2compare_average_normalize=satay_wt2compare_average.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
+# breslow_dataset_normalize=breslow_dataset.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
+# qian_dataset_normalize=qian_dataset_SC.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
+# sga_dataset_normalize=sga_fitness.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
+# satay_wt2compare_domains_normalize=satay_wt2compare_domains.loc[d].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
+
+satay_wt2compare_average_normalize=satay_wt2compare_average.loc[d].apply(lambda x: (x - np.mean(x)) / (np.std(x)))
+breslow_dataset_normalize=breslow_dataset.loc[d].apply(lambda x: (x - np.mean(x)) / (np.std(x)))
+qian_dataset_normalize=qian_dataset_SC.loc[d].apply(lambda x: (x - np.mean(x)) / (np.std(x)))
+sga_dataset_normalize=sga_fitness.loc[d].apply(lambda x: (x - np.mean(x)) / (np.std(x)))
+satay_wt2compare_domains_normalize=satay_wt2compare_domains.loc[d].apply(lambda x: (x - np.mean(x)) / (np.std(x)))
+
 ## remove index that are duplicates 
 
 sga_dataset_normalize=sga_dataset_normalize.loc[~sga_dataset_normalize.index.duplicated(keep='first')]
@@ -404,7 +411,7 @@ plt.figure(figsize=(5,5))
 plt.scatter(satay_average,sga,marker='o',color='orange',label="SGA",s=2)
 plt.scatter(satay_average,qian,marker='o',color='g',label="Qian",s=2)
 plt.scatter(satay_average,breslow,marker='o',color='purple',label="Breslow",s=2)
-plt.plot([0,2],[0,2],color='k',linestyle='--')
+
 #
 plt.legend()
 
@@ -427,7 +434,7 @@ plt.hist(sga_fitness.loc[d1,"fitness"],bins=100,color="orange",alpha=0.5,histtyp
 plt.hist(breslow_dataset.loc[d1,"fitness"],bins=100,color="purple",alpha=0.5,histtype="step",linewidth=2);
 plt.hist(qian_dataset_SC.loc[d1,"fitness"],bins=100,color="green",alpha=0.5,    histtype="step",linewidth=2);
 
-plt.xlim(0,1.5)
+
 
 plt.ylabel("Number of genes")
 plt.xlabel("Fitness")
