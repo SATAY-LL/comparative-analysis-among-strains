@@ -953,7 +953,15 @@ gi_pd_fitness_gene["gene_names"]=gi_pd_fitness_gene.index
 gi_pd_fitness_gene_dbem1dbem3=gi_pd_fitness_gene
 
 gi_pd_fitness_gene_dbem1dbem3
+
+# +
+all_pathways_gi=gi_pd_fitness_gene_dbem1dbem3[gi_pd_fitness_gene_dbem1dbem3.loc[:,"gene_names"].isin(all_pathways)]
+
+
+#all_pathways_gi.to_csv("../postprocessed-data/pathways_bem1bem3_gi.csv",sep="\t")
 # -
+
+all_pathways_gi.sort_values(by="fold_change",ascending=False)
 
 x=gi_pd_fitness_gene_dbem1dbem3.loc[:,"fold_change"].sort_values(ascending=False)
 x[:10]

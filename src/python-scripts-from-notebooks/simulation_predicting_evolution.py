@@ -30,6 +30,9 @@ plt.rc('font', family='serif',size=14)
 plt.rc('xtick',labelsize=14)
 plt.rc('ytick',labelsize=14)
 
+
+from functions_interaction_computations import filter_fitness
+
 # +
 
 
@@ -66,55 +69,44 @@ with open("../postprocessed-data/fitness_models_all_backgrounds", "rb") as fp:  
     b = pickle.load(fp)
 
 fitness_all_pd=pd.concat(b,axis=0,keys=keys)
-
-# +
-data=[]
-for backg in keys:
-    f=fitness_all_pd.loc[backg]
-    f=f[f.loc[:,"fitness_gene"]!="Not enough flanking regions"]
-    for i in f.index:
-        if f.loc[i,"fitness_gene"]=="Not enough reads":
-            f.loc[i,"fitness_gene"]=0
-        elif f.loc[i,"fitness_gene"]=="Not enough insertions":
-            f.loc[i,"fitness_gene"]=0
-        elif f.loc[i,"fitness_domains_corrected"]=="Not enough insertions":
-            f.loc[i,"fitness_domains_corrected"]=0
-
-    # f[f.loc[:,"fitness_gene"]=="Not enough reads"]=0
-    # f[f.loc[:,"fitness_gene"]=="Not enough insertions"]=0
-    # f[f.loc[:,"fitness_domains_corrected"]=="Not enough insertions"]=0
-    
-    # f=f[f.loc[:,"fitness_gene"]!="Not enough reads"]
-    # f=f[f.loc[:,"fitness_gene"]!="Not enough insertions"]
-    # f=f[f.loc[:,"fitness_domains_corrected"]!="Not enough insertions"]
-    data.append(f)
-
-data_fitness=pd.concat(data,axis=0,keys=keys)
-
 # -
 
-keys
+data_fitness=filter_fitness(fitness_all_pd,backgrounds=keys,goi=["BEM1","BEM3","NRP1"],discard=["Not enough flanking regions"],set2zero=["Not enough reads",
+    "Not enough insertions"],cols=["fitness_gene","fitness_domains_corrected"],essentiality=True)
+
+
 
 # +
-fitness_dbem1=data_fitness.loc["bem1-aid_merged"]
 fitness_wt=data_fitness.loc["wt_merged"]
-fitness_dbem1dbem3=data_fitness.loc["bem1-aid-dbem3_a"]
 
-genes2test=["BEM3","CLA4","RDI1","STE18","SEC8","NRP1","BEM2"]
+fitness_bem1_wt=0.5*(fitness_wt.loc["BEM1","fitness_gene"]+fitness_wt.loc["BEM1","fitness_domains_corrected"])
+fitness_dbem1=data_fitness.loc["bem1-aid_merged"].loc[:,"fitness_gene"]*fitness_bem1_wt/np.median(data_fitness.loc["bem1-aid_merged","fitness_gene"])
+
+
+fitness_dbem1dbem3_dbem1=fitness_dbem1.loc["BEM3"]
+
+fitness_dbem1dbem3=data_fitness.loc["dbem1dbem3_a"].loc[:,"fitness_gene"]*fitness_dbem1dbem3_dbem1/np.median(data_fitness.loc["dbem1dbem3_a","fitness_gene"])
+
+
+
+
+np.where(fitness_dbem1.sort_values(ascending=False).index=="BEM3")
+
+# +
+# genes2test=["BEM3","RDI1","STE18","SEC8","NRP1","BEM2"]
 column="fitness_gene"
-
+genes2test=fitness_dbem1.sort_values(ascending=False)[523:530].index
 
 fitness_dbem12test=[]
 fitness_dbem1dbem32test=[]
+fitness_wt2test=[]
 for gene in genes2test:
-    fitness_dbem12test.append(fitness_dbem1.loc[gene,column])
-    fitness_dbem1dbem32test.append(fitness_dbem1dbem3.loc[gene,column])
+    if gene in fitness_dbem1dbem3.index and gene in fitness_wt.index:
+        fitness_dbem12test.append(fitness_dbem1.loc[gene])
+        fitness_dbem1dbem32test.append(fitness_dbem1dbem3.loc[gene])
+        fitness_wt2test.append(fitness_wt.loc[gene,column])
 
-fitness_bem1=fitness_wt.loc["BEM1",column]/np.max(fitness_wt.loc[:,column])
-fitness_wt2test=fitness_wt.loc[genes2test,column]/np.max(fitness_wt.loc[:,column])
-
-fitness_dbem12test=fitness_dbem12test/np.max(fitness_dbem1.loc[:,column])
-fitness_dbem1dbem32test=fitness_dbem1dbem32test/np.max(fitness_dbem1dbem3.loc[:,column])
+fitness_bem1=fitness_bem1_wt
 
 # -
 
@@ -153,10 +145,10 @@ import matplotlib.pyplot as plt
 fitness=fitness_dbem12test
 
 # Define population size
-N = 100000
+N = 10000
 
 # Define number of generations to simulate
-T = 12
+T = 50
 
 # Initialize population with equal frequencies of all genotypes
 p = np.ones(len(fitness)) / len(fitness)
@@ -187,8 +179,8 @@ fig = plt.figure(figsize=(15, 5))
 ax1 = fig.add_subplot(121)
 ax1.plot(fitness)
 ax1.plot(fitness,"*", markersize=10, color="b")
-ax1.set_xticks(np.arange(len(fitness)))
-ax1.set_xticklabels(genes2test,rotation=45)
+# ax1.set_xticks(np.arange(len(fitness)))
+# ax1.set_xticklabels(genes2test,rotation=45)
 ax1.hlines(fitness_bem1, 0, len(fitness), linestyles='dashed', colors='k')
 ax1.set_xlabel('Genotype')
 ax1.set_ylabel('Fitness')
@@ -198,19 +190,41 @@ ax1.set_title('Fitness Landscape')
 ax2 = fig.add_subplot(122)
 trajectory = np.array(trajectory)
 for i in range(trajectory.shape[1]):
-    ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]))
+    if genes2test[i]=="BEM3":
+        ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]),color="red")
+    else:
+        ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]),color="gray",alpha=0.2)
 ax2.set_xlabel('Generations')
 ax2.set_ylabel('Frequency')
 ax2.set_title('Evolutionary Trajectory for dbem1')
-ax2.legend()
-ax2.set_xlim(0, 50)
+# ax2.legend()
+ax2.set_xlim(0, T+10)
 plt.tight_layout()
 plt.show()
 
 # -
 
-plt.imshow(trajectory, cmap='Greys', aspect='auto',vmax=0.8,vmin=0)
+plt.imshow(trajectory, cmap='Greys', aspect='auto')
 plt.xticks(np.arange(len(genes2test)),genes2test,rotation=45);
+
+# +
+
+np.where(fitness_dbem1dbem3.sort_values(ascending=False).index=="NRP1")
+
+# +
+column="fitness_gene"
+genes2test=fitness_dbem1dbem3.sort_values(ascending=False)[21:30].index
+
+
+fitness_dbem1dbem32test=[]
+
+for gene in genes2test:
+    if gene in fitness_dbem1dbem3.index :
+        
+        fitness_dbem1dbem32test.append(fitness_dbem1dbem3.loc[gene])
+       
+
+
 
 # +
 # One genotype evolution fitness
@@ -226,7 +240,7 @@ fitness=fitness_dbem1dbem32test
 N = 100000
 
 # Define number of generations to simulate
-T = 12
+T = 50
 
 # Initialize population with equal frequencies of all genotypes
 p = np.ones(len(fitness)) / len(fitness)
@@ -256,8 +270,8 @@ fig = plt.figure(figsize=(15, 5))
 ax1 = fig.add_subplot(121)
 ax1.plot(fitness)
 ax1.plot(fitness,"*", markersize=10, color="b")
-ax1.set_xticks(np.arange(len(fitness)))
-ax1.set_xticklabels(genes2test,rotation=45)
+# ax1.set_xticks(np.arange(len(fitness)))
+# ax1.set_xticklabels(genes2test,rotation=45)
 #ax1.hlines(fitness_bem1, 0, len(fitness), linestyles='dashed', colors='k')
 ax1.set_xlabel('Genotype')
 ax1.set_ylabel('Fitness')
@@ -267,16 +281,65 @@ ax1.set_title('Fitness Landscape')
 ax2 = fig.add_subplot(122)
 trajectory = np.array(trajectory)
 for i in range(trajectory.shape[1]):
-    ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]))
+    if genes2test[i]=="NRP1":
+        ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]),color="red")
+    else:
+        ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]),color="gray",alpha=0.2)
 ax2.set_xlabel('Generations')
 ax2.set_ylabel('Frequency')
 ax2.set_title('Evolutionary Trajectory for dbem1-dbem3')
-ax2.legend()
-ax2.set_xlim(0, 50)
+# ax2.legend()
+ax2.set_xlim(0, T+10)
 plt.tight_layout()
 plt.show()
 
 # -
 
-plt.imshow(trajectory, cmap='Greys', aspect='auto',vmax=0.6,vmin=0)
+plt.imshow(trajectory, cmap='Greys', aspect='auto')
 plt.xticks(np.arange(len(genes2test)),genes2test,rotation=45);
+
+# #### Simulating mutation rate of a gene based on the length of the gene, sequence complexity, presence of repetitive sequences, and evolutionary conservation. Please note that this code is just an example and the specific details of how these factors influence mutation rate may vary depending on the context:
+#
+# In this code, we first define the length of the gene (in this case, 1000 base pairs), the sequence complexity (which is a value between 0 and 1 that represents the fraction of unique base pairs in the gene), the presence of repetitive sequences (which is a Boolean value indicating whether the gene contains repetitive sequences), and the evolutionary conservation (which is a value between 0 and 1 that represents the level of conservation of the gene across species). We then calculate the mutation rate based on these factors, where the mutation rate is a value between 0 and 1 that represents the probability of a base pair mutating in one generation. Finally, we simulate mutations in the gene by iterating over each base pair and randomly deciding whether to mutate based on the mutation rate.
+
+# +
+import random
+
+# define gene length
+gene_length = 100
+
+# define sequence complexity
+sequence_complexity = 0.8 #the fraction of unique base pairs in the gene
+
+# define presence of repetitive sequences
+repetitive_sequence = 0.02 # the fraction of the gene that is repetitive
+
+# define evolutionary conservation
+evolutionary_conservation = 0.9 #the fraction of the gene that is conserved across species
+
+# calculate mutation rate based on factors
+mutation_rate = gene_length * (1 - sequence_complexity) * (1 + repetitive_sequence) * (1 - evolutionary_conservation)
+
+# simulate mutation based on mutation rate
+for i in range(gene_length):
+    if random.gauss(mu=mutation_rate,sigma=mutation_rate) < mutation_rate:
+        # mutate gene at position i
+        print(f"Mutation at position {i} with mutation_rate {mutation_rate}")
+# -
+
+list_data_pd
+
+# +
+genes2test=fitness_dbem1.sort_values(ascending=False)[0:530].index
+
+len_genes2test=[]
+x=list_data_pd.loc["wt_merged"]
+for gene in genes2test:
+    tmp=x[x.loc[:,"Gene name"]==gene]
+    lengene=tmp["End location"]-tmp["Start location"]
+    len_genes2test.append(lengene.tolist())
+
+
+# -
+
+
