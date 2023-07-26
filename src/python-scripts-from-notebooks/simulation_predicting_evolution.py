@@ -30,9 +30,12 @@ plt.rc('font', family='serif',size=14)
 plt.rc('xtick',labelsize=14)
 plt.rc('ytick',labelsize=14)
 
+<<<<<<< HEAD
 
 from functions_interaction_computations import filter_fitness
 
+=======
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 # +
 
 
@@ -69,6 +72,7 @@ with open("../postprocessed-data/fitness_models_all_backgrounds", "rb") as fp:  
     b = pickle.load(fp)
 
 fitness_all_pd=pd.concat(b,axis=0,keys=keys)
+<<<<<<< HEAD
 # -
 
 data_fitness=filter_fitness(fitness_all_pd,backgrounds=keys,goi=["BEM1","BEM3","NRP1"],discard=["Not enough flanking regions"],set2zero=["Not enough reads",
@@ -107,6 +111,57 @@ for gene in genes2test:
         fitness_wt2test.append(fitness_wt.loc[gene,column])
 
 fitness_bem1=fitness_bem1_wt
+=======
+
+# +
+data=[]
+for backg in keys:
+    f=fitness_all_pd.loc[backg]
+    f=f[f.loc[:,"fitness_gene"]!="Not enough flanking regions"]
+    for i in f.index:
+        if f.loc[i,"fitness_gene"]=="Not enough reads":
+            f.loc[i,"fitness_gene"]=0
+        elif f.loc[i,"fitness_gene"]=="Not enough insertions":
+            f.loc[i,"fitness_gene"]=0
+        elif f.loc[i,"fitness_domains_corrected"]=="Not enough insertions":
+            f.loc[i,"fitness_domains_corrected"]=0
+
+    # f[f.loc[:,"fitness_gene"]=="Not enough reads"]=0
+    # f[f.loc[:,"fitness_gene"]=="Not enough insertions"]=0
+    # f[f.loc[:,"fitness_domains_corrected"]=="Not enough insertions"]=0
+    
+    # f=f[f.loc[:,"fitness_gene"]!="Not enough reads"]
+    # f=f[f.loc[:,"fitness_gene"]!="Not enough insertions"]
+    # f=f[f.loc[:,"fitness_domains_corrected"]!="Not enough insertions"]
+    data.append(f)
+
+data_fitness=pd.concat(data,axis=0,keys=keys)
+
+# -
+
+keys
+
+# +
+fitness_dbem1=data_fitness.loc["bem1-aid_merged"]
+fitness_wt=data_fitness.loc["wt_merged"]
+fitness_dbem1dbem3=data_fitness.loc["bem1-aid-dbem3_a"]
+
+genes2test=["BEM3","CLA4","RDI1","STE18","SEC8","NRP1","BEM2"]
+column="fitness_gene"
+
+
+fitness_dbem12test=[]
+fitness_dbem1dbem32test=[]
+for gene in genes2test:
+    fitness_dbem12test.append(fitness_dbem1.loc[gene,column])
+    fitness_dbem1dbem32test.append(fitness_dbem1dbem3.loc[gene,column])
+
+fitness_bem1=fitness_wt.loc["BEM1",column]/np.max(fitness_wt.loc[:,column])
+fitness_wt2test=fitness_wt.loc[genes2test,column]/np.max(fitness_wt.loc[:,column])
+
+fitness_dbem12test=fitness_dbem12test/np.max(fitness_dbem1.loc[:,column])
+fitness_dbem1dbem32test=fitness_dbem1dbem32test/np.max(fitness_dbem1dbem3.loc[:,column])
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 
 # -
 
@@ -145,10 +200,17 @@ import matplotlib.pyplot as plt
 fitness=fitness_dbem12test
 
 # Define population size
+<<<<<<< HEAD
 N = 10000
 
 # Define number of generations to simulate
 T = 50
+=======
+N = 100000
+
+# Define number of generations to simulate
+T = 12
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 
 # Initialize population with equal frequencies of all genotypes
 p = np.ones(len(fitness)) / len(fitness)
@@ -179,8 +241,13 @@ fig = plt.figure(figsize=(15, 5))
 ax1 = fig.add_subplot(121)
 ax1.plot(fitness)
 ax1.plot(fitness,"*", markersize=10, color="b")
+<<<<<<< HEAD
 # ax1.set_xticks(np.arange(len(fitness)))
 # ax1.set_xticklabels(genes2test,rotation=45)
+=======
+ax1.set_xticks(np.arange(len(fitness)))
+ax1.set_xticklabels(genes2test,rotation=45)
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 ax1.hlines(fitness_bem1, 0, len(fitness), linestyles='dashed', colors='k')
 ax1.set_xlabel('Genotype')
 ax1.set_ylabel('Fitness')
@@ -190,6 +257,7 @@ ax1.set_title('Fitness Landscape')
 ax2 = fig.add_subplot(122)
 trajectory = np.array(trajectory)
 for i in range(trajectory.shape[1]):
+<<<<<<< HEAD
     if genes2test[i]=="BEM3":
         ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]),color="red")
     else:
@@ -199,11 +267,20 @@ ax2.set_ylabel('Frequency')
 ax2.set_title('Evolutionary Trajectory for dbem1')
 # ax2.legend()
 ax2.set_xlim(0, T+10)
+=======
+    ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]))
+ax2.set_xlabel('Generations')
+ax2.set_ylabel('Frequency')
+ax2.set_title('Evolutionary Trajectory for dbem1')
+ax2.legend()
+ax2.set_xlim(0, 50)
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 plt.tight_layout()
 plt.show()
 
 # -
 
+<<<<<<< HEAD
 plt.imshow(trajectory, cmap='Greys', aspect='auto')
 plt.xticks(np.arange(len(genes2test)),genes2test,rotation=45);
 
@@ -227,6 +304,12 @@ for gene in genes2test:
 
 
 # +
+=======
+plt.imshow(trajectory, cmap='Greys', aspect='auto',vmax=0.8,vmin=0)
+plt.xticks(np.arange(len(genes2test)),genes2test,rotation=45);
+
+# +
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 # One genotype evolution fitness
 
 import numpy as np
@@ -240,7 +323,11 @@ fitness=fitness_dbem1dbem32test
 N = 100000
 
 # Define number of generations to simulate
+<<<<<<< HEAD
 T = 50
+=======
+T = 12
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 
 # Initialize population with equal frequencies of all genotypes
 p = np.ones(len(fitness)) / len(fitness)
@@ -270,8 +357,13 @@ fig = plt.figure(figsize=(15, 5))
 ax1 = fig.add_subplot(121)
 ax1.plot(fitness)
 ax1.plot(fitness,"*", markersize=10, color="b")
+<<<<<<< HEAD
 # ax1.set_xticks(np.arange(len(fitness)))
 # ax1.set_xticklabels(genes2test,rotation=45)
+=======
+ax1.set_xticks(np.arange(len(fitness)))
+ax1.set_xticklabels(genes2test,rotation=45)
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 #ax1.hlines(fitness_bem1, 0, len(fitness), linestyles='dashed', colors='k')
 ax1.set_xlabel('Genotype')
 ax1.set_ylabel('Fitness')
@@ -281,6 +373,7 @@ ax1.set_title('Fitness Landscape')
 ax2 = fig.add_subplot(122)
 trajectory = np.array(trajectory)
 for i in range(trajectory.shape[1]):
+<<<<<<< HEAD
     if genes2test[i]=="NRP1":
         ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]),color="red")
     else:
@@ -290,11 +383,20 @@ ax2.set_ylabel('Frequency')
 ax2.set_title('Evolutionary Trajectory for dbem1-dbem3')
 # ax2.legend()
 ax2.set_xlim(0, T+10)
+=======
+    ax2.plot(trajectory[:, i], label='$\Delta$ {}'.format(genes2test[i]))
+ax2.set_xlabel('Generations')
+ax2.set_ylabel('Frequency')
+ax2.set_title('Evolutionary Trajectory for dbem1-dbem3')
+ax2.legend()
+ax2.set_xlim(0, 50)
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 plt.tight_layout()
 plt.show()
 
 # -
 
+<<<<<<< HEAD
 plt.imshow(trajectory, cmap='Greys', aspect='auto')
 plt.xticks(np.arange(len(genes2test)),genes2test,rotation=45);
 
@@ -343,3 +445,7 @@ for gene in genes2test:
 # -
 
 
+=======
+plt.imshow(trajectory, cmap='Greys', aspect='auto',vmax=0.6,vmin=0)
+plt.xticks(np.arange(len(genes2test)),genes2test,rotation=45);
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f

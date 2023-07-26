@@ -174,9 +174,12 @@ plt.ylabel("gene length",fontsize=18)
 plt.xlabel("# transposons",fontsize=18)
 plt.legend()
 #plt.savefig("../figures/figures_thesis_chapter_2/supp_fig_length_vs_number_of_transposons_linear.png",dpi=300)
+<<<<<<< HEAD
 # -
 
 
+=======
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 
 # +
 ## Plot the number of genes with less than 5 transposons in all mutants over the total number of transposons per library
@@ -270,6 +273,350 @@ fig.savefig("../figures/number_of_insertions_less_than_5_vs_total_number_of_read
 #plt.savefig("../figures/fig_mean_and_std_number_reads_per_transposons_per_library.png",dpi=300)
 # -
 
+<<<<<<< HEAD
+keys=['dbem3_b',
+ 'WT_1-Benoit',
+ 'dnrp1_2',
+ 'bem1-aid_a',
+ 'dbem1dbem3_b',
+ 'wt_merged',
+ 'dbem3_a-trimmed',
+ 'dbem1dbem3_a',
+ 'bem1-aid-dbem3_a',
+ 'bem1-aid_merged',
+ 'bem1-aid-dbem3_b',
+ 'dnrp1_1',
+ 'wt_b',
+ 'wt_a',
+ 'dnrp1_merged',
+ 'WT_2-Benoit',
+ 'bem1-aid_b',
+ 'dbem3_merged',
+ 'dbem3_a']
+
+# +
+#######  Import fitness from SATAY #########
+import pickle
+with open("../postprocessed-data/fitness_models_all_backgrounds", "rb") as fp:   # Unpickling
+    b = pickle.load(fp)
+=======
+# ## Compute fitness from a coarse grained model, taking the total sum of reads per transposon per gene 
+
+# +
+
+# list_data_rates=[]
+# for i in np.arange(0,len(backgrounds)):
+#     tmp=(list_data_extended_pd.loc[backgrounds[i]])
+#     list_data_rates.append(getting_r(tmp))
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
+
+satay_fitness=pd.concat(b,axis=0,keys=keys)
+
+standard_essentials=np.loadtxt("../postprocessed-data/standard_essentials.txt",dtype=str)
+
+# +
+satay_wt=satay_fitness.loc["wt_merged"]
+
+
+satay_wt2compare=satay_wt.loc[:,"fitness_domains_corrected"]
+#satay_wt2compare=satay_wt.loc[:,"fitness_gene"]
+
+
+satay_wt2compare=pd.DataFrame(satay_wt2compare)
+satay_wt2compare.columns=["fitness"]
+
+satay_wt2compare.index.name="Gene"
+satay_wt2compare.dropna(inplace=True)
+
+satay_wt2compare=satay_wt2compare[satay_wt2compare.loc[:,"fitness"]!= "Not enough flanking regions"]
+
+## asign zero to the fitness that are not enough reads or insertions
+
+satay_wt2compare.loc[satay_wt2compare.loc[:,"fitness"]=="Not enough reads","fitness"]=0
+satay_wt2compare.loc[satay_wt2compare.loc[:,"fitness"]=="Not enough insertions","fitness"]=0
+
+# satay_wt2compare=satay_wt2compare[satay_wt2compare.loc[:,"fitness"]!= "Not enough reads"]
+# satay_wt2compare=satay_wt2compare[satay_wt2compare.loc[:,"fitness"]!= "Not enough insertions"]
+
+
+
+# +
+<<<<<<< HEAD
+essential_satay=satay_wt2compare[satay_wt2compare.loc[:,"fitness"]<0.5]
+len(essential_satay),len(standard_essentials)
+
+# how many essentials for satay are also essentials in S288C 
+
+common_essentials=len(np.intersect1d(essential_satay.index,standard_essentials))
+=======
+# fitness_all=[]from module_intergenic_model import adding_features2dataframe,getting_r
+
+# list_data_extended=[]
+# for i in np.arange(0,len(backgrounds)):
+#     tmp=(list_data_pd.loc[backgrounds[i]])
+#     list_data_extended.append(adding_features2dataframe(tmp))
+#     tmp.columns=["fitness"]
+#     tmp.index=list_data_pd.loc[backgrounds[i],"Gene name"]
+#     fitness_all.append(tmp)
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
+
+# essentials that are unique for satay_fitness
+
+<<<<<<< HEAD
+unique_essentials_satay=np.setdiff1d(essential_satay.index,standard_essentials)
+
+# essentials that are unique for S288C
+
+unique_essentials_S288C=np.setdiff1d(standard_essentials,essential_satay.index)
+
+print("common_essentials",common_essentials/len(standard_essentials)*100,"% for reference")
+print("common_essentials",common_essentials/len(essential_satay)*100,"%")
+print("unique_essentials_satay",len(unique_essentials_satay)/len(essential_satay)*100,"%")
+print("unique_essentials_S288C",len(unique_essentials_S288C)/len(standard_essentials)*100,"%")
+
+
+# +
+
+values=satay_wt2compare.astype(float).values
+
+fig, axes = plt.subplots(2, 1,  gridspec_kw={"height_ratios":(.10, .30)}, figsize = (8, 5))
+
+
+sns.violinplot(values, ax=axes[0],color="gray",orient="h",inner="quartile")
+
+g=sns.histplot(values,bins=200,color="gray",ax=axes[1],stat="percent",label="WT",kde=True,element="step")
+
+axes[1].set_xlabel("Corrected fitness values",fontsize=16)
+axes[1].set_ylabel("Percent",fontsize=16)
+axes[1].tick_params(axis="both",labelsize=16)
+axes[0].tick_params(axis="both",labelsize=16)
+
+#axes[1].vlines(x=1,ymin=0,ymax=2.5,color="red",linestyle="--",linewidth=2,label="HO")
+#axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
+
+axes[1].legend()
+#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
+
+# +
+high=[1.1,np.max(values)]
+low=[high[0]*0.5,high[0]*0.7]
+neutral=[low[1],high[0]]
+essential=low[0]
+
+high,low,neutral,essential
+
+# +
+## Normalization of values from 0 to 1
+
+valuesnorm=(values-np.min(values))/(np.max(values)-np.min(values))
+
+
+# +
+## make a pie chart with the mean fitness values compared to HO
+
+high=[1.1,np.max(values)]
+low=[high[0]*0.5,high[0]*0.7]
+neutral=[low[1],high[0]]
+essential=low[0]
+
+values_neutral=values[np.where((values>neutral[0]) & (values<neutral[1]))]
+values_high=values[np.where((values>high[0]) & (values<high[1]))]
+values_low=values[np.where((values<low[1]) & (values>low[0]))]
+values_essential=values[np.where(values<essential)]
+
+
+# high=[0.8,1]
+# neutral=[0.65,0.8]
+# low=[0.3,0.65]
+# essential=[0,0.3]
+
+# values_neutral=valuesnorm[np.where((valuesnorm>neutral[0]) & (valuesnorm<neutral[1]))]
+# values_high=valuesnorm[np.where((valuesnorm>high[0]) & (valuesnorm<high[1]))]
+# values_low=valuesnorm[np.where((valuesnorm<low[1]) & (valuesnorm>low[0]))]
+# values_essential=valuesnorm[np.where(valuesnorm<essential[1])]
+
+
+fig,axes=plt.subplots(1,1,figsize=(8,8))
+#define data
+data = [len(values_neutral),len(values_high),len(values_low),len(values_essential)]
+labels = ['Neutral', 'Advantageous', 'Disadvantageous', 'Possible essentials']
+
+#define Seaborn color palette to use
+#colors = sns.color_palette('pastel')[0:4]
+colors=["blue","green","red","pink"]
+
+#create pie chart
+plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%',textprops={'fontsize': 18});
+plt.tight_layout()
+#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_pie_normalized_wt2HO.png",dpi=400)
+# -
+
+# ### ROC curve to assess the performance of the low fitness values with essentiality.
+#
+
+# +
+
+# fitness2roc=1-fitness
+# fitness2rocprob=(fitness2roc-np.min(fitness2roc))/(np.max(fitness2roc)-np.min(fitness2roc))
+
+
+
+# # for i in np.arange(0,len(standard_essentials)):
+# #     if standard_essentials[i] in satay_wt2compare.index:
+# #         x=np.where(satay_wt2compare.index==standard_essentials[i])[0][0]
+# #         y[x]=1 # write 1 in the position of essential genes
+# #         print(x)
+
+fitness=satay_wt2compare.loc[:,"fitness"].astype(float)
+y=np.zeros(len(fitness)) ## labels for ROC curve
+y_pred=np.zeros(len(fitness)) ## predicted values for ROC curve
+j=0
+for i in satay_wt2compare.index:
+    if i in standard_essentials.tolist():
+        y[j]=1
+   
+        
+    j+=1
+#
+j=0
+for i in satay_wt2compare.index:
+    if i in essential_satay.index.tolist():
+        y_pred[j]=1
+        
+   
+        
+    j+=1
+
+
+
+
+
+# +
+## to construc a confusiion matrix 
+from sklearn.metrics import confusion_matrix
+
+# confusion_matrix(y, y_pred)/len(y)*100
+
+# plot a heatmap of the confusion matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+cm = confusion_matrix(y, y_pred)
+
+ax= plt.subplot()
+sns.heatmap(cm, annot=True, ax = ax,fmt="d",cmap="Blues"); #annot=True to annotate cells
+
+# labels, title and ticks
+# set the labels in bold 
+
+ax.set_xlabel('Predicted labels');ax.set_ylabel('True labels');
+ax.set_title('Confusion Matrix');
+ax.xaxis.set_ticklabels(['Non-essential', 'Essential']); ax.yaxis.set_ticklabels(['Non-essential', 'Essential']);
+=======
+# fitness_all_pd.rename(columns={"level_0":"background"},inplace=True)
+
+# fitness_all_pd.to_excel("../postprocessed-data/fitness_coarse_grained_all_pd.xlsx")
+
+
+# +
+# ## Normalization with respect the values of the fitness of the wild type merged genotype
+# rates_dict=dict(zip(backgrounds,list_data_rates))
+
+# rates_norm_dict=defaultdict(dict)
+
+# for i in np.arange(0,len(backgrounds)):
+#     tmp=(rates_dict[backgrounds[i]])
+#     if rates_dict["wt_merged"]!=0:
+#         rates_norm_dict[backgrounds[i]]["rates-intergenic"]=np.divide(tmp,rates_dict["wt_merged"])[0]
+#     else:
+#         rates_norm_dict[backgrounds[i]]["rates-intergenic"]=tmp[0]
+
+# +
+# rates_norm_dict_pd=pd.DataFrame.from_dict(rates_norm_dict,orient="index")
+# rates_norm_dict_pd.head(2)
+
+# +
+# ## Fitness plots  normalized to the values of wt_merged
+
+# keys_fitness=["bem1-aid_a","bem1-aid_b"]
+# #keys_fitness=backgrounds
+
+# rates_norm_dict_pd=pd.DataFrame.from_dict(rates_norm_dict,orient="index")
+
+# plt.subplots(nrows=1,ncols=2,figsize=(8, 3))
+# j=1
+# for i in np.arange(0,len(keys_fitness),2):
+#     plt.subplot(1,2,j)
+#     plt.scatter(rates_norm_dict_pd.loc[keys_fitness[i]].tolist(),
+#     rates_norm_dict_pd.loc[keys_fitness[i+1]].tolist(),s=30,alpha=0.5)
+#     plt.plot(np.arange(0,2.1,0.1),np.arange(0,2.1,0.1),color="black")
+   
+#     plt.ylabel("Fitness_" + keys_fitness[i+1],fontsize=9)
+#     plt.xlabel("Fitness_" + keys_fitness[i],fontsize=9)
+#     plt.tight_layout(pad=3)
+    
+#     j=j+1
+#plt.savefig("../figures/fig_fitness_scatter_normalized_wt_merged.png",dpi=300)
+
+# +
+# ## Distribution of fitness values from WT/normalization to the HO locus values
+
+# list_data_pd_wt=list_data_pd.loc["wt_merged"]
+# ho=np.where(list_data_pd_wt.loc[:,"Gene name"]=="HO")[0][0]
+
+# index_wt_merged=np.where(np.array(backgrounds)=="wt_merged")[0][0]
+
+# fitness_wt=list_data_rates[index_wt_merged]
+# fitness_wt_ho=fitness_wt[0][ho]
+
+# values=np.array(fitness_wt[0])/fitness_wt_ho
+
+# values[~np.isfinite(values)]=0 # make zero values if nan or inf values 
+
+# # genes=list_data_pd_wt.loc[np.where(values!=-np.inf)[0],"Gene name"]
+# # values=values[np.where(values!=-np.inf)]
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
+
+#plt.savefig("../figures/fig_confusion_matrix_corrected_fitness2essentiality.png",dpi=400)
+# -
+
+<<<<<<< HEAD
+print(4247/(len(y)-len(standard_essentials))*100,  "percentage of non-essential genes")
+print(474/len(y)*100, "percentage of false negatives")
+print(1229/len(y)*100, "percentage of false positives")
+print(636/len(standard_essentials)*100, "percentage of true positives")
+
+# +
+from sklearn import metrics
+
+#fpr, tpr, thresholds = metrics.roc_curve(y, fitness2rocprob)
+fpr, tpr, thresholds = metrics.roc_curve(y, y_pred)
+area=metrics.auc(fpr,tpr)
+
+figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+
+plt.plot([0, 1], [0, 1], color="navy", lw=2, linestyle="--")
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False Positive Rate",fontsize=16)
+plt.ylabel("True Positive Rate",fontsize=16)
+plt.title("ROC of the  corrected fitness to predict essentiality",fontsize=16)
+
+plt.plot(fpr, tpr ,label=f"AUC={area:.2f}",color="darkorange",lw=2)
+ax.tick_params(axis="both",labelsize=16)
+ax.legend(loc="lower right",fontsize=16)
+
+#figure.savefig("../figures/fig_corrected_fitness_ROC_curve.png",dpi=300)
+
+# +
+## subplots of the confusion matrix and ROC curve
+
+figure,ax=plt.subplots(nrows=1,ncols=2,figsize=(10,4))
+
+plt.subplots_adjust(wspace=0.5)
+plt.subplot(1,2,1)
+# plot a ROC curve
+=======
 keys=['dbem3_b',
  'WT_1-Benoit',
  'dnrp1_2',
@@ -351,25 +698,39 @@ print("unique_essentials_S288C",len(unique_essentials_S288C)/len(standard_essent
 # +
 
 values=satay_wt2compare.astype(float).values
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 
-fig, axes = plt.subplots(2, 1,  gridspec_kw={"height_ratios":(.10, .30)}, figsize = (8, 5))
+plt.plot([0, 1], [0, 1], color="navy", lw=2, linestyle="--")
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False Positive Rate",fontsize=16)
+plt.ylabel("True Positive Rate",fontsize=16)
+plt.title("ROC curve",fontsize=16)
+
+plt.plot(fpr, tpr ,label=f"AUC={area:.2f}",color="darkorange",lw=2)
+ax[0].tick_params(axis="both",labelsize=14)
+ax[0].legend(loc="lower right",fontsize=14)
 
 
-sns.violinplot(values, ax=axes[0],color="gray",orient="h",inner="quartile")
+# plot a heatmap of the confusion matrix
+plt.subplot(1,2,2)
 
-g=sns.histplot(values,bins=200,color="gray",ax=axes[1],stat="percent",label="WT",kde=True,element="step")
-
+<<<<<<< HEAD
+cm = confusion_matrix(y, y_pred)
+=======
 axes[1].set_xlabel("Corrected fitness values",fontsize=16)
 axes[1].set_ylabel("Percent",fontsize=16)
 axes[1].tick_params(axis="both",labelsize=16)
 axes[0].tick_params(axis="both",labelsize=16)
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 
-#axes[1].vlines(x=1,ymin=0,ymax=2.5,color="red",linestyle="--",linewidth=2,label="HO")
-#axes[1].vlines(x=np.mean(values),ymin=0,ymax=2.5,color="black",linestyle="--",linewidth=1)
+## normalize the confusion matrix
+cm = cm.astype('float') / cm.sum(axis=0)
 
-axes[1].legend()
-#fig.savefig("../figures/figures_thesis_chapter_2/fig_fitness_distribution_normalized_wt2HO.png",dpi=400)
+sns.heatmap(cm, annot=True, ax = ax[1],cmap="Blues"); #annot=True to annotate cells
 
+<<<<<<< HEAD
+=======
 # +
 high=[1.1,np.max(values)]
 low=[high[0]*0.5,high[0]*0.7]
@@ -547,6 +908,7 @@ cm = cm.astype('float') / cm.sum(axis=0)
 
 sns.heatmap(cm, annot=True, ax = ax[1],cmap="Blues"); #annot=True to annotate cells
 
+>>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 # labels, title and ticks
 # set the labels in bold 
 
