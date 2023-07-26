@@ -44,7 +44,7 @@ set2zero=["Not enough reads","Not enough insertions"],cols=["fitness_gene","fitn
                     if essentiality==True:
                         f.loc[i,cols[1]]=0 # set to zero the fitness of the genes that have not enough reads or insertions
                     else:
-                        f.drop(i,inplace=True)
+                        f.drop(i,inplace=True) # drop genes that do not have enough reads or insertions
                 else:
                     pass
             else:
