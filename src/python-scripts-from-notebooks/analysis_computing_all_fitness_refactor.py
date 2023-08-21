@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.13.7
 #   kernelspec:
 #     display_name: Python 3.9.7 ('transposonmapper')
 #     language: python
@@ -66,8 +66,6 @@ list_data_pd=pd.concat(list_data,axis=0,keys=keys)
 
 # -
 
-keys,len(keys)
-
 wig_files=["../data/dbem3_b/yLIC137_8_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig",
 "../data/WT_1-Benoit/ERR1533147_trimmed.sorted.bam_clean.wig",
 "../data/dnrp1_2/dnrp1-2_merged-DpnII-NlaIII-a_trimmed.sorted.bam_clean.wig",
@@ -88,8 +86,6 @@ wig_files=["../data/dbem3_b/yLIC137_8_merged_cleaned_forward_reads_trimmed.sorte
 "../data/dbem3_merged/merged_ylic137_trimmed.sorted.bam_clean.wig",
 "../data/dbem3_a/all_cleaned_fw_reads_trimmed.sorted.bam_clean.wig"]
 
-len(wig_files)
-
 # +
 #######  Import discarded genes from SATAY #########
 import pickle
@@ -97,73 +93,25 @@ with open("../postprocessed-data/discarded_genes_all_backgrounds", "rb") as fp: 
     b = pickle.load(fp)
 
 
-<<<<<<< HEAD
-=======
-# -
-
-len(b)
->>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 
 # +
 i=0
 fitness_all=[]
-<<<<<<< HEAD
 background="dnrp1_merged"
-=======
-background="wt_merged"
->>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
     
 r,gene_coordinates,reads_location,insertion_locations=reads_per_insertion_along_gene_length(list_data_pd,background,number_of_parts=10)
 
 data_domains=protein_domains_info(list_data_pd,background,gene_coordinates,reads_location,
-<<<<<<< HEAD
                                 insertion_locations,b[14])
-=======
-                                insertion_locations,b[5])
->>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 data_domains_extended=reads_and_insertions_per_domain(list_data_pd,background,data_domains,reads_location,insertion_locations)
 
 data_domains_extended_new=excluding_domains(list_data_pd,background,data_domains_extended)
 
-<<<<<<< HEAD
 fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,r,b[14])
 # -
 
-data_domains_extended_new.loc["WHI3"],data_domains_extended_new.loc["CLN3"]
-
-# +
-f=fitness_models_pd
-
-f=f[f.loc[:,"fitness_gene"]!="Not enough reads"]
-f=f[f.loc[:,"fitness_gene"]!="Not enough insertions"]
-f=f[f.loc[:,"fitness_gene"]!="Not enough flanking regions"]
-
-plt.boxplot(f.loc[:,"fitness_gene"].astype(float));
-# -
-
-fitness_models_pd.loc["BEM3",:]
-=======
-fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,r,b[5])
-# -
-
-fitness_models_pd.loc["NRP1",:]
->>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
-
-# which row number is certain gene 
-datawt=list_data_pd.loc["wt_merged"]
-datawt[datawt.loc[:,"Gene name"]=="TFC3"]
-
-
-np.sum(r[83,:][1:9]),(data_domains_extended_new.loc["TFC3",:]),fitness_models_pd.loc["CDC24",:]
-
 x=fitness_models_pd[fitness_models_pd.loc[:,"fitness_domains_corrected"]=="Not enough insertions"]
 x
-
-len(fitness_models_pd[fitness_models_pd.loc[:,"fitness_gene"]==0]),len(fitness_models_pd[fitness_models_pd.loc[:,"fitness_domains_corrected"]==0])
-
-# +
-
-fitness_models_pd.loc["POP5"],data_domains_extended_new.loc["POP5"]
 
 # +
 x=fitness_models_pd[fitness_models_pd.loc[:,"fitness_domains_corrected"]!="Not enough reads"]
@@ -191,11 +139,6 @@ for background in keys:
     i=i+1
     fitness_all.append(fitness_models_pd)
 
-<<<<<<< HEAD
-len(fitness_all)
-
-=======
->>>>>>> 1c5527a6c3a1e3cda5126ec83fb46e9a8a798f6f
 # +
 import pickle
 
