@@ -46,7 +46,9 @@ def reads_per_insertion_along_gene_length(data_pergene,background,number_of_part
     # compute the reads per insertions for each gene along the gene length
     gene_parts=np.linspace(0,1,number_of_parts+1)
     r=np.zeros(shape=(len(insertion_locations),len(gene_parts))) # reads_per_insertion_parts array , every gene in the rows 
-
+    insertions_array=np.zeros(shape=(len(insertion_locations),len(gene_parts))) # insertions_parts array , every gene in the rows
+    reads_array=np.zeros(shape=(len(insertion_locations),len(gene_parts))) # reads_parts array , every gene in the rows
+    
     for i in np.arange(0,len(insertion_locations)):
         if (insertion_locations[i])!=0:
             g=np.array(insertion_locations[i]) # insertion locations
@@ -58,15 +60,17 @@ def reads_per_insertion_along_gene_length(data_pergene,background,number_of_part
 
             for k in np.arange(0,len(rngs)):
                 readsperinsert=[]
+                insertions_array[i,k]=len(rngs[k])
                 for j in np.arange(0,len(rngs[k])):
                     readsperinsert.append(reads_locations[i][rngs[k][j]])
+                reads_array[i,k]=readsperinsert
                     
                 if len(readsperinsert)>1:
                     r[i,k]=np.sum(readsperinsert)/(len(reads_locations[i])-1)#discarding the insertion with the highest read count
                 else:
                     r[i,k]=0
 
-    return r,gene_coordinates,reads_locations,insertion_locations
+    return r,gene_coordinates,reads_locations,insertion_locations,insertions_array,reads_array
 
 
 
@@ -349,9 +353,8 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
         _description_
     """    
 
-    ref=np.abs(np.log2(np.median(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
-    
-    
+    ref=np.abs(np.median(np.log2(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
+    # change here the reads per insertion array by the sum of the reads over the sum of insertions along the gene, from the function that output this parameter    
     data=data_pergene.loc[background]
     if background=="bem1-aid_a" or background=="bem1-aid_b" or background=="bem1-aid_merged":
         data=data[data.loc[:,"Gene name"]!="BEM1"]
