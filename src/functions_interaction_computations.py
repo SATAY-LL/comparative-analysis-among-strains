@@ -55,8 +55,8 @@ set2zero=["Not enough reads","Not enough insertions"],cols=["fitness_gene","fitn
                 else:
                     pass
         
-        f[f.loc[:,cols[0]]==set2zero[0]]=0 # set to zero the fitness of the genes that have not enough reads 
-        f[f.loc[:,cols[0]]==set2zero[1]]=0 # set to zero the fitness of the genes that have not enough insertions
+        f[f.loc[:,cols[0]]==set2zero[0]]=0 # set to zero the average fitness of the genes that have not enough reads 
+        f[f.loc[:,cols[0]]==set2zero[1]]=0 # set to zero the average fitness of the genes that have not enough insertions
         
         data.append(f)
 

@@ -63,7 +63,7 @@ def reads_per_insertion_along_gene_length(data_pergene,background,number_of_part
                 insertions_array[i,k]=len(rngs[k])
                 for j in np.arange(0,len(rngs[k])):
                     readsperinsert.append(reads_locations[i][rngs[k][j]])
-                reads_array[i,k]=readsperinsert
+                reads_array[i,k]=np.sum(readsperinsert)
                     
                 if len(readsperinsert)>1:
                     r[i,k]=np.sum(readsperinsert)/(len(reads_locations[i])-1)#discarding the insertion with the highest read count
@@ -331,7 +331,8 @@ def reads_and_insertions_per_domain(data_pergene,background,data_domains,reads_l
     return data_domains
 
 
-def fitness_models(data_pergene,background,data_domains_extended,reads_per_insertion_array,discarded_genes):
+def fitness_models(data_pergene,background,data_domains_extended,insertions_array,
+                   reads_array,discarded_genes,reads_locations):
     """_summary_
 
     Parameters
@@ -351,9 +352,13 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
     -------
     _type_
         _description_
-    """    
+    """   
 
-    ref=np.abs(np.median(np.log2(np.sum(reads_per_insertion_array[:,1:9],axis=1))) )# reference fitness, assumption: most genes are neutral in the wild type
+
+    a=np.divide(np.sum(reads_array[:,1:9],axis=1),np.sum(insertions_array[:,1:9],axis=1))
+    a[np.isinf(a)]=0
+    a[np.isnan(a)]=0
+    ref=np.median(np.log2(a))# reference fitness, assumption: most genes are neutral in the wild type
     # change here the reads per insertion array by the sum of the reads over the sum of insertions along the gene, from the function that output this parameter    
     data=data_pergene.loc[background]
     if background=="bem1-aid_a" or background=="bem1-aid_b" or background=="bem1-aid_merged":
@@ -376,9 +381,12 @@ def fitness_models(data_pergene,background,data_domains_extended,reads_per_inser
             fitness_models[gene]["domains"]="Not enough flanking regions"
         
         else:
-            if np.sum(reads_per_insertion_array[i,1:9])!=0: # if there are no reads in the 80% central part of the gene, the fitness is not calculated
-                fitness_models[gene]["fitness_gene"]=(np.log2(np.sum(reads_per_insertion_array[i,1:9])))/ref # getting the 80% central part of the reads per insertions
-                fitness_models[gene]["fitness_gene_std"]=(np.std(reads_per_insertion_array[i,1:9]))
+            if np.sum(reads_array[i,1:9])!=0 and np.sum(insertions_array[i,1:9]!=0): # if there are no reads in the 80% central part of the gene, the fitness is not calculated
+                tmp=np.divide(np.sum(reads_array[i,1:9]),np.sum(insertions_array[i,1:9]))
+                tmp_std=np.sqrt(np.std(reads_locations[i])/len(reads_locations[i]))#standard error of the fitness values
+                            
+                fitness_models[gene]["fitness_gene"]=np.log2(tmp)/ref # getting the 80% central part of the reads per insertions
+                fitness_models[gene]["fitness_gene_std"]=tmp_std
                 if type(data_domains_extended.loc[gene,"reads_domain"])==list:
                     nume=np.array(data_domains_extended.loc[gene,"reads_domain"])
                     deno=np.array(data_domains_extended.loc[gene,"insertions_domain"])
