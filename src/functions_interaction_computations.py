@@ -73,23 +73,21 @@ def digenic_GI(data,goi="BEM1",col_fitness="fitness_gene",backg=["wt_a","wt_b","
     data_fitness2interact=data_backg[data_backg.loc[:,col_fitness]!=0]
      
 
-    if goi=="BEM1":
-        goi_f_a=(data_backg.loc[backg[0],col_fitness].loc[goi]+data_backg.loc[backg[0]].loc[goi,"fitness_domains_corrected"])/2
-        goi_f_b=(data_backg.loc[backg[1],col_fitness].loc[goi]+data_backg.loc[backg[1]].loc[goi,"fitness_domains_corrected"])/2
+    
+    goi_f_a=data_backg.loc[backg[0],col_fitness].loc[goi]
+    goi_f_b=data_backg.loc[backg[1],col_fitness].loc[goi]
         
 
-    else:
-        goi_f_a=data_backg.loc[backg[0],col_fitness].loc[goi]
-        goi_f_b=data_backg.loc[backg[1],col_fitness].loc[goi]
+    
         
-    if np.median(data_backg.loc[backg[2],col_fitness]) == 0:
-        data_2=data_fitness2interact.loc[backg[2],col_fitness]*goi_f_a/2**(np.median(data_backg.loc[backg[2],col_fitness]))
+    if np.nanmedian(data_backg.loc[backg[2],col_fitness]) == 0:
+        data_2=data_fitness2interact.loc[backg[2],col_fitness]*goi_f_a/2**(np.nanmedian(data_backg.loc[backg[2],col_fitness]))
     else:
-        data_2=data_fitness2interact.loc[backg[2],col_fitness]*goi_f_a/(np.median(data_backg.loc[backg[2],col_fitness]))
+        data_2=data_fitness2interact.loc[backg[2],col_fitness]*goi_f_a/(np.nanmedian(data_backg.loc[backg[2],col_fitness]))
     if np.median(data_backg.loc[backg[3],col_fitness]) == 0:
-        data_3=data_fitness2interact.loc[backg[3],col_fitness]*goi_f_b/2**(np.median(data_backg.loc[backg[3],col_fitness]))
+        data_3=data_fitness2interact.loc[backg[3],col_fitness]*goi_f_b/2**(np.nanmedian(data_backg.loc[backg[3],col_fitness]))
     else:
-        data_3=data_fitness2interact.loc[backg[3],col_fitness]*goi_f_b/(np.median(data_backg.loc[backg[3],col_fitness]))
+        data_3=data_fitness2interact.loc[backg[3],col_fitness]*goi_f_b/(np.nanmedian(data_backg.loc[backg[3],col_fitness]))
 
     data_0=data_fitness2interact.loc[backg[0],col_fitness]
     data_1=data_fitness2interact.loc[backg[1],col_fitness]
@@ -125,7 +123,7 @@ def digenic_GI(data,goi="BEM1",col_fitness="fitness_gene",backg=["wt_a","wt_b","
         variable_a_array=[geneXgoi_f_a,geneXgoi_f_b]# in satay the double mutant fitness is only the fitness of the genex on dbem1 but we dont have the other way around data
         variable_b_array=[(geneX_f_a*goi_f_a),(geneX_f_b*goi_f_b)]
         
-        ttest_val = stats.ttest_ind(variable_a_array, variable_b_array) #T-test
+        ttest_val = stats.ttest_ind(variable_a_array, variable_b_array,equal_var=False) #T-test assuming unequal variance among the samples
         gi[gene]["p_statistic"]=ttest_val[1]
         ttest_tval_list = ttest_val[0]
         gi[gene]["t_statistic"]=ttest_tval_list

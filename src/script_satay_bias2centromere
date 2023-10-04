@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Sep 20 11:13:35 2023
+
+@author: linigodelacruz
+"""
+import os
+
+from functions_satay_biases import transposon_bias2centromeres
+import wiggelen as wg
+
+cen_file="../data/centromere_locations.txt"
+data_dir="../data/"
+wig_files=[]
+for root, dirs, files in os.walk(data_dir):
+    for file in files:
+        if file.endswith("_clean.wig_roman.wig"):
+            wig_files.append(os.path.join(root, file))
+            
+wigfile=wig_files[8]## wt_merged
+fig, distance2cent_all = transposon_bias2centromeres(wigfile,cen_file,save=True)

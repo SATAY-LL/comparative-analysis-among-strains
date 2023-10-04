@@ -7,7 +7,8 @@ from collections import defaultdict
 def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,save=False):
     """This function plot a cumulative plot of the number of transposon vs the distance
     to centromeres to show that transposon cluster in the proximity of them for every chromosome.
-
+    THIS FUNCTION IS NOT CORRECT ON COMPUTING THE DISTANCE TO CENTROMERES. 
+    
     Parameters
     ----------
     wigfile_path : str
@@ -45,7 +46,7 @@ def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,s
     
 
     ## Importing centromeres genomic locations
-    centromeres=pd.read_csv(centromeres_genomic_location_path,sep=",")
+    centromeres=pd.read_csv(centromeres_genomic_location_path,sep="\t")
 
     chrom_names=["chrI","chrII","chrIII","chrIV","chrV","chrVI","chrVII","chrVIII","chrIX","chrX","chrXI","chrXII","chrXIII","chrXIV","chrXV","chrXVI"]
 
@@ -59,7 +60,7 @@ def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,s
 
     for i in chrom_names:
         pos_chrom=pos[np.where(chrom==i)]
-        cen_data_chrom=centromeres[centromeres.loc[:,"centromere_name"]==centromeres_names_translation[i]]
+        cen_data_chrom=centromeres[centromeres.loc[:,"centromere"]==centromeres_names_translation[i]]
         distance2cent_all[i]=(2*np.abs(pos_chrom-cen_data_chrom.loc[:,"start"].values[0]))
 
     ## Plotting
@@ -88,7 +89,7 @@ def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,s
 
     axes.plot(x,df.mean(),color="red",label="Mean")
     axes.set_xlabel("Distance to centromere[$\pm$kb]")
-    axes.set_ylabel("Number of transposons")
+    axes.set_ylabel("Cumulative insertions")
     axes.set_xlim(0,500000)
 
 
@@ -97,7 +98,12 @@ def transposon_bias2centromeres(wigfile_path,centromeres_genomic_location_path,s
     model = np.polyfit(x2fit, data2fit[20:50], 1)
     axes.plot(x,model[0]*x+model[1],color="black",label="Linear fit",alpha=0.8)
     #plt.plot(model[0]*x+model[1],color="blue",label="Linear fit")
-    plt.text(10000, 10000, 'y=%.3fx+%.1f' % (model[0], model[1]), fontsize=10)
+    plt.text(300000, 5000, 'y=%.3fx+%.1f' % (model[0], model[1]), fontsize=10)
+    xticks_values = [100000, 200000, 300000, 400000, 500000]  # Specify the x-axis tick values
+    xticks_labels = np.round(np.divide(xticks_values,1000),0)  # Specify the labels for the tick values
+
+    # Set the x-axis tick locations and labels
+    plt.xticks(xticks_values, xticks_labels)
     axes.legend()
     if save==True:
         plt.tight_layout()
