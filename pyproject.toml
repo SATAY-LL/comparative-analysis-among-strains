@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "satay-gi"
+version = "0.1.0"
+description = "This set of scripts and notebooks are meant to transform read and insertion counts from SATAY sequencing data into fitness and genetic interaction score values."
+authors = ["Leila Inigo de la Cruz, Enzo Kingma"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "Higher 3.6"
+numpy = "^1.26.1"
+scipy = "^1.11.3"
+matplotlib = "^3.8.0"
+seaborn = "^0.13.0"
+pandas = "^2.1.1"
+gseapy="^1.0.6" 
+pickle5="^0.0.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
