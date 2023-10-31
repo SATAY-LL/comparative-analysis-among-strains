@@ -84,7 +84,7 @@ def digenic_GI(data,goi="BEM1",col_fitness="fitness_gene",backg=["wt_a","wt_b","
         data_2=data_fitness2interact.loc[backg[2],col_fitness]*goi_f_a/2**(np.nanmedian(data_backg.loc[backg[2],col_fitness]))
     else:
         data_2=data_fitness2interact.loc[backg[2],col_fitness]*goi_f_a/(np.nanmedian(data_backg.loc[backg[2],col_fitness]))
-    if np.median(data_backg.loc[backg[3],col_fitness]) == 0:
+    if np.nanmedian(data_backg.loc[backg[3],col_fitness]) == 0:
         data_3=data_fitness2interact.loc[backg[3],col_fitness]*goi_f_b/2**(np.nanmedian(data_backg.loc[backg[3],col_fitness]))
     else:
         data_3=data_fitness2interact.loc[backg[3],col_fitness]*goi_f_b/(np.nanmedian(data_backg.loc[backg[3],col_fitness]))
