@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: Python 3.9.7 ('transposonmapper')
 #     language: python
@@ -23,6 +23,7 @@ from ast import literal_eval
 from scipy.stats import norm
 from scipy import stats
 import statistics as stat
+import pickle
 
 plt.rc('font', family='serif',size=14)
 plt.rc('xtick',labelsize=14)

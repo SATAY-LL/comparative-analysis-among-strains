@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: Python 3.9.7 ('transposonmapper')
 #     language: python
@@ -22,7 +22,7 @@ from collections import defaultdict
 from ast import literal_eval
 
 from from_excel_to_list import from_excel_to_list
-from transposonmapper.statistics import volcano
+
 
 from scipy import stats
 
@@ -38,6 +38,26 @@ from functions_interaction_computations import classify_GI
 # +
 
 def uncertainty_propagation(f,a,b,sigma_a,sigma_b):
+    """To compute the uncertainty propagation of the function f = a/b
+
+    Parameters
+    ----------
+    f : float
+        composition of functions a/b
+    a : float
+        mean of a
+    b : float
+        mean of b
+    sigma_a : float
+        standard deviation of a
+    sigma_b : float
+        standard deviation of b
+
+    Returns
+    -------
+    float
+        uncertainty propagation of the function f = a/b
+    """
     return f*np.sqrt(np.divide(sigma_a,a)**2+np.divide(sigma_b,b)**2)
 
 
@@ -91,14 +111,10 @@ polarity_genes.fillna(0,inplace=True)
 # f.close()
 # -
 
-# ### Fitness for interactions, just eliminate from the datatset those genes with not enough reads, insertions or flanking regions , because we have very little information about them , to incorporate them to the interaction calculation. Only for the domain correction fitness if there are not enough insertions then wwe will assign zero fitness
+# ### Fitness for interactions, just eliminate from the datatset those genes with not enough reads, insertions or flanking regions , because we have very little information about them , to incorporate them to the interaction calculation.
 
 data_fitness=filter_fitness(fitness_all_pd,backgrounds=keys,goi=["BEM1","BEM3","NRP1"],discard=["Not enough flanking regions"],set2zero=["Not enough reads",
     "Not enough insertions"],cols=["fitness_gene","fitness_domains_corrected"])
-
-len(data_fitness.loc["wt_merged"]),len(data_fitness.loc["bem1-aid_a"]),len(data_fitness.loc["bem1-aid_b"])
-
-data_fitness.loc["wt_merged"].loc["BEM1"]
 
 # +
 
@@ -153,9 +169,6 @@ plt.grid(linewidth=0.2)
 
 plt.tight_layout()
 plt.savefig("../figures/evolutionary_trajectory_growth_rate_dots.png",dpi=300)
-# -
-
-growth_rate_steps_std2wt
 
 # +
 ## take the same index across all libraries
@@ -189,26 +202,26 @@ x=list_data_pd.loc["wt_merged"]
 y=list_data_pd.loc["bem1-aid_merged"]
 za=list_data_pd.loc["bem1-aid-dbem3_a"]
 zb=list_data_pd.loc["bem1-aid-dbem3_b"]
-
+q=list_data_pd.loc["dbem3_merged"]
 
 x.index=x.loc[:,"Gene name"]
 y.index=y.loc[:,"Gene name"]
 za.index=za.loc[:,"Gene name"]
 zb.index=zb.loc[:,"Gene name"]
+q.index=q.loc[:,"Gene name"]
 
 
 
 bem1_insertions=x.loc["BEM1","Insertions"]
 bem3_insertions=y.loc["BEM3","Insertions"]
 nrp1_insertions=np.mean([za.loc["NRP1","Insertions"],zb.loc["NRP1","Insertions"]])
+bem1_dbem3_insertions=q.loc["BEM1","Insertions"]
 
 # +
 
 
-# ## Standarize the data as having mu=0 and std=1 ## NOT A GOOD IDEA IN THIS CASE BECAUSE https://stats.stackexchange.com/questions/19216/variables-are-often-adjusted-e-g-standardised-before-making-a-model-when-is
-# data_wt_norm=scaler(data_wt)
-# data_dbem1_norm=scaler(data_dbem1)
-# data_dbem1dbem3_norm=scaler(data_dbem1dbem3)
+
+
 fitness_bem1_wt=(data_fitness.loc["wt_merged"].loc["BEM1","fitness_gene"]+data_fitness.loc["wt_merged"].loc["BEM1","fitness_domains_corrected"])/2
 
 fitness_bem3_wt=data_wt.loc["BEM3"]
@@ -224,7 +237,7 @@ fitness_bem3_dbem1=data_dbem1_norm.loc["BEM3"]
 data_dbem1dbem3_norm=data_dbem1dbem3*fitness_bem3_dbem1/(np.median(data_dbem1dbem3))
 
 
-
+fitness_bem1_dbem3=(data_fitness.loc["dbem3_merged"].loc["BEM1","fitness_gene"])*fitness_bem3_wt/(np.median(data_dbem3))
 
 
 
@@ -241,14 +254,17 @@ data_dbem1dbem3_norm=data_dbem1dbem3*fitness_bem3_dbem1/(np.median(data_dbem1dbe
 fitness_bem1=fitness_bem1_wt
 fitness_bem1_std= data_fitness.loc["wt_merged"].loc["BEM1","fitness_gene_std"]/np.sqrt(bem1_insertions)
 
+fitness_bem3_std= data_fitness.loc["wt_merged"].loc["BEM3","fitness_gene_std"]/np.sqrt(bem3_insertions)
 
 fitness_bem3_dbem1_std= data_fitness.loc["bem1-aid_merged"].loc["BEM3","fitness_gene_std"]/np.sqrt(bem3_insertions)
+
+fitness_bem1_dbem3_std= data_fitness.loc["dbem3_merged"].loc["BEM1","fitness_gene_std"]/np.sqrt(bem1_dbem3_insertions)
 
 fitness_nrp1_dbem1_dbem3=data_dbem1dbem3_norm[index_NRP1]
 
 fitness_nrp1_dbem1_dbem3_std= data_fitness.loc["bem1-aid-dbem3_a"].loc["NRP1","fitness_gene_std"]/np.sqrt(nrp1_insertions)
 
-fitness_bem1,fitness_bem3_dbem1,fitness_nrp1_dbem1_dbem3,fitness_bem1_std,fitness_bem3_dbem1_std,fitness_nrp1_dbem1_dbem3_std
+
 
 # +
 ##Analysis evolutionary trajectory of dbem1 cells
@@ -317,7 +333,36 @@ for patch, color in zip(box['boxes'], colors):
 
 
 
-plt.savefig("../figures/fig_boxplots_fitness_distributions_satay.png",dpi=300,bbox_inches="tight")
+#plt.savefig("../figures/fig_boxplots_fitness_distributions_satay.png",dpi=300,bbox_inches="tight")
+
+# +
+## shows the value of the fitness for all genes from the evolutionary trajectory of the bem1 cells in the same format as the boxplot.setdefault()
+
+
+
+# +
+fig, ax1 = plt.subplots(figsize=(8,8))
+
+labels=["$\Delta$bem1","$\Delta$bem3"]
+labels2scatter=["WT","$\Delta$bem1","$\Delta$bem3"]
+box=ax1.boxplot([data_dbem1_norm,data_dbem3_norm],labels=labels,
+showfliers=False,patch_artist=True,notch=True,boxprops=dict(alpha=.2),whiskerprops=dict(alpha=.2),capprops=dict(alpha=.2));
+plt.ylabel("Fitness values")
+
+growth_rate_steps_satay_bem1=[fitness_bem1_wt,np.nan,fitness_bem1_dbem3]
+ax1.plot(growth_rate_steps_satay_bem1,marker="o",linestyle="dashed",color="blue",linewidth=0.2)
+ax1.errorbar(labels2scatter,growth_rate_steps_satay_bem1,yerr=[fitness_bem1_std,np.nan,fitness_bem1_dbem3_std],
+linestyle="None",color="black",alpha=0.3,capsize=5)
+
+
+growth_rate_steps_satay_bem3=[fitness_bem3_wt,fitness_bem3_dbem1,np.nan]
+ax1.plot(growth_rate_steps_satay_bem3,marker="o",linestyle="None",color="green",linewidth=0.2)
+ax1.errorbar(labels2scatter,growth_rate_steps_satay_bem3,yerr=[fitness_bem3_std,fitness_bem3_dbem1_std,np.nan],
+linestyle="None",color="black",alpha=0.3,capsize=5)
+
+#plt.savefig("../figures/fig_appendix_boxplots_fitness_distributions_satay_bem1_bem3.png",dpi=300,bbox_inches="tight",transparent=True)
+
+
 
 # +
 
@@ -328,7 +373,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure(figsize=(10,8))
 ax = fig.add_subplot(111, projection='3d')
-x=data_wt_norm
+x=data_wt
 y=data_dbem1_norm
 z=data_dbem1dbem3_norm
 
@@ -339,17 +384,25 @@ colo = x
 color_map = plt.cm.ScalarMappable(cmap=plt.cm.viridis)
 color_map.set_array(colo)
 
-ax.scatter3D(x,y,z, c=colo,s=200,marker="s");
+# ax.scatter3D(x,y,z, c=colo,s=100,marker="o",alpha=0.8);
+
+ax.scatter3D(x,y,z, s=100,marker="o",alpha=0.8);
 
 
-cbar=plt.colorbar(color_map,fraction=0.03, pad=0.1)
 
-cbar.set_label('Fitness WT')
+# cbar=plt.colorbar(color_map,fraction=0.03, pad=0.1)
+
+# cbar.set_label('Fitness WT')
 
 ax.set_xlabel('WT')
 ax.set_ylabel('$\Delta$bem1')
 ax.set_zlabel('$\Delta$bem1$\Delta$bem3')
 # -
+
+fitness_dataframe=pd.DataFrame({"WT":x,"dbem1":y,"dbem1dbem3":z})
+fitness_dataframe.to_csv("../postprocessed-data/fitness_wt_dbem1_dbem1dbem3.csv")
+
+len(data_dbem1_norm),len(data_dbem1dbem3_norm),len(data_wt)
 
 gi_bem1=digenic_GI(data=data_fitness,goi="BEM1",col_fitness="fitness_gene",backg=["wt_a","wt_b","bem1-aid_a","bem1-aid_b"])
 gi_bem3=digenic_GI(data=data_fitness,goi="BEM3",col_fitness="fitness_gene",backg=["wt_a","wt_b","dbem3_a","dbem3_b"])
@@ -396,11 +449,13 @@ all_pathways_gi=gi_pd_fitness_gene[gi_pd_fitness_gene.loc[:,"gene_names"].isin(a
 #all_pathways_gi.to_csv("../postprocessed-data/pathways_bem1_gi.csv",sep="\t")
 # -
 
+len(all_pathways_gi)
+
 all_pathways_gi.sort_values(by="fold_change",ascending=False)
 
 x=gi_pd_fitness_gene_bem1d.loc[:,"fold_change"].sort_values(ascending=False)
 # np.where(x.index=="BEM3")
-gi_pd_fitness_gene_bem1d.loc["BEM3"]
+x[:10]
 
 # +
 gi_pd_fitness_gene=pd.DataFrame.from_dict(gi_bem3,orient="index")
@@ -409,6 +464,11 @@ gi_pd_fitness_gene["gene_names"]=gi_pd_fitness_gene.index
 
 gi_pd_fitness_gene_bem3d=gi_pd_fitness_gene
 gi_pd_fitness_gene_bem3d
+
+# +
+all_pathways_gi=gi_pd_fitness_gene_bem3d[gi_pd_fitness_gene_bem3d.loc[:,"gene_names"].isin(all_pathways)]
+
+all_pathways_gi.to_csv("../postprocessed-data/pathways_bem3_gi.csv",sep="\t")
 
 # +
 bem1_PI_sig,bem1_NI_sig,bem1_PI,bem1_NI,bem1_PI_all,bem1_NI_all=classify_GI(gi_pd_fitness_gene_bem1d,col="fold_change")
@@ -443,7 +503,8 @@ for i in gi_pd_fitness_gene_bem3d.index:
         gi_pd_fitness_gene_bem3d.loc[i,"significance4FC"]="none"
 # -
 
-len(bem1_PI_sig),len(bem1_NI_sig),len(bem1_PI),len(bem1_NI),len(bem1_PI_all),len(bem1_NI_all)
+gi_pd_fitness_gene_bem1d.to_csv("../postprocessed-data/gi_bem1d.csv",sep=",")
+gi_pd_fitness_gene_bem3d.to_csv("../postprocessed-data/gi_bem3d.csv",sep=",")
 
 # +
 gi_pd_fitness_gene_bem1d.loc[:,"fold_change"].hist(bins=50)
@@ -482,7 +543,7 @@ volcano_df=gi_pd_fitness_gene_bem1d
 
 fig=annotate_volcano(volcano_df,figure_title="Interactors of bem1 in WT")
 
-plt.savefig("../figures/volcano_bem1_wt.png",dpi=300)
+#plt.savefig("../figures/volcano_bem1_wt.png",dpi=300)
 # -
 
 gi_pd_fitness_gene_bem1d.loc[bem1_NI2export.index].sort_values(by="fold_change",ascending=False)
@@ -493,7 +554,7 @@ volcano_df=gi_pd_fitness_gene_bem1d
 trackgene_list=["BEM3","NRP1"]
 fig=annotate_volcano(volcano_df,figure_title="Interactors of bem1 in WT",trackgene_list=trackgene_list)
 
-plt.savefig("../figures/fig_volcano_interactors_bem1_with annotations.png",dpi=300,transparent=True)
+#plt.savefig("../figures/fig_volcano_interactors_bem1_with annotations.png",dpi=300,transparent=True)
 # -
 
 gi_pd_fitness_gene_bem3d[gi_pd_fitness_gene_bem3d.loc[:, "p_statistic"]<0.05].sort_values(by="fold_change",ascending=False)
@@ -505,7 +566,7 @@ volcano_df=gi_pd_fitness_gene_bem3d
 
 fig=annotate_volcano(volcano_df,figure_title="Interactors of bem3 in WT")
 
-plt.savefig("../figures/volcano_bem3_wt.png",dpi=300)
+#plt.savefig("../figures/volcano_bem3_wt.png",dpi=300)
 
 # +
 bem1_PI2export=gi_pd_fitness_gene_bem1d.loc[bem1_PI]
@@ -539,7 +600,7 @@ table_BEM1_interactors["target_node"]=len(table_PI)*["BEM1"]+len(table_NI)*["BEM
 table_BEM1_interactors.to_csv("../postprocessed-data/table_BEM1_interactors.tsv",sep="\t")
 
 # +
-## export to a txt the gene names of the significant positive and negative regulators of nrp1
+## export to a txt the gene names of the significant positive and negative regulators 
 
 with open("../postprocessed-data/positive_satay_genes_bem1.txt","w") as f:
     for i in bem1_PI2export.index:
@@ -953,6 +1014,57 @@ gi_pd_fitness_gene["gene_names"]=gi_pd_fitness_gene.index
 gi_pd_fitness_gene_dbem1dbem3=gi_pd_fitness_gene
 
 gi_pd_fitness_gene_dbem1dbem3
+# -
+
+gi_pd_fitness_gene_dbem1dbem3.to_csv("../postprocessed-data/gi_pd_fitness_gene_dbem1dbem3.csv")
+
+# +
+## Plot a barplot of the interaction scores with BEM1 and BEM1BEM3 of specific genes related to the evolutionary trajectory
+
+genes=["YOX1","PKH3","YKL091C","MPH3","NRP1"]
+
+scores_bem1=[]
+p_bem1=[]
+scores_bem1bem3=[]
+p_bem1bem3=[]
+for gene in genes:
+    scores_bem1.append(gi_pd_fitness_gene_bem1d.loc[gene,"fold_change"])
+    p_bem1.append(gi_pd_fitness_gene_bem1d.loc[gene,"p_statistic"])
+    scores_bem1bem3.append(gi_pd_fitness_gene_dbem1dbem3.loc[gene,"fold_change"])
+    p_bem1bem3.append(gi_pd_fitness_gene_dbem1dbem3.loc[gene,"p_statistic"])
+
+plt.figure(figsize=(10,5))
+
+scores_bem1.append(gi_pd_fitness_gene_bem1d.loc["BEM3","fold_change"])
+scores_bem1bem3.append(0)
+
+categories=["YOX1","PKH3","YKL091C","MPH3","NRP1","BEM3"]
+variable1 = scores_bem1
+
+variable2 = scores_bem1bem3
+
+bar_width = 0.35  # width of the bars
+
+fig, ax = plt.subplots()
+
+# Plotting the bars
+bar1 = np.arange(len(categories))
+bar2 = [x + bar_width for x in bar1]
+ax.bar(bar1, variable1, bar_width, label='BEM1',color="blue")
+ax.bar(bar2, variable2, bar_width, label='BEM1BEM3',color="orange")
+
+ax.set_xticks([r + bar_width/2 for r in range(len(categories))])
+ax.set_xticklabels(categories)
+ax.legend()
+
+
+plt.ylabel('Genetic interaction scores')
+# plt.title('Bar Plot with Two Variables')
+plt.tight_layout()
+plt.savefig("../figures/gi-scores-bem1-bem1bem3.png",dpi=300)
+# -
+
+gi_pd_fitness_gene_bem1d.loc["CDC39"]
 
 # +
 all_pathways_gi=gi_pd_fitness_gene_dbem1dbem3[gi_pd_fitness_gene_dbem1dbem3.loc[:,"gene_names"].isin(all_pathways)]
@@ -961,12 +1073,8 @@ all_pathways_gi=gi_pd_fitness_gene_dbem1dbem3[gi_pd_fitness_gene_dbem1dbem3.loc[
 #all_pathways_gi.to_csv("../postprocessed-data/pathways_bem1bem3_gi.csv",sep="\t")
 # -
 
-all_pathways_gi.sort_values(by="fold_change",ascending=False)
-
 x=gi_pd_fitness_gene_dbem1dbem3.loc[:,"fold_change"].sort_values(ascending=False)
 x[:10]
-
-gi_pd_fitness_gene_bem3d[gi_pd_fitness_gene_bem3d.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=False)[0:10]
 
 # +
 
@@ -993,7 +1101,8 @@ f.close()
 
 # -
 
-gi_pd_fitness_gene_dbem1dbem3[gi_pd_fitness_gene_dbem1dbem3.loc[:,"significance4FC"]=="pos"].sort_values(by="fold_change",ascending=False)
+x=gi_pd_fitness_gene_dbem1dbem3.loc[bem1bem3_PI]
+x.sort_values(by="fold_change",ascending=False)
 
 # +
 gi_pd_fitness_gene_dbem1dbem3.loc[:,"e_a"].hist(alpha=0.2)
@@ -1027,6 +1136,8 @@ gi_standard_essentials_pd_dbem1dbem3=gi_standard_essentials_pd
 #gi_standard_essentials_pd_dbem1dbem3[gi_standard_essentials_pd_dbem1dbem3.loc[:,"significance"]==True].sort_values(by="fold_change",ascending=False)
 gi_standard_essentials_pd_dbem1dbem3.sort_values(by="fold_change",ascending=False)
 
+gi_standard_essentials_pd_dbem1dbem3[gi_standard_essentials_pd_dbem1dbem3.p_statistic<0.3].sort_values(by="fold_change",ascending=False)
+
 # +
 ## interaction score for polarity genes 
 
@@ -1056,7 +1167,7 @@ volcano_df=gi_pd_fitness_gene_dbem1dbem3
 
 fig=annotate_volcano(volcano_df,figure_title="Interactors of dbem1dbem3 in WT")
 
-plt.savefig("../figures/volcano_bem1bem3_wt.png",dpi=300)
+#plt.savefig("../figures/volcano_bem1bem3_wt.png",dpi=300)
 
 # +
 from annotate_volcano import annotate_volcano   #import annotate_volcano function
@@ -1115,10 +1226,114 @@ gi_supression_shift=set(bem1_NI).intersection(bem1bem3_PI)
 
 gi_essentiality_shift=set(bem1_PI).intersection(bem1bem3_NI)
 
-len(gi_essentiality_shift)/len(gi_dbem1dbem3),len(gi_supression_shift)/len(gi_dbem1dbem3)
+len(gi_essentiality_shift),len(gi_supression_shift)
 # -
 
-len(gi_essentiality_shift),len(gi_supression_shift)
+# len(set(bem1_NI).difference(bem1bem3_NI)),len(set(bem1_NI).intersection(bem1bem3_PI)),len(set(bem1_NI).intersection(bem1bem3_NI)),
+len(set(bem1bem3_NI).difference(bem1_NI)),len(set(bem1bem3_NI).intersection(bem1_PI)),len(set(bem1_PI).difference(bem1bem3_NI)),
+
+# +
+## Plot differences in genetic interaction scores
+from matplotlib_venn import venn3, venn3_circles
+
+a1=len(set(bem1_PI))
+a2=len(set(bem1bem3_PI))
+a3=len(set(bem1_PI).intersection(set(bem1bem3_PI)))
+a4=len(set(bem1_NI))
+a5=len(set(bem1_PI).intersection(set(bem1_NI)))
+a6=len(set(bem1bem3_PI).intersection(set(bem1_NI)))
+a7=len(set(bem1_PI).intersection(set(bem1bem3_PI)).intersection(set(bem1_NI)))
+
+a=[a1,a2,a3,a4,a5,a6,a7]
+plt.figure(figsize=(10,8))
+venn3(subsets = a, set_labels = ('BEM1 PI', 'BEM1BEM3 PI','BEM1 NI'), alpha = 0.5,
+set_colors=('purple', 'yellow', 'green'));
+
+plt.savefig("../figures/fig_venn_bem1_bem1bem3_PI_relationships.png",dpi=300)
+
+
+# +
+from matplotlib_venn import venn3, venn3_circles
+
+a1=len(set(bem1_PI))
+a2=len(set(bem1bem3_NI))
+a3=len(set(bem1_PI).intersection(set(bem1bem3_NI)))
+a4=len(set(bem1_NI))
+a5=len(set(bem1_PI).intersection(set(bem1_NI)))
+a6=len(set(bem1bem3_NI).intersection(set(bem1_NI)))
+a7=len(set(bem1_PI).intersection(set(bem1bem3_NI)).intersection(set(bem1_NI)))
+
+a=[a1,a2,a3,a4,a5,a6,a7]
+plt.figure(figsize=(10,8))
+venn3(subsets = a, set_labels = ('BEM1 PI', 'BEM1BEM3 NI','BEM1 NI'), alpha = 0.5,
+set_colors=('purple', 'yellow', 'green'));
+
+plt.savefig("../figures/fig_venn_bem1_bem1bem3_NI_relationships.png",dpi=300)
+
+# +
+## Plot differences in genetic interaction scores
+from matplotlib_venn import venn3, venn3_circles
+
+a1=len(set(bem3_PI))
+a2=len(set(bem1bem3_PI))
+a3=len(set(bem3_PI).intersection(set(bem1bem3_PI)))
+a4=len(set(bem3_NI))
+a5=len(set(bem3_PI).intersection(set(bem3_NI)))
+a6=len(set(bem1bem3_PI).intersection(set(bem3_NI)))
+a7=len(set(bem3_PI).intersection(set(bem1bem3_PI)).intersection(set(bem3_NI)))
+
+a=[a1,a2,a3,a4,a5,a6,a7]
+plt.figure(figsize=(10,8))
+venn3(subsets = a, set_labels = ('BEM3 PI', 'BEM1BEM3 PI','BEM3 NI'), alpha = 0.5,
+set_colors=('purple', 'yellow', 'green'));
+
+plt.savefig("../figures/fig_venn_bem3_bem1bem3_PI_relationships.png",dpi=300)
+
+# +
+## Plot differences in genetic interaction scores
+from matplotlib_venn import venn3, venn3_circles
+
+a1=len(set(bem3_PI))
+a2=len(set(bem1bem3_NI))
+a3=len(set(bem3_PI).intersection(set(bem1bem3_NI)))
+a4=len(set(bem3_NI))
+a5=len(set(bem3_PI).intersection(set(bem3_NI)))
+a6=len(set(bem1bem3_NI).intersection(set(bem3_NI)))
+a7=len(set(bem3_PI).intersection(set(bem1bem3_NI)).intersection(set(bem3_NI)))
+
+a=[a1,a2,a3,a4,a5,a6,a7]
+plt.figure(figsize=(10,8))
+venn3(subsets = a, set_labels = ('BEM3 PI', 'BEM1BEM3 NI','BEM3 NI'), alpha = 0.5,
+set_colors=('purple', 'yellow', 'green'));
+
+plt.savefig("../figures/fig_venn_bem3_bem1bem3_NI_relationships.png",dpi=300)
+
+# +
+## how many interactions are lost from dbem1 to dbem1dbem3 and from dbem3 to dbem1dbem3
+
+bem1bem3_all=bem1_PI_all.union(bem1_NI_all)
+bem1_all=bem1_PI_all.union(bem1_NI_all)
+bem3_all=bem3_PI_all.union(bem3_NI_all)
+# Gained interactors for bem1bem3
+bem1bem3_gained_dbem1=bem1bem3_all.difference(bem1_all)
+bem1bem3_gained_dbem3=bem1bem3_all.difference(bem3_all)
+# Lost interactors for bem1bem3
+bem1bem3_lost_dbem1=bem1_all.difference(bem1bem3_all)
+bem1bem3_lost_dbem3=bem3_all.difference(bem1bem3_all)
+# -
+
+len(bem3_all)-len(bem1_all),len(bem1bem3_all),len(bem1bem3_lost_dbem3),len(bem1bem3_gained_dbem3)
+
+# save the genes that shift the interaction type to a txt file
+with open("../data/bem1bem3_essentiality_bem1_supression_shift.txt","w") as f:
+    for i in gi_essentiality_shift:
+        f.write(i+"\n")
+f.close()
+with open("../data/bem1bem3_suppresion_bem1_essentiality_shift.txt","w") as f:
+    for i in gi_supression_shift:
+        f.write(i+"\n")
+f.close()
+
 
 # +
 ## Differences in essentiality scores from dbem1 to data_dbem1dbem3
@@ -1163,6 +1378,17 @@ gi_essentiality_shift=set(bem3_PI).intersection(bem1bem3_NI)
 
 len(gi_essentiality_shift),len(gi_supression_shift)
 # -
+
+# save the genes that shift the interaction type to a txt file
+with open("../data/bem1bem3_suppresion_bem3_essentiality_shift.txt","w") as f:
+    for i in gi_supression_shift:
+        f.write(i+"\n")
+f.close()
+with open("../data/bem1bem3_essentiality_bem3_suppresion_shift.txt","w") as f:
+    for i in gi_essentiality_shift:
+        f.write(i+"\n")
+f.close()
+
 
 gi_dbem1dbem3.loc[gi_essentiality_shift].sort_values(ascending=True)
 
@@ -1419,7 +1645,7 @@ len(common_essentials_pos),len(common_essentials_pos_db13_db1),len(common_essent
 # ### Fitness for detecting essentiality, making zero regions that do not have enough reads , insertions or flanking regions
 
 data_fitness=filter_fitness(fitness_all_pd,backgrounds=keys,goi=["BEM1","BEM3","NRP1"],discard=["Not enough flanking regions"],set2zero=["Not enough reads",
-    "Not enough insertions"],cols=["fitness_gene","fitness_domains_corrected"],essentiality=True)
+    "Not enough insertions"],cols=["fitness_gene","fitness_domains_corrected"],essentiality=False)
 
 # +
 ## take the same index across all libraries
@@ -1485,30 +1711,74 @@ data_fitness_dbem1dbem3b=data_fitness.loc["dbem1dbem3_b","fitness_domains_correc
 data_fitness_dbem3a=data_fitness.loc["dbem3_a","fitness_domains_corrected"]*fitness_bem3_wt
 data_fitness_dbem3b=data_fitness.loc["dbem3_b","fitness_domains_corrected"]*fitness_bem3_wt
 # in WT threshold f<0.4(mean)-0.28(std) (from domains corrected)
-essential_genes_wta=data_fitness_wta[data_fitness_wta<0.12].index
-essential_genes_wtb=data_fitness_wtb[data_fitness_wtb<0.12].index
 
-essential_genes_dbem1a=data_fitness_dbem1a[data_fitness_dbem1a<0.12*fitness_bem1_wt].index
-essential_genes_dbem1b=data_fitness_dbem1b[data_fitness_dbem1b<0.12*fitness_bem1_wt].index
 
-essential_genes_dbem1dbem3a=data_fitness_dbem1dbem3a[data_fitness_dbem1dbem3a<0.12*fitness_bem3_dbem1].index
-essential_genes_dbem1dbem3b=data_fitness_dbem1dbem3b[data_fitness_dbem1dbem3b<0.12*fitness_bem3_dbem1].index
+# +
+fitness_dnrp1=data_fitness.loc["wt_merged","fitness_gene"].loc["NRP1"]
 
-essential_genes_dbem3a=data_fitness_dbem3a[data_fitness_dbem3a<0.12*fitness_bem3_wt].index
-essential_genes_dbem3b=data_fitness_dbem3b[data_fitness_dbem3b<0.12*fitness_bem3_wt].index
+data_fitness_dnrp1a=data_fitness.loc["dnrp1_1","fitness_domains_corrected"]*fitness_dnrp1
+data_fitness_dnrp1b=data_fitness.loc["dnrp1_2","fitness_domains_corrected"]*fitness_dnrp1
+
+
+# +
+data_fitness_wta_essentials=data_fitness_wta[data_fitness_wta.index.isin(standard_essentials)]
+
+data_fitness_wtb_essentials=data_fitness_wtb[data_fitness_wtb.index.isin(standard_essentials)]
+
+data_fitness_wt_essentials=pd.concat([data_fitness_wta_essentials,data_fitness_wtb_essentials],axis=1)
+data_fitness_wt_essentials.fillna(0,inplace=True)
+# -
+
+data_fitness_wt_essentials["mean"]=data_fitness_wt_essentials.mean(axis=1)
+cutoff=np.round(np.abs(np.mean(data_fitness_wt_essentials["mean"])-0.5*np.std(data_fitness_wt_essentials["mean"])),3)
+# cutoff=0.44 # from the mean - std of the merged wt dataset
+cutoff
+
+# +
+plt.figure(figsize=(5,5))
+
+
+plt.hist(data_fitness_wt_essentials["mean"],bins=40,color="black",alpha=0.6);
+plt.vlines(cutoff,0,400,color="gray",linestyles="dashed")#
+plt.annotate(cutoff,xy=(cutoff,600),xytext=(cutoff+0.01,600),color="gray")
+plt.xlabel("Fitness")
+plt.ylabel("Number of essential genes")
+plt.tight_layout()
+
+#plt.savefig("../figures/fitness_distribution_essentials.png",dpi=300,transparent=True)
+
+
+# +
+essential_genes_wta=data_fitness_wta[data_fitness_wta<cutoff].index
+essential_genes_wtb=data_fitness_wtb[data_fitness_wtb<cutoff].index
+
+essential_genes_dbem1a=data_fitness_dbem1a[data_fitness_dbem1a<cutoff*fitness_bem1_wt].index
+essential_genes_dbem1b=data_fitness_dbem1b[data_fitness_dbem1b<cutoff*fitness_bem1_wt].index
+
+essential_genes_dbem1dbem3a=data_fitness_dbem1dbem3a[data_fitness_dbem1dbem3a<cutoff*fitness_bem3_dbem1].index
+essential_genes_dbem1dbem3b=data_fitness_dbem1dbem3b[data_fitness_dbem1dbem3b<cutoff*fitness_bem3_dbem1].index
+
+essential_genes_dbem3a=data_fitness_dbem3a[data_fitness_dbem3a<cutoff*fitness_bem3_wt].index
+essential_genes_dbem3b=data_fitness_dbem3b[data_fitness_dbem3b<cutoff*fitness_bem3_wt].index
+
+essential_genes_dnrp1a=data_fitness_dnrp1a[data_fitness_dnrp1a<cutoff*fitness_dnrp1].index
+essential_genes_dnrp1b=data_fitness_dnrp1b[data_fitness_dnrp1b<cutoff*fitness_dnrp1].index
 
 essential_genes_wt=set(essential_genes_wta)&set(essential_genes_wtb)
 essential_genes_dbem1=set(essential_genes_dbem1a)&set(essential_genes_dbem1b)
 essential_genes_dbem1dbem3=set(essential_genes_dbem1dbem3a)&set(essential_genes_dbem1dbem3b)
 essential_genes_dbem3=set(essential_genes_dbem3a)&set(essential_genes_dbem3b)
+essential_genes_dnrp1=set(essential_genes_dnrp1a)&set(essential_genes_dnrp1b)
 
 # +
-number_e_genes=[len(essential_genes_wt),len(essential_genes_dbem1),len(essential_genes_dbem1dbem3),len(essential_genes_dbem3)]
+number_e_genes=[len(essential_genes_wt),len(essential_genes_dbem1),len(essential_genes_dbem1dbem3),
+len(essential_genes_dbem3),len(essential_genes_dnrp1)]
 
 std_number_e_genes=[np.std([len(essential_genes_wta),len(essential_genes_wtb)]),
 np.std([len(essential_genes_dbem1a),len(essential_genes_dbem1b)]),
 np.std([len(essential_genes_dbem1dbem3a),len(essential_genes_dbem1dbem3b)]),
-np.std([len(essential_genes_dbem3a),len(essential_genes_dbem3b)])]
+np.std([len(essential_genes_dbem3a),len(essential_genes_dbem3b)]),
+np.std([len(essential_genes_dnrp1a),len(essential_genes_dnrp1b)])]
 
 
 # +
@@ -1518,6 +1788,57 @@ np.std([len(essential_genes_dbem3a),len(essential_genes_dbem3b)])]
 #         e_13_pos_1.append(i)
 
 # e_13_pos_1
+
+# +
+plt.figure(figsize=(8,5))
+
+plt.bar(np.arange(5),number_e_genes,yerr=std_number_e_genes,color="black",alpha=0.6)
+
+plt.xticks(np.arange(5),["WT","dbem1","dbem1dbem3","dbem3","dnrp1"]);
+
+# +
+### Correlation of the number of essential genes per library with the number of read counts per library
+
+reads_wta=list_data_pd.loc["wt_a","Reads"].sum()
+reads_wtb=list_data_pd.loc["wt_b","Reads"].sum()
+reads_dbem1a=list_data_pd.loc["bem1-aid_a","Reads"].sum()
+reads_dbem1b=list_data_pd.loc["bem1-aid_b","Reads"].sum()
+reads_dbem1dbem3a=list_data_pd.loc["dbem1dbem3_a","Reads"].sum()
+reads_dbem1dbem3b=list_data_pd.loc["dbem1dbem3_b","Reads"].sum()
+reads_dbem3a=list_data_pd.loc["dbem3_a","Reads"].sum()
+reads_dbem3b=list_data_pd.loc["dbem3_b","Reads"].sum()
+reads_dnrp1a=list_data_pd.loc["dnrp1_1","Reads"].sum()
+reads_dnrp1b=list_data_pd.loc["dnrp1_2","Reads"].sum()
+
+reads_wt=np.mean([reads_wta,reads_wtb])
+reads_dbem1=np.mean([reads_dbem1a,reads_dbem1b])
+reads_dbem1dbem3=np.mean([reads_dbem1dbem3a,reads_dbem1dbem3b])
+reads_dbem3=np.mean([reads_dbem3a,reads_dbem3b])
+reads_dnrp1=np.mean([reads_dnrp1a,reads_dnrp1b])
+
+reads=[reads_wt,reads_dbem1,reads_dbem1dbem3,reads_dbem3,reads_dnrp1]
+reads_std=[np.std([reads_wta,reads_wtb]),np.std([reads_dbem1a,reads_dbem1b]),
+np.std([reads_dbem1dbem3a,reads_dbem1dbem3b]),np.std([reads_dbem3a,reads_dbem3b]),
+np.std([reads_dnrp1a,reads_dnrp1b])]
+
+# +
+plt.figure(figsize=(8,5))
+backg=["WT","dbem1","dbem1dbem3","dbem3","dnrp1"]
+for i in np.arange(5):
+    plt.annotate(backg[i],xy=(reads[i]+1000,number_e_genes[i]+50),color="black")
+    plt.errorbar(reads[i],number_e_genes[i],yerr=std_number_e_genes[i],
+    xerr=reads_std[i],color="black",alpha=0.6,fmt="o",capsize=5)
+
+plt.xlabel("Number of reads")
+plt.ylabel("Number of essential genes")
+plt.tight_layout()
+plt.savefig("../figures/essential_genes_vs_reads.png",dpi=300)
+
+# +
+## pearson correlation between reads and essential genes 
+
+from scipy.stats import pearsonr
+pearsonr(reads,number_e_genes)
 
 # +
 plt.figure(figsize=(8,5))
@@ -1571,7 +1892,7 @@ ax2.tick_params(axis='y', labelcolor="gray")
 
 plt.tight_layout()
 
-plt.savefig("../figures/predicted_number_essential_genes_trajectory_growth_rate.png",dpi=300,transparent=True) 
+#plt.savefig("../figures/predicted_number_essential_genes_trajectory_growth_rate.png",dpi=300,transparent=True) 
 # #plt.savefig("../figures/predicted_number_essential_genes_trajectory.png",dpi=300,transparent=True)
 
 # +
@@ -1595,14 +1916,14 @@ plt.plot(growth_rate_steps,number_e_genes,"--",color="black",linewidth=0.5)
 # plt.annotate("$\Delta$bem1$\Delta$bem3",xy=(growth_rate_steps[1],number_e_genes[1]),xytext=(growth_rate_steps[1]-0.0008,
 # number_e_genes[1]+400),fontsize=14)
 
-plt.ylim(500,5000)
-plt.yticks([1000,2000,3000,4000,5000],fontsize=14)
+plt.ylim(500,3000)
+plt.yticks([1000,2000,3000],fontsize=14)
 plt.xticks([0.0022,0.010,0.01244],fontsize=14)
 plt.grid(linewidth=0.3,linestyle="dashed")
 plt.xlabel("Growth rate (min$^{-1}$)")
 plt.ylabel("Predicted number of essential genes")
 
-plt.savefig("../figures/fig_scatter_predicted_number_essential_genes_vs_growth_rate.png",dpi=300)
+#plt.savefig("../figures/fig_scatter_predicted_number_essential_genes_vs_growth_rate.png",dpi=300)
 
 # +
 ## How many of the predicted genes are also WT essential gi_standard_essentials
@@ -1633,7 +1954,14 @@ from matplotlib_venn import venn3, venn3_circles
 venn3(subsets = a, set_labels = ('Essentials WT', 'Essentials $\Delta$bem1','Essentials $\Delta$bem1$\Delta$bem3'), alpha = 0.5,
 set_colors=('gray', 'blue', 'yellow'));
 
-plt.savefig("../figures/venn3_common_essentials_dbem1_wt_dbem1dbem3.png", dpi=300, bbox_inches="tight")
+#plt.savefig("../figures/venn3_common_essentials_dbem1_wt_dbem1dbem3.png", dpi=300, bbox_inches="tight")
+
+# +
+# write the conserved essential genes to a file
+
+with open("../postprocessed-data/conserved_essential_genes-all-backgrounds.txt","w") as f:
+    for gene in common_wt_bem1_bem1bem3_e_genes:
+        f.write(gene+"\n")
 
 # +
 ## Plot how many of the essentials in different backgrounds are also conserved with existing WT essential genes
@@ -1650,14 +1978,14 @@ a=[a1,a2,a3,a4,a5,a6,a7]
 venn3(subsets = a, set_labels = ('Essentials WT', 'Essentials $\Delta$bem1','Essentials $\Delta$bem1$\Delta$bem3'), alpha = 0.5,
 set_colors=('gray', 'blue', 'yellow'),subset_label_formatter=lambda x: f"{(x):1.0%}");
 
-plt.savefig("../figures/venn3_common_essentials_dbem1_wt_dbem1dbem3_compared2standard_essentials.png", dpi=300, bbox_inches="tight")
+#plt.savefig("../figures/venn3_common_essentials_dbem1_wt_dbem1dbem3_compared2standard_essentials.png", dpi=300, bbox_inches="tight")
 
 # +
 
 data=[data_wt_norm,data_dbem1_norm,data_dbem1dbem3_norm,data_dbem3_norm]
 labels=["WT", "$\Delta$bem1", "$\Delta$bem1$\Delta$bem3", "$\Delta$bem3"]
 colors=["gray", "blue", "yellow", "green"]
-bounds=[0.12,0.12*fitness_bem1_wt,0.12*fitness_bem3_dbem1,0.12*fitness_bem3_wt]
+bounds=[cutoff,cutoff*fitness_bem1_wt,cutoff*fitness_bem3_dbem1,cutoff*fitness_bem3_wt]
 plt.subplots(2,2,figsize=(10,10))
 plt.subplots_adjust(hspace=0.5,wspace=0.5)
 

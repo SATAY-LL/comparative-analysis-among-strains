@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: Python 3.9.7 ('transposonmapper')
 #     language: python
@@ -97,18 +97,23 @@ with open("../postprocessed-data/discarded_genes_all_backgrounds", "rb") as fp: 
 # +
 i=0
 fitness_all=[]
-background="dnrp1_merged"
+background="wt_merged"
     
-r,gene_coordinates,reads_location,insertion_locations=reads_per_insertion_along_gene_length(list_data_pd,background,number_of_parts=10)
+ri,gene_coordinates,reads_location,insertion_locations,i,r=reads_per_insertion_along_gene_length(list_data_pd,background,number_of_parts=10)
 
 data_domains=protein_domains_info(list_data_pd,background,gene_coordinates,reads_location,
-                                insertion_locations,b[14])
+                                insertion_locations,b[5])
 data_domains_extended=reads_and_insertions_per_domain(list_data_pd,background,data_domains,reads_location,insertion_locations)
 
 data_domains_extended_new=excluding_domains(list_data_pd,background,data_domains_extended)
 
-fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,r,b[14])
+fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,
+                                 i,r,b[5],reads_location)
 # -
+
+data_domains_extended_new
+
+fitness_models_pd
 
 x=fitness_models_pd[fitness_models_pd.loc[:,"fitness_domains_corrected"]=="Not enough insertions"]
 x
@@ -120,23 +125,63 @@ x=x[x.loc[:,"fitness_domains_corrected"]!="Not enough flanking regions"]
 
 x["fitness_domains_corrected"].astype(float).hist(bins=100)
 x["fitness_gene"].astype(float).hist(bins=100)
+
+# +
+a=np.divide(np.sum(r[:,1:9],axis=1),np.sum(i[:,1:9],axis=1))
+# a=np.log2(a)
+a[np.isinf(a)]=0
+a[np.isnan(a)]=0
+
+
+a_std=[]
+for k in np.arange(0,r.shape[0]):
+    if type(reads_location[k])!=int:
+    
+        a_std.append(np.sqrt(np.std(reads_location[k])/len(reads_location[k])))
+    else:
+        a_std.append(0)
+   
+
+a_std=np.array(a_std)
+a_std[np.isnan(a_std)]=0
+a_std[np.isinf(a_std)]=0
+
+import statsmodels.api as sm
+
+# Generate some sample data
+np.random.seed(0)
+x = a  # Independent variable
+a = 2.0  # Coefficient for the quadratic term
+y = a_std  # Dependent variable with noise
+
+# Create a design matrix with x and x^2
+X = np.column_stack((x, x**2))
+
+# Add a constant (intercept) term to the model
+X = sm.add_constant(X)
+
+# Fit the Ordinary Least Squares (OLS) model
+model = sm.OLS(y, X).fit()
+
+# Print the summary of the regression
+print(model.summary())
 # -
 
-i=0
+k=0
 fitness_all=[]
 for background in keys:
     
-    r,gene_coordinates,reads_location,insertion_locations=reads_per_insertion_along_gene_length(list_data_pd,background,number_of_parts=10)
+    ri,gene_coordinates,reads_location,insertion_locations,i,r=reads_per_insertion_along_gene_length(list_data_pd,background,number_of_parts=10)
     
-    data_domains=protein_domains_info(list_data_pd,background,gene_coordinates,reads_location,
-                                  insertion_locations,b[i])
+    data_domains=protein_domains_info(list_data_pd,background,gene_coordinates,reads_location,insertion_locations,b[k])
     data_domains_extended=reads_and_insertions_per_domain(list_data_pd,background,
                                                         data_domains,reads_location,insertion_locations)
     data_domains_extended_new=excluding_domains(list_data_pd,background,data_domains_extended)
 
-    fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,r,b[i])
+    fitness_models_pd=fitness_models(list_data_pd,background,data_domains_extended_new,
+                                     i,r,b[k],reads_location)
     
-    i=i+1
+    k=k+1
     fitness_all.append(fitness_models_pd)
 
 # +

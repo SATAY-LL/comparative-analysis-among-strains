@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.10.3
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: Python 3.9.7 ('transposonmapper')
 #     language: python
@@ -72,11 +72,20 @@ list_data_pd=pd.concat(list_data,axis=0,keys=keys)
 
 standard_essentials=np.loadtxt("../postprocessed-data/standard_essentials.txt",dtype=str)
 
-keys= ['wt_merged','wt_a','wt_b','dnrp1_1','dnrp1_2']
-data=list_data_pd.loc[keys] # Take only data from targeted genotypes
+# keys= ['wt_merged','wt_a','wt_b','dnrp1_1','dnrp1_2']
+# data=list_data_pd.loc[keys] # Take only data from targeted genotypes
+
+
+for i in keys:
+    print(i,"The number of reads are",list_data_pd.loc[i,"Reads"].sum())
+
+
+for i in keys:
+    print(i,"The number of insertions are",list_data_pd.loc[i,"Insertions"].sum())
 
 
 # +
+data=list_data_pd
 data_wta=data.loc["wt_a"]
 data_wtb=data.loc["wt_b"]
 
@@ -177,7 +186,7 @@ for i in np.arange(0,len(magnitudes)):
 
 
 plt.tight_layout()
-figure.savefig("../figures/fig_differences_biological_replicates.png",dpi=300)
+#figure.savefig("../figures/fig_differences_biological_replicates.png",dpi=300)
 
 
 
@@ -258,7 +267,13 @@ import wiggelen as wg
 wigfiles={"wt_a":"../data/wt_a/WT_merged-DpnII-NlaIII-a_trimmed.sorted.bam_clean.wig",
 "wt_b":"../data/wt_b/WT_merged-DpnII-NlaIII-b_trimmed.sorted.bam_clean.wig",
 "dnrp1_1":"../data/dnrp1_1/dnrp1-1_merged-DpnII-NlaIII-a_trimmed.sorted.bam_clean.wig",
-"dnrp1_2": "../data/dnrp1_2/dnrp1-2_merged-DpnII-NlaIII-a_trimmed.sorted.bam_clean.wig"}
+"dnrp1_2": "../data/dnrp1_2/dnrp1-2_merged-DpnII-NlaIII-a_trimmed.sorted.bam_clean.wig",
+"bem1-aid_a":"../data/bem1-aid_a/yWT03a_16_trimmed_out_restriction_sites_yWT03a_16_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig",
+"bem1-aid_b":"../data/bem1-aid_b/yWT0321_a_trimmed_out_restriction_sites_yWT0321_a_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig",
+"dbem1dbem3_a": "../data/dbem1dbem3_a/yTW001_4_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig",
+"dbem1dbem3_b": "../data/dbem1dbem3_b/yTW001_6_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig",
+"dbem3_a": "../data/dbem3_a/all_cleaned_fw_reads_trimmed.sorted.bam_clean.wig",
+"dbem3_b": "../data/dbem3_b/yLIC137_8_merged_cleaned_forward_reads_trimmed.sorted.bam_clean.wig",}
 
 
 ## Import wig files 
@@ -294,6 +309,25 @@ data_wigfiles_pd=pd.DataFrame(data_wigfiles)
 
 data_wigfiles_pd=data_wigfiles_pd.T
 # -
+
+data_wigfiles_pd
+
+# +
+## Compute the sum of the reads and length of Positions for each key
+
+data_wigfiles_pd["Reads_sum"]=data_wigfiles_pd["Reads"].apply(lambda x: sum(x))
+data_wigfiles_pd["Insertions_sum"]=data_wigfiles_pd["Positions"].apply(lambda x: len(x))
+# -
+
+data_wigfiles_pd
+
+np.sum(data_wigfiles_pd["Reads"]["wt_a"]),np.sum(data_wigfiles_pd["Reads"]["wt_b"]),np.sum(data_wigfiles_pd["Reads"]["dnrp1_1"]),np.sum(data_wigfiles_pd["Reads"]["dnrp1_2"])
+
+len(data_wigfiles_pd["Positions"]["wt_a"]),len(data_wigfiles_pd["Positions"]["wt_b"]),len(data_wigfiles_pd["Positions"]["dnrp1_1"]),len(data_wigfiles_pd["Positions"]["dnrp1_2"])
+
+list_data_pd.loc["wt_a","Reads"].sum(),list_data_pd.loc["wt_b","Reads"].sum(),list_data_pd.loc["dnrp1_1","Reads"].sum(),list_data_pd.loc["dnrp1_2","Reads"].sum()
+
+list_data_pd.loc["wt_a","Insertions"].sum(),list_data_pd.loc["wt_b","Insertions"].sum(),list_data_pd.loc["dnrp1_1","Insertions"].sum(),list_data_pd.loc["dnrp1_2","Insertions"].sum()
 
 # ## Using read counts for fitness 
 # - Simplified fitness model (simple malthusian model where the differences in mutant abundance is proportional to its growth rate, and there is no limiting factor)
@@ -350,7 +384,8 @@ for j in data.index:
 
 gene_parts=np.linspace(0,1,11)
 r=np.zeros(shape=(len(insertion_locations),len(gene_parts))) # reads_per_insertion_parts array , every gene in the rows 
-
+insertions_array=np.zeros(shape=(len(insertion_locations),len(gene_parts))) # insertions_parts array , every gene in the rows
+reads_array=np.zeros(shape=(len(insertion_locations),len(gene_parts))) # reads_parts array , every gene in the rows
 for i in np.arange(0,len(insertion_locations)):
     if (insertion_locations[i])!=0:
         g=np.array(insertion_locations[i]) # insertion locations
@@ -359,11 +394,15 @@ for i in np.arange(0,len(insertion_locations)):
         binedges = g.searchsorted(f)
 
         rngs = [list(range(binedges[k], binedges[k+1])) for k in range(len(binedges)-1)]
+        
 
         for k in np.arange(0,len(rngs)):
             readsperinsert=[]
+            insertions_array[i,k]=len(rngs[k])
             for j in np.arange(0,len(rngs[k])):
                 readsperinsert.append(reads_locations[i][rngs[k][j]])
+            reads_array[i,k]=np.sum(readsperinsert) # number of reads binned in 10 equally sized bins
+            
                 
             if len(readsperinsert)>1:
                 r[i,k]=np.sum(readsperinsert)/(len(readsperinsert)-1)#discarding the insertion with the highest read count
@@ -424,11 +463,11 @@ labels=["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "10
 fontsize=16);
 plt.yticks(fontsize=20);
 
-plt.legend(fontsize=16)
-plt.grid(linewidth=0.5)
+# plt.legend(fontsize=16)
+# plt.grid(linewidth=0.5)
 plt.tight_layout()
 
-plt.savefig("../figures/fig_reads_per_insertion_all_genes_along_gene_length.png",dpi=300,format="png")
+#plt.savefig("../figures/fig_reads_per_insertion_all_genes_along_gene_length.png",dpi=300,format="png")
 
 
 
@@ -460,11 +499,11 @@ plt.xticks(np.linspace(-0.05,0.95,11),
 labels=["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"],
 fontsize=16);
 plt.yticks(fontsize=20);
-plt.legend(fontsize=16)
-plt.grid(linewidth=0.5)
+# plt.legend(fontsize=16)
+# plt.grid(linewidth=0.5)
 plt.tight_layout()
 
-plt.savefig("../figures/fig_reads_per_insertion_essential_genes_along_gene_length.png",dpi=300,format="png")
+#plt.savefig("../figures/fig_reads_per_insertion_essential_genes_along_gene_length.png",dpi=300,format="png")
 ## from the figure it follows that I should remove only the first 10% of the reads to compute the fitness of the whole gene
 
 # -
@@ -594,15 +633,6 @@ flanking_regions_data_pd=pd.DataFrame.from_dict(flanking_regions_data,orient="in
 discarded_genes2fitness=flanking_regions_data_pd[flanking_regions_data_pd["classification"]=="Not enough flanking regions"].index
 # -
 
-flanking_regions_data_pd
-
-len(discarded_genes2fitness),discarded_genes2fitness
-
-# +
-
-np.where(discarded_genes2fitness=="OSW1")
-# -
-
 #
 
 flanking_regions_data_pd[flanking_regions_data_pd["classification"]=="Not enough flanking regions"].sort_values(by="insertions_flanking")
@@ -652,116 +682,7 @@ for i in np.arange(0,len(distance2cent_all_chrom)):
 
     j=j+1
   
-
-# +
-## import protein domains
-
-## data generated in the notebook "analysis_proteins_domains.ipynb"
-data_domains=pd.read_excel("../postprocessed-data/genomic-domains-wt.xlsx",index_col="Unnamed: 0")
-#data_reads_domains=pd.read_excel("../postprocessed-data/reads-per-domain-all-backgrounds-new.xlsx",index_col="Unnamed: 0")
-#data_insertions_domains=pd.read_excel("../postprocessed-data/insertions-per-domain-all-backgrounds-new.xlsx",index_col="Unnamed: 0")
-
-
-## data from yeastmine
-domains_names=pd.read_csv('../data/Domains_all_genes_protein_coordinates_yeastmine.tsv',sep="\t")
-domains_names.index=domains_names["Gene Name"]
-
-
-# +
-protein_domains_data=defaultdict(dict)
-
-for i in data.index:
-
-    gene=data.loc[i,"Gene name"]
-    
-    protein_domains_data[gene]["gene coordinates"]= np.round(np.linspace(gene_coordinates[i][0],
-    gene_coordinates[i][1],10),0)
-    central_gene_part=protein_domains_data[gene]["gene coordinates"][1:9]
-    protein_domains_data[gene]["gene coordinates central"]=central_gene_part
-    
-    if data_domains.loc[gene][0]!="[]":
-        tmp=from_excel_to_list(data_domains.loc[gene][0])
-        protein_domains_data[gene]["domains coordinates"]= tmp
-        tmp_central=[]
-        for i in np.arange(0,len(tmp),2):
-            if np.min(central_gene_part)<tmp[i] and np.max(central_gene_part)>tmp[i]: # if the first protein coordinate from the domain is inside the central part
-                tmp_central.append(tmp[i:i+2])
-            elif np.min(central_gene_part)<tmp[i+1] and np.max(central_gene_part)>tmp[i+1]: # if the first one is not but the second one is
-                tmp_central.append(tmp[i:i+2])
-        protein_domains_data[gene]["domains coordinates central"]=tmp_central
-                
-        protein_domains_data[gene]["domains name"]= np.array(domains_names.loc[gene]["Protein Domain"])
-        protein_domains_data[gene]["domain description"]= np.array(domains_names.loc[gene]["Protein domain description"])
-        protein_domains_data[gene]["reads_domain"]= np.zeros_like(protein_domains_data[gene]["domains name"])
-        protein_domains_data[gene]["insertions_domain"]= np.zeros_like(protein_domains_data[gene]["domains name"])
-    else:
-        protein_domains_data[gene]["domains coordinates"]= np.nan
-        protein_domains_data[gene]["domains name"]= np.nan
-        protein_domains_data[gene]["domain description"]= np.nan
-        protein_domains_data[gene]["reads_domain"]= np.sum(reads_locations[i])
-        protein_domains_data[gene]["insertions_domain"]= insertion_locations[i]
-
-    if gene in discarded_genes2fitness:
-        protein_domains_data[gene]["classification"]="Not enough flanking regions"
-    else:
-        protein_domains_data[gene]["classification"]="OK"
-        
-
-
 # -
-
-protein_domains_data_pd=pd.DataFrame.from_dict(protein_domains_data,orient="index")
-protein_domains_data_pd.head(3)
-
-# +
-# how many genes have domains?
-
-protein_domains_data_pd[protein_domains_data_pd["domains coordinates"].isna()==False].shape[0]
-
-# +
-# compute the reads in each protein domain
-
-domain_coordinates=protein_domains_data_pd["domains coordinates"]
-domain_coordinates=domain_coordinates[domain_coordinates.isna()==False]
-
-for i in domain_coordinates.index: # over all genes 
-    i_index=protein_domains_data_pd.index.get_loc(i)
-    b=data[data["Gene name"]==i]["Insertion locations"]
-    b=np.array(from_excel_to_list(np.array(b)[0]))
-    if b.size>1:
-        f=domain_coordinates.loc[i] # protein domains
-        binedges = b.searchsorted(f) # find the index of the insertion in the domains
-
-        rngs = [list(range(binedges[k], binedges[k+1])) for k in range(0,len(binedges)-1,2)]
-
-        totalreads=[]
-        totalinsertions=[]
-        for k in np.arange(0,len(rngs)):
-            readsperdomain=[]
-            insertionsperdomain=[]
-            for j in np.arange(0,len(rngs[k])):
-                tmp=reads_locations[i_index][rngs[k][j]]
-                readsperdomain.append(tmp)
-                if type(tmp)!=float:
-                    insertionsperdomain.append(len(tmp))
-                else:
-                    insertionsperdomain.append(1)
-
-            totalreads.append(np.sum(readsperdomain))
-            totalinsertions.append(np.sum(insertionsperdomain))
-    else:
-        totalreads=1
-        totalinsertions=1
-                
-    protein_domains_data_pd.loc[i,"reads_domain"]=totalreads
-    protein_domains_data_pd.loc[i,"insertions_domain"]=totalinsertions
-
-    
-
-
-# -
-
-protein_domains_data_pd
 
 # ## fitness - malthusian model
 #
@@ -784,194 +705,198 @@ protein_domains_data_pd
 #  - Plot the distributions of every fitness calculation referenced to the median fitness value of the population.
 #  - Plot the average fitness vs the corrected fitness 
 
-reads_domains=[]
-for i in protein_domains_data_pd.index:
-    tmp=protein_domains_data_pd.loc[i,"reads_domain"] # total reads of all domains in the gene 
-    if type(tmp)==list: # the list indicates that that protein has annotated domains
-        reads_domains.append(tmp[0])
-    
-
 # +
-# r=np.delete(r,5805,axis=0) # deleting the ade2 gene
-# r=np.delete(r,1927,axis=0) # deleting the ura3 gene
-# r[5805,:]=np.zeros_like(r[5805,:])
-# r[1927,:]=np.zeros_like(r[1927,:])
-ref=np.log2(np.median(np.sum(r,axis=1))) # reference fitness, assumption: most genes are neutral in the wild type
-# r are the reads per insertions of every gene divided in chunks . Here I am summing all the reads per gene and taking its median 
+import pickle
+with open("../postprocessed-data/fitness_models_all_backgrounds", "rb") as fp:   # Unpickling
+    b = pickle.load(fp)
 
-ref_domains=np.log2(np.median(reads_domains)) # reference fitness, assumption: most genes are neutral in the wild type
-# -
+fitness_all_pd=pd.concat(b,axis=0,keys=keys)
 
-ref,ref_domains,len(reads_domains),len(protein_domains_data_pd)
-
-# +
-fitness_models=defaultdict(dict)
-
-data=list_data_pd.loc["wt_merged"]
-
-for i in np.arange(0,len(data)):
-    gene=data.loc[i,"Gene name"]
-    if gene in discarded_genes2fitness:
-        fitness_models[gene]["fitness_gene"]="Not enough flanking regions"
-        fitness_models[gene]["fitness_gene_std"]="Not enough flanking regions"
-        fitness_models[gene]["fitness_domains_vector"]="Not enough flanking regions"
-        fitness_models[gene]["fitness_domains_average"]="Not enough flanking regions"
-        fitness_models[gene]["fitness_domains_corrected"]="Not enough flanking regions"
-        fitness_models[gene]["domains"]="Not enough flanking regions"
-    
-    else:
-        if np.sum(r[i,1:9])!=0:
-            fitness_models[gene]["fitness_gene"]=np.log2(np.sum(r[i,1:9]))/ref # getting the 80% central part of the reads per insertions
-            fitness_models[gene]["fitness_gene_std"]=np.log2(np.std(r[i,1:9]))/ref
-            if np.array(protein_domains_data_pd.loc[gene,"domains coordinates"]).size>1:
-                nume=np.array(protein_domains_data_pd.loc[gene,"reads_domain"])
-                deno=np.array(protein_domains_data_pd.loc[gene,"insertions_domain"])
-                if np.sum(deno)==0 or np.sum(nume)==0:
-                    deno=1
-                    nume=1
-                elif deno=='':
-                    deno=1
-                else:
-                    tmp=np.log2(nume/deno)
-                # replace nan values with zeros
-                if type(tmp)!=np.float64:
-                    tmp[np.isnan(tmp)] = 0
-                else:
-                    tmp=0
-                fitness_models[gene]["fitness_domains_vector"]=tmp/ref_domains
-            
-                fitness_models[gene]["fitness_domains_average"]=np.mean(fitness_models[gene]["fitness_domains_vector"])
-                fitness_models[gene]["fitness_domains_std"]=np.std(fitness_models[gene]["fitness_domains_vector"])
-                fitness_models[gene]["domains"]="annotated"
-                ## computing the corrected fitness as the fitness domain that has the maximum difference with the average fitnes
-                tmp=np.absolute(fitness_models[gene]["fitness_domains_vector"]-fitness_models[gene]["fitness_gene"])
-                index_max=np.where(tmp==np.max(tmp))[0]
-                if index_max.size>1:
-                    index_max=index_max[0]
-                    fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_domains_vector"][index_max]
-                else:
-                    fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_domains_vector"][index_max]
-            else:
-                fitness_models[gene]["fitness_domains_vector"]=fitness_models[gene]["fitness_gene"]
-                fitness_models[gene]["fitness_domains_std"]=fitness_models[gene]["fitness_gene_std"]
-                fitness_models[gene]["fitness_domains_average"]=fitness_models[gene]["fitness_gene"]
-                fitness_models[gene]["fitness_domains_corrected"]=fitness_models[gene]["fitness_gene"]
-                fitness_models[gene]["domains"]="non annotated domains"
-    
-
-# +
-fitness_models_pd=pd.DataFrame.from_dict(fitness_models,orient="index")
-fitness_models_pd["fitness_domains_average"].replace(-np.inf,0,inplace=True)
-fitness_models_pd["fitness_domains_corrected"].replace(-np.inf,0,inplace=True)
-fitness_models_pd["fitness_domains_average"].replace(np.inf,1.5,inplace=True)
-fitness_models_pd["fitness_domains_corrected"].replace(np.inf,1.5,inplace=True)
-fitness_models_pd["fitness_gene"].replace(-np.inf,0,inplace=True)
-fitness_models_pd["fitness_gene"].replace(np.inf,1.5,inplace=True)
-
+standard_essentials=np.loadtxt("../postprocessed-data/standard_essentials.txt",dtype=str)
 
 # -
 
-fitness_models_pd.loc["NRP1"],protein_domains_data_pd.loc["NRP1"]
-
-fitness_annotated_domains=fitness_models_pd[fitness_models_pd["domains"]=="annotated"]
-fitness_annotated_domains
-
-fitness_annotated_domains.loc[:,"fitness_domains_corrected"][0][0]
-f_corrected=[]
-for i in fitness_annotated_domains.index:
-    if type(fitness_annotated_domains.loc[i,"fitness_domains_corrected"])!=np.float64:
-        f_corrected.append(fitness_annotated_domains.loc[i,"fitness_domains_corrected"][0])
-    else:
-        f_corrected.append(0)
-
+from functions_interaction_computations import filter_fitness
+data_fitness=filter_fitness(fitness_all_pd,backgrounds=keys,goi=["BEM1","BEM3","NRP1"],discard=["Not enough flanking regions"],set2zero=["Not enough reads",
+    "Not enough insertions"],cols=["fitness_gene","fitness_domains_corrected"],essentiality=False) # drop genes that do not have enough reads or insertions
 
 # +
-# plt.figure(figsize=(5,5))
-plt.hist(fitness_annotated_domains.loc[:,"fitness_gene"],bins=100,label="whole gene");
-plt.hist(fitness_annotated_domains.loc[:,"fitness_domains_average"],bins=100,label="average domains",alpha=0.6);
-plt.hist(f_corrected,bins=100,label="fitness from domain with strongest effect",alpha=0.6);
+## Plot the distribution of fitness values for the wild type for the corrected and non corrected fitness for all genes and essential genes
 
-plt.legend()
 
-plt.xlabel("Fitness")
+data_wt_non_corrected=data_fitness.loc["wt_merged","fitness_gene"]
+data_wt_corrected=data_fitness.loc["wt_merged","fitness_domains_corrected"]
 
-plt.ylabel("Number of genes")
-
-plt.title("Fitness of genes with annotated domains")
-
-#plt.savefig("../figures/fitness_annotated_domains_hist.png")
-# -
-
-plt.scatter(fitness_annotated_domains.loc[:,"fitness_gene"],f_corrected,alpha=0.3)
-plt.xlabel("fitness whole gene")
-plt.ylabel("fitness domain with strongest effect")
-plt.xlim(0,1.5)
-plt.ylim(0,1.5)
-plt.plot([0,1.5],[0,1.5],color="black",marker="None",linestyle="--")
-plt.savefig("../figures/fitness_whole_gene_vs_fitness_domain_with_strongest_effect.png",dpi=300)
+data_wt_non_corrected_essentials=data_wt_non_corrected[data_wt_non_corrected.index.isin(standard_essentials)]
+data_wt_corrected_essentials=data_wt_corrected[data_wt_corrected.index.isin(standard_essentials)]
 
 # +
-## Fitness of essentials genes
+# select the genes that are not essential
 
-fitness_annotated_domains["Essential"]=np.zeros_like(fitness_annotated_domains.index)
+data_wt_non_corrected_non_essentials=data_wt_non_corrected[~data_wt_non_corrected.index.isin(standard_essentials)]
+data_wt_corrected_non_essentials=data_wt_corrected[~data_wt_corrected.index.isin(standard_essentials)]
 
-for i in standard_essentials:
-    if i in fitness_annotated_domains.index:
-        fitness_annotated_domains.loc[i,"Essential"]=1
-    else:
-        continue
+# +
+plt.subplots(1,1,figsize=(8,5))
 
-fitness_essential=fitness_annotated_domains[fitness_annotated_domains["Essential"]==1]
+
+sns.kdeplot(data_wt_non_corrected_non_essentials,alpha=0.4,label="All genes",color="black",shade=True);
+sns.kdeplot(data_wt_non_corrected_essentials,alpha=0.4,label="Essential genes",color="pink",shade=True);
+
+plt.xlabel("Fitness non corrected by domains ")
+
+plt.vlines(data_wt_non_corrected_non_essentials.mean(),0,2.5,linestyle="--",color="black",label="Mean fitness non corrected")
+plt.vlines(data_wt_non_corrected_essentials.mean(),0,2.5,linestyle="--",color="pink",label="Mean fitness non corrected essentials")
+
+#plt.savefig("../figures/fitness_distribution_non_corrected_wt_essentials.png",dpi=300)
 
 # -
 
-fitness_essential
+data_wt_non_corrected_essentials.mean(),data_wt_non_corrected_non_essentials.mean()
 
 # +
+plt.subplots(1,1,figsize=(8,5))
 
 
-f_corrected_essential=[]
-for i in fitness_essential.index:
-    if type(fitness_annotated_domains.loc[i,"fitness_domains_corrected"])!=np.float64:
-        f_corrected_essential.append(fitness_annotated_domains.loc[i,"fitness_domains_corrected"][0])
-    else:
-        f_corrected_essential.append(fitness_annotated_domains.loc[i,"fitness_domains_corrected"])
+sns.kdeplot(data_wt_corrected_non_essentials,alpha=0.4,label="All genes",color="black",shade=True);
+sns.kdeplot(data_wt_corrected_essentials,alpha=0.4,label="Essential genes",color="pink",shade=True);
 
-plt.hist(f_corrected,bins=100,label="fitness from domain with strongest effect",alpha=0.6);
-#plt.hist(fitness_essential.loc[:,"fitness_gene"],bins=100,label="whole gene essentials");
-#plt.hist(fitness_essential.loc[:,"fitness_domains_average"],bins=100,label="average domains essentials",alpha=0.6);
-plt.hist(f_corrected_essential,bins=100,label="fitness (essentials)from domain with strongest effect",alpha=0.6);
+plt.xlabel("Fitness corrected by domains ")
 
-plt.legend()
+plt.vlines(data_wt_corrected_non_essentials.mean(),0,2.5,linestyle="--",color="black",label="Mean fitness corrected")
+plt.vlines(data_wt_corrected_essentials.mean(),0,2.5,linestyle="--",color="pink",label="Mean fitness corrected essentials")
+
+#plt.savefig("../figures/fitness_distribution_corrected_wt_essentials.png",dpi=300)
 # -
 
-plt.scatter(fitness_essential.loc[:,"fitness_gene"],f_corrected_essential,alpha=0.3)
-plt.xlabel("fitness whole gene")
-plt.ylabel("fitness domain with strongest effect")
-plt.xlim(0,1.5)
-plt.ylim(0,1.5)
-plt.plot([0,1.5],[0,1.5],color="black",marker="None",linestyle="--")
+data_wt_corrected_non_essentials.mean(),data_wt_corrected_essentials.mean()
+
+essentials_pred=data_wt_non_corrected[data_wt_non_corrected<data_wt_non_corrected.mean()-data_wt_non_corrected.std()].index.tolist()
+
+data_wt_corrected.max()/5
+
+# +
+## Construct a ROC curve for predicting essential genes based on the fitness .values()
+
+
+from sklearn.metrics import roc_curve, auc
+
+y=np.zeros(len(data_wt_non_corrected)) ## labels for ROC curve
+y_pred=np.zeros(len(data_wt_non_corrected)) ## predicted values for ROC curve
+#essentials_pred=data_wt_non_corrected[data_wt_non_corrected<data_wt_non_corrected.mean()-0.5*2*data_wt_non_corrected.std()].index.tolist()
+essentials_pred=data_wt_non_corrected[data_wt_non_corrected<0.42].index.tolist()
+y_corrected=np.zeros(len(data_wt_corrected)) ## labels for ROC curve
+y_pred_corrected=np.zeros(len(data_wt_corrected)) ## predicted values for ROC curve
+#essentials_pred_corrected=data_wt_corrected[data_wt_corrected<data_wt_corrected.mean()-0.5*2*data_wt_corrected.std()].index.tolist()
+essentials_pred_corrected=data_wt_corrected[data_wt_corrected<0.42].index.tolist()
+
+j=0
+for i in data_wt_non_corrected.index:
+    if i in standard_essentials.tolist():
+        y[j]=1
+    j+=1
+#
+j=0
+for i in data_wt_non_corrected.index:
+    if i in essentials_pred:
+        y_pred[j]=1
+    j+=1
+
+
+j=0
+for i in data_wt_corrected.index:
+    if i in standard_essentials.tolist():
+        y_corrected[j]=1
+    j+=1
+#
+j=0
+for i in data_wt_corrected.index:
+    if i in essentials_pred_corrected:
+        y_pred_corrected[j]=1
+    j+=1
+# -
+
+data_wt_non_corrected.mean()-1*data_wt_non_corrected.std(),data_wt_corrected.mean()-1*data_wt_corrected.std()
+
+len(y),len(y_corrected),len(standard_essentials)
+
+# +
+## to construc a confusiion matrix 
+from sklearn.metrics import confusion_matrix
+
+# confusion_matrix(y, y_pred)/len(y)*100
+
+
+cm = confusion_matrix(y, y_pred)
+
+ax= plt.subplot()
+sns.heatmap(cm, annot=True, ax = ax,fmt="d",cmap="Blues"); #annot=True to annotate cells
+
+ax.set_xlabel('Predicted labels');ax.set_ylabel('True labels');
+ax.set_title('Confusion Matrix');
+ax.xaxis.set_ticklabels(['Non-essential', 'Essential']); ax.yaxis.set_ticklabels(['Non-essential', 'Essential']);
+
+#plt.savefig("../figures/confusion_matrix_non_corrected_fitness.png",dpi=300)
 
 
 # +
+## to construc a confusiion matrix 
+from sklearn.metrics import confusion_matrix
 
-plt.hist(fitness_annotated_domains.loc[:,"fitness_gene"],bins=100,label="whole gene",alpha=0.6);
-plt.hist(fitness_essential.loc[:,"fitness_gene"],bins=100,label="whole gene essentials",alpha=0.6);
+# confusion_matrix(y, y_pred)/len(y)*100
 
-plt.legend()
+
+cm = confusion_matrix(y_corrected, y_pred_corrected)
+
+ax= plt.subplot()
+sns.heatmap(cm, annot=True, ax = ax,fmt="d",cmap="Blues"); #annot=True to annotate cells
+
+ax.set_xlabel('Predicted labels');ax.set_ylabel('True labels');
+ax.set_title('Confusion Matrix');
+ax.xaxis.set_ticklabels(['Non-essential', 'Essential']); ax.yaxis.set_ticklabels(['Non-essential', 'Essential']);
+
+#plt.savefig("../figures/confusion_matrix_corrected_fitness.png",dpi=300)
 
 # +
-index_positive_domains=np.where(f_corrected_essential>fitness_essential.loc[:,"fitness_gene"])[0]
+from sklearn import metrics
 
-fitness_essential.iloc[index_positive_domains,:]
+#fpr, tpr, thresholds = metrics.roc_curve(y, fitness2rocprob)
+fpr, tpr, thresholds = metrics.roc_curve(y, y_pred)
+area=metrics.auc(fpr,tpr)
 
+figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+
+plt.plot([0, 1], [0, 1], color="navy", lw=2, linestyle="--")
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False Positive Rate",fontsize=16)
+plt.ylabel("True Positive Rate",fontsize=16)
+#plt.title("ROC of the  corrected fitness to predict essentiality",fontsize=16)
+
+plt.plot(fpr, tpr ,label=f"AUC={area:.2f}",color="darkorange",lw=2)
+ax.tick_params(axis="both",labelsize=16)
+ax.legend(loc="lower right",fontsize=16)
+
+#figure.savefig("../figures/fig_non_corrected_fitness_ROC_curve.png",dpi=300)
 
 # +
-plt.scatter(fitness_annotated_domains.loc[:,"fitness_gene"],fitness_annotated_domains.loc[:,"fitness_gene_std"],alpha=0.3)
-plt.scatter(fitness_essential.loc[:,"fitness_domains_average"],fitness_essential.loc[:,"fitness_domains_std"],alpha=0.3)
-plt.xlabel("fitness whole gene")
-plt.ylabel("fitness standard deviation")
+from sklearn import metrics
 
-plt.plot([0,1.5],[0,1.5],color="black",marker="None",linestyle="--")
-plt.xlim(0,1.5)
-plt.ylim(0,1.5)
+#fpr, tpr, thresholds = metrics.roc_curve(y, fitness2rocprob)
+fpr, tpr, thresholds = metrics.roc_curve(y_corrected, y_pred_corrected)
+area=metrics.auc(fpr,tpr)
+
+figure,ax=plt.subplots(nrows=1,ncols=1,figsize=(8,5))
+
+plt.plot([0, 1], [0, 1], color="navy", lw=2, linestyle="--")
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False Positive Rate",fontsize=16)
+plt.ylabel("True Positive Rate",fontsize=16)
+#plt.title("ROC of the  corrected fitness to predict essentiality",fontsize=16)
+
+plt.plot(fpr, tpr ,label=f"AUC={area:.2f}",color="darkorange",lw=2)
+ax.tick_params(axis="both",labelsize=16)
+ax.legend(loc="lower right",fontsize=16)
+
+#figure.savefig("../figures/fig_corrected_fitness_ROC_curve.png",dpi=300)
